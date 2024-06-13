@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# This bash script uses the current working directory to create a simple
+# script to run the Simple School Library command anywhere in a user's
+# workspace.
+
+installScript() {
+  scriptName=$1
+  cmdScript=$(pwd)/.venv/bin/$scriptName
+
+  cat << CMD_SCRIPT > $HOME/.local/bin/$scriptName
+#!/bin/sh
+
+# This shell script was created by the lpilGerbyBuilder tool
+#       './scripts/installEditableLpilGerbyBuilderCommand'
+# script.
+
+exec $cmdScript \$@
+CMD_SCRIPT
+
+  chmod a+x $HOME/.local/bin/$scriptName
+}
+
+##########################################################################
+
+installScript schoolLib
+
+echo ""
+echo "The editable school library command have been created"
+echo ""
