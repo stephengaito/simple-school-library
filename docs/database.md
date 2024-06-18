@@ -2,22 +2,30 @@
 
 ## Database structure
 
-- people (all text fields searchable)
-  - peopleID (unique primary key)
+- classes
+  - classesID (unique primary key)
+  - className
+
+- borrowers (all text fields searchable)
+  - borrowersID (unique primary key)
   - First name
   - Other names
   - Family name
   - cohort
   - classID
 
-- classes
-  - classesID (unique primary key)
-  - className
-
 - itemsInfo (all text fields searchable)
   - itemsInfoID  (unique primary key)
   - isbn
   - deweyDecimal
+      SELECT
+        author, title, biblio_metadata.metadata
+      FROM biblio, biblio_metadata
+      WHERE biblio.biblionumber = biblio_metadata.biblionumber
+
+      The DDC is located as the value in the datafield tag="082" code="a"
+      it the metadata field which is itself an XML structure.
+
   - Title
   - Authors
   - PublisherInfo
@@ -37,7 +45,7 @@
 
 - itemsBorrowed
   - itemsBorrowedID (unique primary key)
-  - personID
+  - borrowersID
   - itemsInfoID
   - itemsPhysicalID
   - dateBorrowed
