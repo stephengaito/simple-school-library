@@ -6,7 +6,16 @@
 
 installScript() {
   scriptName=$1
+  uvicornBin=$(pwd)/.venv/bin/uvicorn
   cmdScript=$(pwd)/.venv/bin/$scriptName
+
+  cat << BIN_SCRIPT > $cmdScript
+#!/bin/sh
+
+exec $uvicornBin schoolLib.app:app
+BIN_SCRIPT
+
+  chmod a+x $cmdScript
 
   cat << CMD_SCRIPT > $HOME/.local/bin/$scriptName
 #!/bin/sh
