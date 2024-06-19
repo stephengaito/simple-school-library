@@ -8,7 +8,14 @@ We build a simple school library using:
 
 - [</> htmx](https://htmx.org/)
 
-- [jaraco/cssutils](https://github.com/jaraco/cssutils)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+  - For development, this requires the [Standalone CLI: Use Tailwind CSS
+    without Node.js - Tailwind
+    CSS](https://tailwindcss.com/blog/standalone-cli) to be downloaded
+    from the [Releases ·
+    tailwindlabs/tailwindcss](https://github.com/tailwindlabs/tailwindcss/releases)
+    page and placed somewhere in your $PATH.
 
 - [Starlette](https://www.starlette.io/)
 
