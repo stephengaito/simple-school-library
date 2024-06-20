@@ -1,0 +1,11 @@
+
+# This is a YAML (configuration) file
+
+# Comments start with the `#` character and continue to the end of a line.
+
+# You MUST provide the location of your SLQlite3 database:
+database: sslDb.sqlite
+
+# You CAN provide an alternative location for your Simple School Library
+# web page templates:
+templatesDir: templates

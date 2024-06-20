@@ -5,8 +5,9 @@ from starlette.applications import Starlette
 from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
 
-from schoolLib.router import *
-from schoolLib.templates import *
+from schoolLib.setup import *
+
+loadedConfig('config.yaml')
 
 # The ORDER here is important!
 import schoolLib.classes

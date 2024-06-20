@@ -1,3 +1,5 @@
+*.sqlite
+config.yaml
 tmp
 .pdm-python
 pdm.lock
