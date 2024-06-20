@@ -10,23 +10,24 @@ from schoolLib.templates import *
 
 @get('/')
 def homepage(request):
-    return TemplateResponse(request, 'index.html')
+    return TemplateResponse(request, 'homePage.html')
 
-@get('/user/me')
-def user_me(request):
-    username = "John Doe"
-    return PlainTextResponse('Hello, %s!' % username)
+async def notFound(request, theException) :
+  print(repr(request))
+  print(repr(theException))
+  return TemplateResponse(request, "404.html", status_code=404)
 
-@get('/user/{username}')
-def user(request):
-    username = request.path_params['username']
-    return PlainTextResponse('Hello, %s!' % username)
+async def serverError(request, theException) :
+  print(repr(request))
+  print(repr(theException))
+  return TemplateResponse(request, "500.html", status_code=500)
 
-@get('/ws')
-async def websocket_endpoint(websocket):
-    await websocket.accept()
-    await websocket.send_text('Hello, websocket!')
-    await websocket.close()
-
-app = Starlette(debug=True, routes=routes)
+app = Starlette(
+  debug=True,
+  routes=routes,
+  exception_handlers={
+    404: notFound,
+    500: serverError
+  }
+)
 app.mount('/static', StaticFiles(packages=['schoolLib']), name='static')

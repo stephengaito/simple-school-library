@@ -20,3 +20,11 @@ We build a simple school library using:
 - [Starlette](https://www.starlette.io/)
 
 - [Uvicorn](http://www.uvicorn.org/)
+
+For testing we use:
+
+- [Test Client - Starlette](https://www.starlette.io/testclient/)
+
+- [HTTPX](https://www.python-httpx.org/)
+
+- [pytest](https://docs.pytest.org/en/8.2.x/)

@@ -20,3 +20,7 @@ requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
 [tool.pdm]
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest>=8.2.2",
+]
