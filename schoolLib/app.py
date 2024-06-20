@@ -8,6 +8,9 @@ from starlette.staticfiles import StaticFiles
 from schoolLib.router import *
 from schoolLib.templates import *
 
+# The ORDER here is important!
+import schoolLib.classes
+
 @get('/')
 def homepage(request):
     return TemplateResponse(request, 'homePage.html')

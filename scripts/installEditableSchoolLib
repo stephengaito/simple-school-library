@@ -12,7 +12,7 @@ installScript() {
   cat << BIN_SCRIPT > $cmdScript
 #!/bin/sh
 
-exec $uvicornBin schoolLib.app:app
+exec $uvicornBin --reload schoolLib.app:app
 BIN_SCRIPT
 
   chmod a+x $cmdScript
