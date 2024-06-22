@@ -5,12 +5,14 @@
     <th>First name</th>
     <th>Family name</th>
     <th>Cohort</th>
+    <th>Class</th>
   </tr>
 {% for aRow in results %}
   <tr>
     <td>{{ aRow[0] }}</td>
     <td>{{ aRow[1] }}</td>
     <td>{{ aRow[2] }}</td>
+    <td>{{ aRow[3] }}</td>
   </tr>
 {% endfor %}
 </table>

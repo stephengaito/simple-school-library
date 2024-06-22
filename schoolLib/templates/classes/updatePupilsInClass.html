@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="/classes/update" method="POST">
+<table>
+  <tr>
+    <th>First name</th>
+    <th>Family name</th>
+    <th>Cohort</th>
+    <th>Old Class</th>
+    <th>New Class</th>
+  </tr>
+{% for aRow in results %}
+  <tr>{# aRow[0] is the id #}
+    <td>{{ aRow[1] }}</td>
+    <td>{{ aRow[2] }}</td>
+    <td>{{ aRow[3] }}</td>
+    <td>{{ aRow[4] }}</td>
+    <td>
+      <select name="row-{{aRow[0]}}" id="row-{{aRow[0]}}">
+        {% for aClass in classes %}
+        <option value="rowClass-{{aRow[0]}}-{{aClass[0]}}" {{aClass[2]}} >{{aClass[1]}}</option>
+        {% endfor %}
+      </select>
+    </td>
+  </tr>
+{% endfor %}
+</table>
+<input type="submit" value="Save changes"/>
+</form>
+{% endblock %}

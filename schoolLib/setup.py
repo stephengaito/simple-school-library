@@ -179,3 +179,19 @@ def getDatabase(asCursor=False) :
       'Have you configured the database properly?',
       repr(err)
     )
+
+def selectUsing(anSQLselection) :
+  with getDatabase(asCursor=True) as cursor:
+    cursor.execute(anSQLselection)
+    return cursor.fetchall()
+
+def getClasses(selectedClass=None) :
+  theClasses = selectUsing("SELECT id, name FROM classes")
+  if selectedClass and 0 <= selectedClass and selectedClass < len(theClasses) :
+    theNewClasses = []
+    for aClass in theClasses :
+      theSelected = ''
+      if aClass[0] == selectedClass : theSelected = 'selected'
+      theNewClasses.append(aClass + (theSelected,))
+    theClasses = tuple(theNewClasses)
+  return theClasses

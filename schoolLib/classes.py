@@ -22,23 +22,56 @@ async def saveNewClass(request) :
 
 @get('/classes/list')
 def listClasses(request) :
-  with getDatabase(asCursor=True) as cursor :
-    cursor.execute("SELECT * FROM classes")
-    results = cursor.fetchall()
-    return TemplateResponse(request, 'classes/listClasses.html', {
-      'results' : results,
-    })
+  results = selectUsing("SELECT * FROM classes")
+  return TemplateResponse(request, 'classes/listClasses.html', {
+    'results' : results,
+  })
 
 @get('/classes/list/{classId}')
 def listClass(request, classId=None) :
   if classId :
-    with getDatabase(asCursor=True) as cursor :
-      cursor.execute(f"""
-        SELECT firstName, familyName, cohort
-        FROM borrowers
-        WHERE classId = '{classId}'
-      """)
-      results = cursor.fetchall()
-      return TemplateResponse(request, 'classes/listPupilsInClass.html', {
-        'results' : results,
-      })
+    results = selectUsing(f"""
+      SELECT firstName, familyName, cohort, classes.name
+      FROM borrowers, classes
+      WHERE classId = '{classId}'
+      AND classId = classes.id
+    """)
+    return TemplateResponse(request, 'classes/listPupilsInClass.html', {
+      'results' : results,
+    })
+  return GoToResponse('/classes/list')
+
+@get('/classes/update/{classId}')
+def updateClassForm(request, classId=None) :
+  if classId :
+    classes = getClasses(selectedClass=int(classId))
+    results = selectUsing(f"""
+      SELECT borrowers.id, firstName, familyName, cohort, classes.name
+      FROM borrowers, classes
+      WHERE classId = {classId}
+      AND   classId = classes.id
+    """)
+    return TemplateResponse(request, 'classes/updatePupilsInClass.html', {
+      'classes' : classes,
+      'results' : results
+    })
+  return GoToResponse('/classes/list')
+
+@post('/classes/update')
+async def updateClass(request) :
+  theForm = await request.form()
+  with getDatabase() as db :
+    for aKey in theForm.keys() :
+      rowClass = theForm[aKey].split('-')
+      cursor = db.cursor()
+      cursor.execute("""
+        UPDATE borrowers
+        SET classId={classId}
+        WHERE id={borrowerId}
+        AND classId!={classId}
+      """.format(
+        borrowerId=rowClass[1],
+        classId=rowClass[2]
+      ))
+    db.commit()
+  return GotoResponse('/classes/list')
