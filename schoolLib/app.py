@@ -16,6 +16,11 @@ import schoolLib.classes
 def homepage(request):
     return TemplateResponse(request, 'homePage.html')
 
+@get('/help/{aPath:path}')
+def helpPages(request, aPath=None) :
+  if not aPath : aPath = 'help'
+  return MarkdownResponse(request, aPath)
+
 async def notFound(request, theException) :
   print(repr(request))
   print(repr(theException))

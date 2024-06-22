@@ -4,7 +4,10 @@ import os
 import sqlite3
 import yaml
 
+from markdown import markdown
+
 from starlette.routing import Route #, Mount, WebSocketRoute
+from starlette.responses import *
 from starlette.templating import Jinja2Templates
 
 ###############################################################
@@ -34,6 +37,12 @@ def sanitizeConfig(config) :
   global templates
   templates = Jinja2Templates(directory=config['templatesDir'])
 
+  if 'makrdownDir' not in config :
+    config['markdownDir'] = os.path.join(
+      os.path.dirname(__file__),
+      'markdown'
+    )
+
 def loadedConfig(aConfigPath, reportErrors=False) :
   try :
     with open(aConfigPath) as configFile :
@@ -58,6 +67,31 @@ def TemplateResponse(*args, **kwargs) :
       'Trying to use a template'
     )
   return templates.TemplateResponse(*args, **kwargs)
+
+def GotoResponse(newUrl) :
+  return RedirectResponse(url=newUrl, status_code=303)
+
+###############################################################
+# Markdown pages
+
+def MarkdownResponse(request, path, template="help.html") :
+  if 'markdownDir' not in config :
+    print("Markdown direcotry not configured")
+    return TemplateResponse(request, "404.html")
+  markdownDir = config['markdownDir']
+
+  markdownPath = os.path.join(markdownDir, path+'.md')
+  if not os.path.isfile(markdownPath) :
+    print(f"Markdown file [{markdownPath}] not found")
+    return TemplateResponse(request, "404.html")
+
+  makedownStr = ""
+  with open(markdownPath) as mdFile :
+    markdownStr = markdown(mdFile.read())
+
+  return TemplateResponse(request, template, {
+    'markdown' : markdownStr
+  })
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -94,7 +128,7 @@ def get(aRoute, name=None) :
 
 def put(aRoute, name=None) :
   def putDecorator(func) :
-    def putWrapper(request) :
+    async def putWrapper(request) :
       return callWithParameters(request, func)
     routes.append(Route(aRoute, putWrapper, name=name, methods=["PUT"]))
     return putWrapper
@@ -102,8 +136,8 @@ def put(aRoute, name=None) :
 
 def post(aRoute, name=None) :
   def postDecorator(func) :
-    def postWrapper(request) :
-      return callWithParameters(request, func)
+    async def postWrapper(request) :
+      return await callWithParameters(request, func)
     routes.append(Route(aRoute, postWrapper, name=name, methods=["POST"]))
     return postWrapper
   return postDecorator

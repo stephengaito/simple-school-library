@@ -6,6 +6,8 @@ We build a simple school library using:
 
 - [Jinja](https://jinja.palletsprojects.com/en/3.0.x/)
 
+- [Python-Markdown](https://python-markdown.github.io/)
+
 - [</> htmx](https://htmx.org/)
 
 - [Tailwind CSS](https://tailwindcss.com/)

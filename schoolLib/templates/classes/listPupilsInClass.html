@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<table>
+  <tr>
+    <th>First name</th>
+    <th>Family name</th>
+    <th>Cohort</th>
+  </tr>
+{% for aRow in results %}
+  <tr>
+    <td>{{ aRow[0] }}</td>
+    <td>{{ aRow[1] }}</td>
+    <td>{{ aRow[2] }}</td>
+  </tr>
+{% endfor %}
+</table>
+{% endblock %}
