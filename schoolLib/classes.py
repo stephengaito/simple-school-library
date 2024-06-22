@@ -9,16 +9,20 @@ def newClassForm(request) :
 
 @post('/classes/new')
 async def saveNewClass(request) :
-  print("-------------------------------")
   theForm = await request.form()
-  print(yaml.dump(theForm))
-  print("-------------------------------")
+  with getDatabase() as db :
+    cursor = db.cursor()
+    cursor.execute("""
+      INSERT INTO classes ( name ) VALUES ('{className}')
+    """.format(
+      className=theForm['className']
+    ))
+    db.commit()
   return GotoResponse('/')
 
 @get('/classes/list')
 def listClasses(request) :
-  with getDatabase() as db :
-    cursor = db.cursor()
+  with getDatabase(asCursor=True) as cursor :
     cursor.execute("SELECT * FROM classes")
     results = cursor.fetchall()
     return TemplateResponse(request, 'classes/listClasses.html', {
@@ -28,8 +32,7 @@ def listClasses(request) :
 @get('/classes/list/{classId}')
 def listClass(request, classId=None) :
   if classId :
-    with getDatabase() as db :
-      cursor = db.cursor()
+    with getDatabase(asCursor=True) as cursor :
       cursor.execute(f"""
         SELECT firstName, familyName, cohort
         FROM borrowers

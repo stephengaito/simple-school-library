@@ -162,11 +162,12 @@ def delete(aRoute, name=None) :
 # Some simple database handling utilities
 
 @contextmanager
-def getDatabase() :
+def getDatabase(asCursor=False) :
   try :
     db = sqlite3.connect(config['database'])
     try :
-      yield db
+      if asCursor :  yield db.cursor()
+      else        :  yield db
     finally :
       db.close()
   except Exception as err :
