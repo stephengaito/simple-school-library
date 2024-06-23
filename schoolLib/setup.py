@@ -186,12 +186,14 @@ def selectUsing(anSQLselection) :
     return cursor.fetchall()
 
 def getClasses(selectedClass=None) :
-  theClasses = selectUsing("SELECT id, name FROM classes")
-  if selectedClass and 0 <= selectedClass and selectedClass < len(theClasses) :
-    theNewClasses = []
-    for aClass in theClasses :
-      theSelected = ''
-      if aClass[0] == selectedClass : theSelected = 'selected'
-      theNewClasses.append(aClass + (theSelected,))
-    theClasses = tuple(theNewClasses)
+  theClasses = selectUsing("SELECT id, name FROM classes ORDER BY id")
+  if selectedClass :
+    selectedClass = int(selectedClass)
+    if 0 <= selectedClass and selectedClass < len(theClasses) :
+      theNewClasses = []
+      for aClass in theClasses :
+        theSelected = ''
+        if aClass[0] == selectedClass : theSelected = 'selected'
+        theNewClasses.append(aClass + (theSelected,))
+      theClasses = tuple(theNewClasses)
   return theClasses

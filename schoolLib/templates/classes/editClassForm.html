@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="{{action}}" method="POST">
+  <label>Class Name</label>
+  <input type="text" maxlength="60" id="className" name="className"
+  {% if className is defined %}
+    value="{{className}}"
+  {% else %}
+    placeholder="A class name..."
+  {% endif %}
+  />
+  <label>Description</label>
+  <textarea maxlength="60" id="classDesc" name="classDesc"
+  {% if classDesc is defined %}
+    >{{classDesc}}</textarea>
+  {% else %}
+    placeholder="A description of your class..."></textarea>
+  {% endif %}
+  <input type="submit" value="Add new class"/>
+</form>
+{% endblock %}
