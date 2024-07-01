@@ -1,5 +1,6 @@
 
 from contextlib import contextmanager
+from functools import wraps
 import os
 import sqlite3
 import yaml
@@ -69,6 +70,7 @@ def TemplateResponse(*args, **kwargs) :
   return templates.TemplateResponse(*args, **kwargs)
 
 def GotoResponse(newUrl) :
+  print(f"GOTO response {newUrl}")
   return RedirectResponse(url=newUrl, status_code=303)
 
 ###############################################################
@@ -95,6 +97,8 @@ def MarkdownResponse(request, path, template="help.html") :
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
+#
+# see: https://restfulapi.net/http-methods/
 
 routes = []
 
@@ -120,6 +124,7 @@ def callWithParameters(request, func) :
 
 def get(aRoute, name=None) :
   def getDecorator(func) :
+    @wraps(func)
     def getWrapper(request) :
       return callWithParameters(request, func)
     routes.append(Route(aRoute, getWrapper, name=name, methods=["GET"]))
@@ -128,14 +133,16 @@ def get(aRoute, name=None) :
 
 def put(aRoute, name=None) :
   def putDecorator(func) :
+    @wraps(func)
     async def putWrapper(request) :
-      return callWithParameters(request, func)
-    routes.append(Route(aRoute, putWrapper, name=name, methods=["PUT"]))
+      return await callWithParameters(request, func)
+    routes.append(Route(aRoute, putWrapper, name=name, methods=["PUT", "POST"]))
     return putWrapper
   return putDecorator
 
 def post(aRoute, name=None) :
   def postDecorator(func) :
+    @wraps(func)
     async def postWrapper(request) :
       return await callWithParameters(request, func)
     routes.append(Route(aRoute, postWrapper, name=name, methods=["POST"]))
@@ -144,17 +151,19 @@ def post(aRoute, name=None) :
 
 def patch(aRoute, name=None) :
   def patchDecorator(func) :
-    def patchWrapper(request) :
-      return callWithParameters(request, func)
-    routes.append(Route(aRoute, patchWrapper, name=name, methods=["PATCH"]))
+    @wraps(func)
+    async def patchWrapper(request) :
+      return await callWithParameters(request, func)
+    routes.append(Route(aRoute, patchWrapper, name=name, methods=["PATCH", "POST"]))
     return patchWrapper
   return patchDecorator
 
 def delete(aRoute, name=None) :
   def deleteDecorator(func) :
+    @wraps(func)
     def deleteWrapper(request) :
       return callWithParameters(request, func)
-    routes.append(Route(aRoute, deleteWrapper, name=name, methods=["DELETE"]))
+    routes.append(Route(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
     return deleteWrapper
   return deleteDecorator
 
@@ -186,14 +195,37 @@ def selectUsing(anSQLselection) :
     return cursor.fetchall()
 
 def getClasses(selectedClass=None) :
-  theClasses = selectUsing("SELECT id, name FROM classes ORDER BY id")
+  results = selectUsing("""
+    SELECT id, name, classOrder, desc, colour
+    FROM classes
+    ORDER BY classOrder
+  """)
+  theClasses = {}
+  for aClass in results :
+    theClass = {}
+    theClass['id']         = aClass[0]
+    theClass['name']       = aClass[1]
+    theClass['classOrder'] = aClass[2]
+    theClass['desc']       = aClass[3]
+    theClass['colour']     = aClass[4]
+    theClass['selected']   = ''
+    theClasses[theClass['id']] = theClass
+
   if selectedClass :
     selectedClass = int(selectedClass)
     if 0 <= selectedClass and selectedClass < len(theClasses) :
-      theNewClasses = []
-      for aClass in theClasses :
-        theSelected = ''
-        if aClass[0] == selectedClass : theSelected = 'selected'
-        theNewClasses.append(aClass + (theSelected,))
-      theClasses = tuple(theNewClasses)
+      theClasses[selectedClass]['selected'] = 'selected'
+
   return theClasses
+
+def getSortedClasses(theClasses) :
+  sortOrder = sorted(
+    theClasses.keys(),
+    key=lambda aClassId : theClasses[aClassId]['classOrder']
+  )
+  print(yaml.dump(sortOrder))
+  sortedClasses = []
+  for aClassId in sortOrder :
+    sortedClasses.append(theClasses[aClassId])
+  print(yaml.dump(sortedClasses))
+  return sortedClasses

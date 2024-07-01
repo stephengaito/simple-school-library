@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Playwrite GB J
+- Font Author: Copyright 2023 The Playwrite Project Authors (https://github.com/TypeTogether/Playwrite)
+- Font Source: https://fonts.gstatic.com/s/playwritegbj/v4/k3kEo8wSPe9dzQ1UGbvobAPhY5iG-fsubxedDheGdc9HaN7X9HFR8Q.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))

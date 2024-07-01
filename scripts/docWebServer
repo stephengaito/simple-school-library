@@ -1,0 +1,4 @@
+#!/bin/sh
+
+
+.venv/bin/python -m pydoc -p 34567 schoolLib/*.py

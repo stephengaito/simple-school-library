@@ -18,7 +18,7 @@
     <td>
       <select name="row-{{aRow[0]}}" id="row-{{aRow[0]}}">
         {% for aClass in classes %}
-        <option value="rowClass-{{aRow[0]}}-{{aClass[0]}}" {{aClass[2]}} >{{aClass[1]}}</option>
+        <option value="rowClass-{{aRow[0]}}-{{aClass['id']}}" {{aClass['selected']}} >{{aClass['name']}}</option>
         {% endfor %}
       </select>
     </td>

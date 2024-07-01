@@ -16,6 +16,24 @@
   {% else %}
     placeholder="A description of your class..."></textarea>
   {% endif %}
-  <input type="submit" value="Add new class"/>
+  <label>Class order</label>
+  <input type="number" id='classOrder' name='classOrder' step="1"
+  {%  if maxClassOrder is defined %}
+    value="{{maxClassOrder}}"
+  {% elif classOrder is defined %}
+    value="{{classOrder}}"
+  {% else %}
+    value="0"
+  {% endif %}
+  />
+  <label>Class colour</label>
+  <input type="color" id="classColour" name="classColour"
+  {% if classColour is defined %}
+    value="{{classColour}}"
+  {% else %}
+    value="#000000"
+  {% endif %}
+  />
+  <input type="submit" value="{{submitMsg}}"/>
 </form>
 {% endblock %}

@@ -30,3 +30,14 @@ For testing we use:
 - [HTTPX](https://www.python-httpx.org/)
 
 - [pytest](https://docs.pytest.org/en/8.2.x/)
+
+For documentation we use:
+
+- [pydoc](https://docs.python.org/3/library/pydoc.html)
+
+  - run using the script `./scriptes/docWebServer`
+
+Resources:
+
+- [The best Favicon Generator (completely free) -
+  favicon.io](https://favicon.io/)

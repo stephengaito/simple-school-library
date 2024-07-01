@@ -11,6 +11,7 @@ loadedConfig('config.yaml')
 
 # The ORDER here is important!
 import schoolLib.classes
+import schoolLib.classesBorrowers
 
 @get('/')
 def homepage(request):
@@ -22,13 +23,17 @@ def helpPages(request, aPath=None) :
   return MarkdownResponse(request, aPath)
 
 async def notFound(request, theException) :
+  print("-------------")
   print(repr(request))
   print(repr(theException))
+  print("-------------")
   return TemplateResponse(request, "404.html", status_code=404)
 
 async def serverError(request, theException) :
+  print("-------------")
   print(repr(request))
   print(repr(theException))
+  print("-------------")
   return TemplateResponse(request, "500.html", status_code=500)
 
 app = Starlette(
@@ -40,3 +45,9 @@ app = Starlette(
   }
 )
 app.mount('/static', StaticFiles(packages=['schoolLib']), name='static')
+
+for aRoute in routes :
+  print(aRoute.path)
+  print(aRoute.methods)
+  print(aRoute.endpoint)
+  print("")
