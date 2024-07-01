@@ -12,6 +12,7 @@ loadedConfig('config.yaml')
 # The ORDER here is important!
 import schoolLib.classes
 import schoolLib.classesBorrowers
+import schoolLib.borrowers
 
 @get('/')
 def homepage(request):

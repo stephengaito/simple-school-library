@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="{{action}}" method="POST">
+
+  <label>First name</label>
+  <input type="text" maxlength="60" id="firstName" name="firstName"
+  {% if firstName is defined %}
+    value="{{firstName}}"
+  {% else %}
+    placeholder="A first name..."
+  {% endif %}
+  />
+
+  <label>Family name</label>
+  <input type="text" maxlength="60" id="familyName" name="familyName"
+  {% if familyName is defined %}
+    value="{{familyName}}"
+  {% else %}
+    placeholder="A family name..."
+  {% endif %}
+  />
+
+  <label>Cohort (year entered education)</label>
+  <input type="text" maxlength="60" id="cohort" name="cohort"
+  {% if cohort is defined %}
+    value="{{cohort}}"
+  {% else %}
+    placeholder="The year of entry into eduction..."
+  {% endif %}
+  />
+
+  <label>Class</label>
+  <select name="assignedClass" id="assignedClass">
+  {% for aClass in classes %}
+    <option value="{{aClass['id']}}" {{aClass['selected']}} >{{aClass['name']}}</option>
+  {% endfor %}
+  </select>
+
+  <input type="submit" value="{{submitMsg}}"/>
+
+</form>
+{% endblock %}

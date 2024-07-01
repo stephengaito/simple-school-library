@@ -12,8 +12,6 @@ description of each class.
 
 """
 
-import sqlite3
-
 from schoolLib.setup import *
 
 @get('/classes/new')

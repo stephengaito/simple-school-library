@@ -10,8 +10,6 @@ Provide a listing of Borrowers in each class.
 
 """
 
-import sqlite3
-
 from schoolLib.setup import *
 
 @get('/classes/list/{classId:int}')
@@ -25,7 +23,7 @@ def getListOfPupilsInAClass(request, classId=None) :
 
   if classId :
     results = selectUsing(f"""
-      SELECT firstName, familyName, cohort, classes.name
+      SELECT borrowers.id, firstName, familyName, cohort, classes.name
       FROM borrowers, classes
       WHERE classId = {classId}
       AND classId = classes.id

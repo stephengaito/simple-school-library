@@ -223,9 +223,11 @@ def getSortedClasses(theClasses) :
     theClasses.keys(),
     key=lambda aClassId : theClasses[aClassId]['classOrder']
   )
-  print(yaml.dump(sortOrder))
   sortedClasses = []
   for aClassId in sortOrder :
     sortedClasses.append(theClasses[aClassId])
-  print(yaml.dump(sortedClasses))
   return sortedClasses
+
+def getOrderedClasses(selectedClass=None) :
+  classes = getClasses(selectedClass=selectedClass)
+  return getSortedClasses(classes)
