@@ -1,4 +1,5 @@
 *.sqlite
+testConfig.yaml
 config.yaml
 tmp
 .pdm-python

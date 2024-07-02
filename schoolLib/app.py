@@ -7,7 +7,7 @@ from starlette.staticfiles import StaticFiles
 
 from schoolLib.setup import *
 
-loadedConfig('config.yaml')
+loadedConfig('config.yaml', verbose=True)
 
 # The ORDER here is important!
 import schoolLib.classes

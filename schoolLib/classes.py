@@ -23,11 +23,12 @@ def getNewClassForm(request) :
 
   """
   maxClassOrder = 0
-  classes = getClasses()
-  for aClassId, aClass in classes.items() :
-    if maxClassOrder < aClass['classOrder'] :
-      maxClassOrder = aClass['classOrder']
-  maxClassOrder += 1
+  with getDatabase() as db :
+    classes = getClasses(db)
+    for aClassId, aClass in classes.items() :
+      if maxClassOrder < aClass['classOrder'] :
+        maxClassOrder = aClass['classOrder']
+    maxClassOrder += 1
   return TemplateResponse(request, 'classes/editClassForm.html', {
     'action'        : '/classes/new',
     'submitMsg'     : 'Add new class',
@@ -43,23 +44,14 @@ async def postSaveNewClass(request) :
 
   """
 
-  ## TODO need to protect from `'` used by user.
-
   theForm = await request.form()
   with getDatabase() as db :
-    cursor = db.cursor()
-    cursor.execute("""
-      INSERT INTO classes (
-        name, classOrder, desc, colour
-      ) VALUES (
-        '{className}', '{classOrder}', '{classDesc}', '{classColour}'
-      )
-    """.format(
-      className=theForm['className'],
-      classOrder=theForm['classOrder'],
-      classDesc=theForm['classDesc'],
-      classColour=theForm['classColour']
-    ))
+    db.execute(InsertSql().sql('classes', {
+      'name'       : theForm['className'],
+      'classOrder' : theForm['classOrder'],
+      'desc'       : theForm['classDesc'],
+      'colour'     : theForm['classColour']
+    }))
     db.commit()
   return GotoResponse('/classes/list')
 
@@ -73,19 +65,17 @@ def getEditAClassForm(request, classId=None) :
   """
 
   if classId :
-    theClasses = getClasses()
-    print("----------------------------")
-    print(yaml.dump(theClasses))
-    print("----------------------------")
-    if classId in theClasses :
-      return TemplateResponse(request, 'classes/editClassForm.html', {
-        'action'      : f'/classes/edit/{classId}',
-        'submitMsg'   : 'Save changes',
-        'className'   : theClasses[classId]['name'],
-        'classOrder'  : theClasses[classId]['classOrder'],
-        'classDesc'   : theClasses[classId]['desc'],
-        'classColour' : theClasses[classId]['colour']
-      })
+    with getDatabase() as db :
+      theClasses = getClasses(db)
+      if classId in theClasses :
+        return TemplateResponse(request, 'classes/editClassForm.html', {
+          'action'      : f'/classes/edit/{classId}',
+          'submitMsg'   : 'Save changes',
+          'className'   : theClasses[classId]['name'],
+          'classOrder'  : theClasses[classId]['classOrder'],
+          'classDesc'   : theClasses[classId]['desc'],
+          'classColour' : theClasses[classId]['colour']
+        })
   return GotoResponse('/classes/list')
 
 @put('/classes/edit/{classId:int}')
@@ -104,23 +94,14 @@ async def putUpdateAClass(request, classId=None) :
   print(yaml.dump(theForm))
   print("--------------")
   with getDatabase() as db :
-    cursor = db.cursor()
-    cursor.execute("""
-      UPDATE classes
-      SET
-        name='{className}',
-        classOrder='{classOrder}',
-        desc='{classDesc}',
-        colour='{classColour}'
-      WHERE
-        id={classId}
-    """.format(
-      classId=classId,
-      className=theForm['className'],
-      classOrder=theForm['classOrder'],
-      classDesc=theForm['classDesc'],
-      classColour=theForm['classColour']
-    ))
+    db.execute(UpdateSql(
+    ).whereValue('id', classId
+    ).sql('classes', {
+      'name'       : theForm['className'],
+      'classOrder' : theForm['classOrder'],
+      'desc'       : theForm['classDesc'],
+      'colour'     : theForm['classColour']
+    }))
     db.commit()
   return GotoResponse('/')
 
@@ -134,19 +115,14 @@ def deleteAnEmptyClass(request, classId=None) :
   """
   print("DELETE AN EMPTY CLASS")
   with getDatabase() as db :
-    cursor = db.cursor()
-    cursor.execute("""
-        SELECT id FROM borrowers WHERE classId={classId}
-      """.format(classId=classId)
-    )
-    results = cursor.fetchall()
-    print(type(results))
-    print(yaml.dump(results))
+    selectSql = SelectSql(
+    ).fields('id').tables('borrowers'
+    ).whereValue('classId', classId)
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
     if not results :
-      cursor.execute("""
-          DELETE FROM classes WHERE id={classId}
-        """.format(classId=classId)
-      )
+      cmd = DeleteSql().whereValue('id', classId).sql('classes')
+      print(cmd)
+      db.execute(cmd)
       db.commit()
     else :
       print("Can NOT delete a class which is not empty!")
@@ -160,9 +136,8 @@ def getListOfClassNames(request) :
   GET the list of existing classes
 
   """
-
-  theClasses = getClasses()
-  return TemplateResponse(request, 'classes/listClasses.html', {
-    'theClasses' : theClasses,
-  })
-
+  with getDatabase() as db :
+    theClasses = getClasses(db)
+    return TemplateResponse(request, 'classes/listClasses.html', {
+      'theClasses' : theClasses,
+    })

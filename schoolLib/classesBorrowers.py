@@ -22,15 +22,18 @@ def getListOfPupilsInAClass(request, classId=None) :
   """
 
   if classId :
-    results = selectUsing(f"""
-      SELECT borrowers.id, firstName, familyName, cohort, classes.name
-      FROM borrowers, classes
-      WHERE classId = {classId}
-      AND classId = classes.id
-    """)
-    return TemplateResponse(request, 'classes/listPupilsInClass.html', {
-      'results' : results,
-    })
+    with getDatabase() as db :
+      selectSql = SelectSql(
+      ).fields(
+        "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
+      ).tables(
+        "borrowers", "classes"
+      ).whereValue("classId", classId
+      ).whereField("classId", "classes.id")
+      results = selectSql.parseResults(db.execute(selectSql.sql()))
+      return TemplateResponse(request, 'classes/listPupilsInClass.html', {
+        'results' : results,
+      })
   return GotoResponse('/classes/list')
 
 @get('/classes/update/{classId:int}')
@@ -44,19 +47,20 @@ def getUpdatePupilsInAClassForm(request, classId=None) :
   """
 
   if classId :
-    classes = getClasses(selectedClass=classId)
-    classes = getSortedClasses(classes)
-    print(yaml.dump(classes))
-    results = selectUsing(f"""
-      SELECT borrowers.id, firstName, familyName, cohort, classes.name
-      FROM borrowers, classes
-      WHERE classId = {classId}
-      AND   classId = classes.id
-    """)
-    return TemplateResponse(request, 'classes/updatePupilsInClass.html', {
-      'classes' : classes,
-      'results' : results
-    })
+    with getDatabase() as db :
+      classes = getOrderedClassList(db, selectedClass=classId)
+      selectSql = SelectSql(
+      ).fields(
+        "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
+      ).tables(
+        "borrowers", "classes"
+      ).whereValue("classId", classId
+      ).whereField("classId", "classes.id")
+      results = selectSql.parseResults(db.execute(selectSql.sql()))
+      return TemplateResponse(request, 'classes/updatePupilsInClass.html', {
+        'classes' : classes,
+        'results' : results
+      })
   return GotoResponse('/classes/list')
 
 @put('/classes/update')
@@ -73,15 +77,11 @@ async def putUpdatePupilesInAClass(request) :
   with getDatabase() as db :
     for aKey in theForm.keys() :
       rowClass = theForm[aKey].split('-')
-      cursor = db.cursor()
-      cursor.execute("""
-        UPDATE borrowers
-        SET classId={classId}
-        WHERE id={borrowerId}
-        AND classId!={classId}
-      """.format(
-        borrowerId=rowClass[1],
-        classId=rowClass[2]
-      ))
+      updateSql = UpdateSql(
+      ).whereValue('id', rowClass[1]
+      ).whereValue('classId', rowClass[2], operator='!=')
+      db.execute(updateSql.sql('borrowers', {
+        'classId' : rowClass[2]
+      }))
     db.commit()
   return GotoResponse('/classes/list')

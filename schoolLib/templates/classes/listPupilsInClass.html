@@ -9,11 +9,11 @@
   </tr>
 {% for aRow in results %}
   <tr>
-    <td>{{ aRow[1] }}</td>
-    <td>{{ aRow[2] }}</td>
-    <td>{{ aRow[3] }}</td>
-    <td>{{ aRow[4] }}</td>
-    <td><a href='/borrowers/edit/{{ aRow[0] }}'>Edit</a></td>
+    <td>{{ aRow['firstName'] }}</td>
+    <td>{{ aRow['familyName'] }}</td>
+    <td>{{ aRow['cohort'] }}</td>
+    <td>{{ aRow['classes_name'] }}</td>
+    <td><a href='/borrowers/edit/{{ aRow['borrowers_id'] }}'>Edit</a></td>
   </tr>
 {% endfor %}
 </table>

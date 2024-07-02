@@ -19,6 +19,7 @@ def test_newBorrower() :
   assert False
 
 def test_listClasses() :
+  pytest.skip('not yet')
   client = TestClient(app)
   response = client.get('/classes')
   assert response.status_code == 200

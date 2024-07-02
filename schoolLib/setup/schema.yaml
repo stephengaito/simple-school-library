@@ -1,0 +1,45 @@
+# This is a simple record of the fields and their types
+
+# see: https://sqlite.org/datatype3.html
+
+# borrowers
+borrowers.id: integer
+borrowers.firstName: text
+borrowers.familyName: text
+borrowers.cohort: integer
+borrowers.classId: integer
+
+# classes
+classes.id: integer
+classes.name: text
+classes.desc: text
+classes.colour: text
+classes.classOrder: integer
+
+# items borrowed
+itemsBorrowed.id: integer
+itemsBorrowed.borrowersId: integer
+itemsBorrowed.itemsPhysicalId: integer
+itemsBorrowed.dateBorrowed: date
+itemsBorrowed.dateDue: date
+
+# items info
+itemsInfo.id: integer
+itemsInfo.isbn: text
+itemsInfo.dewey: text
+itemsInfo.series: text
+itemsInfo.title: text
+itemsInfo.authors: text
+itemsInfo.publisher: text
+itemsInfo.type: text
+itemsInfo.keywords: text
+itemsInfo.summary: text
+
+# items physical
+itemsPhysical.id: integer
+itemsPhysical.itemsInfoId: integer
+itemsPhysical.barCode: text
+itemsPhysical.dateAdded: date
+itemsPhysical.dateBorrowed: date
+itemsPhysical.dateLastSeen: date
+itemsPhysical.status: text

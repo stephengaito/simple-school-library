@@ -10,15 +10,15 @@
     <th>New Class</th>
   </tr>
 {% for aRow in results %}
-  <tr>{# aRow[0] is the id #}
-    <td>{{ aRow[1] }}</td>
-    <td>{{ aRow[2] }}</td>
-    <td>{{ aRow[3] }}</td>
-    <td>{{ aRow[4] }}</td>
+  <tr>{# aRow['borrowers_id'] is the id #}
+    <td>{{ aRow['firstName'] }}</td>
+    <td>{{ aRow['familyName'] }}</td>
+    <td>{{ aRow['cohort'] }}</td>
+    <td>{{ aRow['classes_name'] }}</td>
     <td>
-      <select name="row-{{aRow[0]}}" id="row-{{aRow[0]}}">
+      <select name="row-{{aRow['borrowers_id']}}" id="row-{{aRow['borrowers_id']}}">
         {% for aClass in classes %}
-        <option value="rowClass-{{aRow[0]}}-{{aClass['id']}}" {{aClass['selected']}} >{{aClass['name']}}</option>
+        <option value="rowClass-{{aRow['borrowers_id']}}-{{aClass['id']}}" {{aClass['selected']}} >{{aClass['name']}}</option>
         {% endfor %}
       </select>
     </td>
