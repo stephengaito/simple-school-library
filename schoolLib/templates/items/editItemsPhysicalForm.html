@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="{{formAction}}" method="{{formMethod}}">
+
+  <label>Barcode</label>
+  <input type="text" maxlength="60" id="barcode" name="barcode"
+  {% if barcode is defined %}
+    value="{{barcode}}"
+  {% else %}
+    placeholder="A barcode..."
+  {% endif %}
+  />
+
+  <label>Date aquired</label>
+  <input type="date" min="2000-01-01" id="dateAdded" name="dateAdded"
+  {% if dateAdded is defined %}
+    value="{{dateAdded}}"
+  {% else %}
+    value="2024-07-03"
+  {% endif %}
+  />
+
+  <label>Date last borrowed</label>
+  <input type="date" min="2000-01-01" id="dateBorrowed" name="dateBorrowed"
+  {% if dateBorrowed is defined %}
+    value="{{dateBorrowed}}"
+  {% else %}
+    value="2024-07-03"
+  {% endif %}
+  />
+
+  <label>Date last seen</label>
+  <input type="date" min="2000-01-01" id="dateLastSeen" name="dateLastSeen"
+  {% if dateLastSeen is defined %}
+    value="{{dateLastSeen}}"
+  {% else %}
+    value="2024-07-03"
+  {% endif %}
+  />
+
+  <label>Status</label>
+  <input type="text" maxlength="60" id="status" name="status"
+  {% if status is defined %}
+    value="{{status}}"
+  {% else %}
+    placeholder="The current status..."
+  {% endif %}
+  />
+
+  <input type="submit" value="{{formSubmitMsg}}"/>
+</form>
+{% endblock %}

@@ -54,10 +54,12 @@ editItemsInfoForm:
     - name: type
       label: A book type
       placeholder: A book type...
-    - name: keywords
+    - component: textAreaInput
+      name: keywords
       label: Keywords
       placeholder: Some keywords...
-    - name: summary
+    - component: textAreaInput
+      name: summary
       label: Summary
       placeholder: A summary...
     - name: series
@@ -70,3 +72,25 @@ editItemsInfoForm:
       label: ISBN
       placeholder: The ISBN...
 
+editItemsPhysicalForm:
+  path: items
+  type: form
+  items:
+    - name: barcode
+      label: Barcode
+      placeholder: A barcode...
+    - name: dateAdded
+      component: dateInput
+      label: Date aquired
+      placeholder: The date aquired...
+    - name: dateBorrowed
+      component: dateInput
+      label: Date last borrowed
+      placeholder: The date last borrowed...
+    - name: dateLastSeen
+      component: dateInput
+      label: Date last seen
+      placeholder: The date last seen...
+    - name: status
+      label: Status
+      placeholder: The current status...

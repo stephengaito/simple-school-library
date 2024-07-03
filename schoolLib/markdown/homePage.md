@@ -1,0 +1,12 @@
+  - **Borrowers :**
+    - [Add new users](/borrowers/new)
+    - [List existing borrowers](/borrowsers/list)
+  - **Classes :**
+    - [Add a new class](/classes/new)
+    - [List existing classes](/classes/list)
+  - **Circulation :**
+    - [Take books <strong>out</strong> of the library](/books/takeOut)
+    - [Return books <strong>to</strong> the library](/books/return)
+  - **Cataloguing :**
+    - [Add new books to the library](/itemsInfo/new)
+    - [List the books that the library owns](/books/list)

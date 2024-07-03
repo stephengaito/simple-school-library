@@ -38,7 +38,7 @@ def loadSchema() :
     schemaTables[aTable][aField] = aType
     schemaFields[aTableField]    = aType
     schemaFields[aField]         = aType
-
+  #print(yaml.dump(schemaFields))
 loadSchema()
 
 ###############################################################
@@ -61,7 +61,7 @@ class SqlBuilder :
     wrappedValue = str(value)
     if field in schemaFields and schemaFields[field] != "INTEGER" :
       wrappedValue = f"'{value}'"
-    self.whereList.append(f"{field} {operator} {value}")
+    self.whereList.append(f"{field} {operator} {wrappedValue}")
     return self
 
   def _buildWhere(self) :

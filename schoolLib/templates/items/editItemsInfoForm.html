@@ -39,22 +39,22 @@
   />
 
   <label>Keywords</label>
-  <input type="text" maxlength="60" id="keywords" name="keywords"
+  <textarea id="keywords" name="keywords"
   {% if keywords is defined %}
-    value="{{keywords}}"
+    >{{keywords}}
   {% else %}
-    placeholder="Some keywords..."
+    placeholder="Some keywords..." >
   {% endif %}
-  />
+  </textarea>
 
   <label>Summary</label>
-  <input type="text" maxlength="60" id="summary" name="summary"
+  <textarea id="summary" name="summary"
   {% if summary is defined %}
-    value="{{summary}}"
+    >{{summary}}
   {% else %}
-    placeholder="A summary..."
+    placeholder="A summary..." >
   {% endif %}
-  />
+  </textarea>
 
   <label>Series</label>
   <input type="text" maxlength="60" id="series" name="series"

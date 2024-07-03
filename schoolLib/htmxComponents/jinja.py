@@ -1,4 +1,5 @@
 
+from datetime import date
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 jinja2env = Environment(
@@ -13,3 +14,4 @@ jinja2env = Environment(
   trim_blocks=True,
   lstrip_blocks=True
 )
+jinja2env.globals['today'] = date.today()

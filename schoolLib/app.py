@@ -14,10 +14,11 @@ import schoolLib.classes
 import schoolLib.classesBorrowers
 import schoolLib.borrowers
 import schoolLib.itemsInfo
+import schoolLib.itemsPhysical
 
 @get('/')
 def homepage(request):
-    return TemplateResponse(request, 'homePage.html')
+    return MarkdownResponse(request, 'homePage')
 
 @get('/help/{aPath:path}')
 def helpPages(request, aPath=None) :
