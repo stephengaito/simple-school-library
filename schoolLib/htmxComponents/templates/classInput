@@ -1,0 +1,7 @@
+
+  <label><=label=></label>
+  <select name="<=name=>" id="assignedClass">
+  {% for aClass in classes %}
+    <option value="{{aClass['id']}}" {{aClass['selected']}} >{{aClass['name']}}</option>
+  {% endfor %}
+  </select>

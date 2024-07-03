@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<form action="{{action}}" method="POST">
+<form action="{{formAction}}" method="{{formMethod}}">
 
   <label>Title</label>
   <input type="text" maxlength="60" id="title" name="title"
@@ -13,12 +13,76 @@
 
   <label>Authors</label>
   <input type="text" maxlength="60" id="authors" name="authors"
-  {% if title is defined %}
-    value="{{title}}"
+  {% if authors is defined %}
+    value="{{authors}}"
   {% else %}
-    placeholder="A title..."
+    placeholder="Some authors..."
   {% endif %}
   />
 
+  <label>Publisher</label>
+  <input type="text" maxlength="60" id="publisher" name="publisher"
+  {% if publisher is defined %}
+    value="{{publisher}}"
+  {% else %}
+    placeholder="A publisher..."
+  {% endif %}
+  />
+
+  <label>A book type</label>
+  <input type="text" maxlength="60" id="type" name="type"
+  {% if type is defined %}
+    value="{{type}}"
+  {% else %}
+    placeholder="A book type..."
+  {% endif %}
+  />
+
+  <label>Keywords</label>
+  <input type="text" maxlength="60" id="keywords" name="keywords"
+  {% if keywords is defined %}
+    value="{{keywords}}"
+  {% else %}
+    placeholder="Some keywords..."
+  {% endif %}
+  />
+
+  <label>Summary</label>
+  <input type="text" maxlength="60" id="summary" name="summary"
+  {% if summary is defined %}
+    value="{{summary}}"
+  {% else %}
+    placeholder="A summary..."
+  {% endif %}
+  />
+
+  <label>Series</label>
+  <input type="text" maxlength="60" id="series" name="series"
+  {% if series is defined %}
+    value="{{series}}"
+  {% else %}
+    placeholder="The series..."
+  {% endif %}
+  />
+
+  <label>Dewey decimal classification</label>
+  <input type="text" maxlength="60" id="dewey" name="dewey"
+  {% if dewey is defined %}
+    value="{{dewey}}"
+  {% else %}
+    placeholder="The dewey decimal classificaton..."
+  {% endif %}
+  />
+
+  <label>ISBN</label>
+  <input type="text" maxlength="60" id="isbn" name="isbn"
+  {% if isbn is defined %}
+    value="{{isbn}}"
+  {% else %}
+    placeholder="The ISBN..."
+  {% endif %}
+  />
+
+  <input type="submit" value="{{formSubmitMsg}}"/>
 </form>
 {% endblock %}

@@ -1,0 +1,4 @@
+
+  <input type="submit" value="{{formSubmitMsg}}"/>
+</form>
+{% endblock %}

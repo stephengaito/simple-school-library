@@ -4,7 +4,7 @@
 # script to run the Simple School Library command anywhere in a user's
 # workspace.
 
-installScript() {
+createWebServer() {
   scriptName=$1
   uvicornBin=$(pwd)/.venv/bin/uvicorn
   cmdScript=$(pwd)/.venv/bin/$scriptName
@@ -16,12 +16,16 @@ exec $uvicornBin --reload schoolLib.app:app
 BIN_SCRIPT
 
   chmod a+x $cmdScript
+}
 
+installScript() {
+  scriptName=$1
+  cmdScript=$(pwd)/.venv/bin/$scriptName
   cat << CMD_SCRIPT > $HOME/.local/bin/$scriptName
 #!/bin/sh
 
-# This shell script was created by the lpilGerbyBuilder tool
-#       './scripts/installEditableLpilGerbyBuilderCommand'
+# This shell script was created by the simple-school-library tool
+#       './scripts/installEditableSchoolLib'
 # script.
 
 exec $cmdScript \$@
@@ -32,7 +36,10 @@ CMD_SCRIPT
 
 ##########################################################################
 
+createWebServer schoolLib
 installScript schoolLib
+
+installScript slTemplateBuilder
 
 echo ""
 echo "The editable school library command have been created"

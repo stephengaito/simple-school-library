@@ -1,8 +1,7 @@
 
 editClassForm:
+  path: classes
   type: form
-  method: POST
-  submit: submitMsg
   items:
     - name: className
       label: Class Name
@@ -10,17 +9,21 @@ editClassForm:
     - name: classDesc
       label: Description
       placeholder: A description of your class...
-    #- name: classOrder
-    #  label: Class order
-    #  placeholder: ???
-    #- name: classColour
-    #  label: Class colour
-    #  defaultValue: "#000000"
+    - component: alternateNumbersInput
+      name: classOrder
+      label: Class order
+      firstValue: maxClassOrder
+      alternateValues:
+        - classOrder
+      defaultValue: 0
+    - component: colourInput
+      name: classColour
+      label: Class colour
+      defaultValue: "#000000"
 
 editBorrowerForm:
+  path: borrowers
   type: form
-  method: POST
-  submit: submitMsg
   items:
     - name: firsName
       label: First Name
@@ -31,14 +34,13 @@ editBorrowerForm:
     - name: cohort
       label: Cohort (year entered education)
       placeholder: The year of entry into education...
-    #- name: assignedClass
-    #  label: Class
-    #  ???
+    - component: classInput
+      name: assignedClass
+      label: Class
 
 editItemsInfoForm:
+  path: items
   type: form
-  method: POST
-  submit: submitMsg
   items:
     - name: title
       label: Title

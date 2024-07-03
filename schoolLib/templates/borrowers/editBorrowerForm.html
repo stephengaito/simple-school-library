@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<form action="{{action}}" method="POST">
+<form action="{{formAction}}" method="{{formMethod}}">
 
-  <label>First name</label>
-  <input type="text" maxlength="60" id="firstName" name="firstName"
-  {% if firstName is defined %}
-    value="{{firstName}}"
+  <label>First Name</label>
+  <input type="text" maxlength="60" id="firsName" name="firsName"
+  {% if firsName is defined %}
+    value="{{firsName}}"
   {% else %}
     placeholder="A first name..."
   {% endif %}
@@ -16,7 +16,7 @@
   {% if familyName is defined %}
     value="{{familyName}}"
   {% else %}
-    placeholder="A family name..."
+    placeholder="a family name..."
   {% endif %}
   />
 
@@ -25,7 +25,7 @@
   {% if cohort is defined %}
     value="{{cohort}}"
   {% else %}
-    placeholder="The year of entry into eduction..."
+    placeholder="The year of entry into education..."
   {% endif %}
   />
 
@@ -36,7 +36,6 @@
   {% endfor %}
   </select>
 
-  <input type="submit" value="{{submitMsg}}"/>
-
+  <input type="submit" value="{{formSubmitMsg}}"/>
 </form>
 {% endblock %}

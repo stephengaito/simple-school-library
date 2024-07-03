@@ -1,0 +1,9 @@
+
+  <label><=label=></label>
+  <input type="color" id="<=name=>" name="<=name=>"
+  {% if <=name=> is defined %}
+    value="{{<=name=>}}"
+  {% else %}
+    value="#000000"
+  {% endif %}
+  />

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<form action="{{action}}" method="POST">
+<form action="{{formAction}}" method="{{formMethod}}">
 
   <label>Class Name</label>
   <input type="text" maxlength="60" id="className" name="className"
@@ -12,15 +12,16 @@
   />
 
   <label>Description</label>
-  <textarea maxlength="60" id="classDesc" name="classDesc"
+  <input type="text" maxlength="60" id="classDesc" name="classDesc"
   {% if classDesc is defined %}
-    >{{classDesc}}</textarea>
+    value="{{classDesc}}"
   {% else %}
-    placeholder="A description of your class..."></textarea>
+    placeholder="A description of your class..."
   {% endif %}
+  />
 
   <label>Class order</label>
-  <input type="number" id='classOrder' name='classOrder' step="1"
+  <input type="number" id="classOrder" name="classOrder" step="1"
   {%  if maxClassOrder is defined %}
     value="{{maxClassOrder}}"
   {% elif classOrder is defined %}
@@ -39,6 +40,6 @@
   {% endif %}
   />
 
-  <input type="submit" value="{{submitMsg}}"/>
+  <input type="submit" value="{{formSubmitMsg}}"/>
 </form>
 {% endblock %}
