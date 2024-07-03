@@ -25,7 +25,7 @@ editBorrowerForm:
   path: borrowers
   type: form
   items:
-    - name: firsName
+    - name: firstName
       label: First Name
       placeholder: A first name...
     - name: familyName

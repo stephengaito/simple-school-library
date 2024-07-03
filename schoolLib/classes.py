@@ -30,8 +30,9 @@ def getNewClassForm(request) :
         maxClassOrder = aClass['classOrder']
     maxClassOrder += 1
   return TemplateResponse(request, 'classes/editClassForm.html', {
-    'action'        : '/classes/new',
-    'submitMsg'     : 'Add new class',
+    'formAction'    : '/classes/new',
+    'formMethod'    : 'POST',
+    'formSubmitMsg' : 'Add new class',
     'maxClassOrder' : maxClassOrder
   })
 
@@ -69,12 +70,13 @@ def getEditAClassForm(request, classId=None) :
       theClasses = getClasses(db)
       if classId in theClasses :
         return TemplateResponse(request, 'classes/editClassForm.html', {
-          'action'      : f'/classes/edit/{classId}',
-          'submitMsg'   : 'Save changes',
-          'className'   : theClasses[classId]['name'],
-          'classOrder'  : theClasses[classId]['classOrder'],
-          'classDesc'   : theClasses[classId]['desc'],
-          'classColour' : theClasses[classId]['colour']
+          'formAction'    : f'/classes/edit/{classId}',
+          'formMethod'    : 'POST',
+          'formSubmitMsg' : 'Save changes',
+          'className'     : theClasses[classId]['name'],
+          'classOrder'    : theClasses[classId]['classOrder'],
+          'classDesc'     : theClasses[classId]['desc'],
+          'classColour'   : theClasses[classId]['colour']
         })
   return GotoResponse('/classes/list')
 

@@ -3,9 +3,9 @@
 <form action="{{formAction}}" method="{{formMethod}}">
 
   <label>First Name</label>
-  <input type="text" maxlength="60" id="firsName" name="firsName"
-  {% if firsName is defined %}
-    value="{{firsName}}"
+  <input type="text" maxlength="60" id="firstName" name="firstName"
+  {% if firstName is defined %}
+    value="{{firstName}}"
   {% else %}
     placeholder="A first name..."
   {% endif %}

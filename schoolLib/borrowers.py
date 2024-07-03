@@ -16,11 +16,11 @@ def getNewBorrowerForm(request) :
   with getDatabase() as db :
     classes = getOrderedClassList(db)
     return TemplateResponse(request, 'borrowers/editBorrowerForm.html', {
-      'action'    : '/borrowers/new',
-      'method'    : 'POST',
-      'submitMsg' : 'Add a new borrower',
-      'classes'   : classes,
-      'request'   : request
+      'formAction'    : '/borrowers/new',
+      'formMethod'    : 'POST',
+      'formSubmitMsg' : 'Add a new borrower',
+      'classes'       : classes,
+      'request'       : request
     })
 
 @post('/borrowers/new')
@@ -59,13 +59,14 @@ def getEditABorrowerForm(request, borrowerId=None) :
       if borrower :
         classes = getOrderedClassList(db, selectedClass=borrower[0]['classId'])
         return TemplateResponse(request, 'borrowers/editBorrowerForm.html', {
-          'action'    : f"/borrowers/edit/{borrowerId}",
-          'submitMsg' : 'Save changes',
-          'classes'   : classes,
-          'firstName' : borrower[0]['firstName'],
-          'familyName': borrower[0]['familyName'],
-          'cohort'    : borrower[0]['cohort'],
-          'request'   : request,
+          'formAction'    : f"/borrowers/edit/{borrowerId}",
+          'formMethod'    : 'POST',
+          'formSubmitMsg' : 'Save changes',
+          'classes'       : classes,
+          'firstName'     : borrower[0]['firstName'],
+          'familyName'    : borrower[0]['familyName'],
+          'cohort'        : borrower[0]['cohort'],
+          'request'       : request,
         })
   return GotoResponse("/")
 

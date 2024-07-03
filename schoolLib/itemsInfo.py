@@ -6,7 +6,7 @@ Work with itemsInfo
 
 """
 
-from schooLib.setup import *
+from schoolLib.setup import *
 
 @get('/itemsInfo/new')
 def getNewItemsInfoForm(request) :
