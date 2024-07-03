@@ -1,0 +1,40 @@
+#!.venv/bin/python
+
+import os
+from string import Template
+from textwrap import dedent
+import yaml
+
+forms = {}
+with open('scripts/forms.yaml') as formsFile :
+  forms = yaml.safe_load(formsFile.read())
+
+for aFormName, aForm in forms.items() :
+  print(f"working on : {aFormName}")
+  print(yaml.dump(aForm))
+  with open(os.path.join('tmp', 'forms', aFormName+'.html'), 'w') as formFile :
+    header = Template(dedent("""
+      {% extends "base.html" %}
+      {% block content %}
+      <form action="{{action}}" method="$method">
+    """))
+    formFile.write(header.substitute(aForm))
+
+    for anItem in aForm['items'] :
+      item = Template(dedent("""
+        <label>$label</label>
+        <input type="text" maxlength="60" id="$name" name="$name"
+        {% if $name is defined %}
+          value="{{$name}}"
+        {% else %}
+          placeholder="$placeholder"
+        {% endif %}
+        />
+      """))
+      formFile.write(item.substitute(anItem))
+
+    formFile.write(dedent("""
+      </form>
+      {% endblock %}
+
+    """))

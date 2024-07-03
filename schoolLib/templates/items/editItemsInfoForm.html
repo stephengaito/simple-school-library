@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="{{action}}" method="POST">
+
+  <label>Title</label>
+  <input type="text" maxlength="60" id="title" name="title"
+  {% if title is defined %}
+    value="{{title}}"
+  {% else %}
+    placeholder="A title..."
+  {% endif %}
+  />
+
+  <label>Authors</label>
+  <input type="text" maxlength="60" id="authors" name="authors"
+  {% if title is defined %}
+    value="{{title}}"
+  {% else %}
+    placeholder="A title..."
+  {% endif %}
+  />
+
+</form>
+{% endblock %}

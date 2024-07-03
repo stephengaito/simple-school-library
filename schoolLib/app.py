@@ -13,6 +13,7 @@ loadedConfig('config.yaml', verbose=True)
 import schoolLib.classes
 import schoolLib.classesBorrowers
 import schoolLib.borrowers
+import schoolLib.itemsInfo
 
 @get('/')
 def homepage(request):

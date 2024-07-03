@@ -1,0 +1,70 @@
+
+editClassForm:
+  type: form
+  method: POST
+  submit: submitMsg
+  items:
+    - name: className
+      label: Class Name
+      placeholder: A class name...
+    - name: classDesc
+      label: Description
+      placeholder: A description of your class...
+    #- name: classOrder
+    #  label: Class order
+    #  placeholder: ???
+    #- name: classColour
+    #  label: Class colour
+    #  defaultValue: "#000000"
+
+editBorrowerForm:
+  type: form
+  method: POST
+  submit: submitMsg
+  items:
+    - name: firsName
+      label: First Name
+      placeholder: A first name...
+    - name: familyName
+      label: Family name
+      placeholder: a family name...
+    - name: cohort
+      label: Cohort (year entered education)
+      placeholder: The year of entry into education...
+    #- name: assignedClass
+    #  label: Class
+    #  ???
+
+editItemsInfoForm:
+  type: form
+  method: POST
+  submit: submitMsg
+  items:
+    - name: title
+      label: Title
+      placeholder: A title...
+    - name: authors
+      label: Authors
+      placeholder: Some authors...
+    - name: publisher
+      label: Publisher
+      placeholder: A publisher...
+    - name: type
+      label: A book type
+      placeholder: A book type...
+    - name: keywords
+      label: Keywords
+      placeholder: Some keywords...
+    - name: summary
+      label: Summary
+      placeholder: A summary...
+    - name: series
+      label: Series
+      placeholder: The series...
+    - name: dewey
+      label: Dewey decimal classification
+      placeholder: The dewey decimal classificaton...
+    - name: isbn
+      label: ISBN
+      placeholder: The ISBN...
+
