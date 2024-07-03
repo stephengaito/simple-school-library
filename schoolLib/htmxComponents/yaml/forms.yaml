@@ -94,3 +94,16 @@ editItemsPhysicalForm:
     - name: status
       label: Status
       placeholder: The current status...
+
+editItemsBorrowedForm:
+  path: items
+  type: form
+  items:
+    - name: dateBorrowed
+      component: dateInput
+      label: Date borrowed
+      placeholder: The date last borrowed...
+    - name: dateDue
+      component: dateInput
+      label: Date due
+      placeholder: The date due....

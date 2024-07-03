@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="{{formAction}}" method="{{formMethod}}">
+
+  <label>Date borrowed</label>
+  <input type="date" min="2000-01-01" id="dateBorrowed" name="dateBorrowed"
+  {% if dateBorrowed is defined %}
+    value="{{dateBorrowed}}"
+  {% else %}
+    value="2024-07-03"
+  {% endif %}
+  />
+
+  <label>Date due</label>
+  <input type="date" min="2000-01-01" id="dateDue" name="dateDue"
+  {% if dateDue is defined %}
+    value="{{dateDue}}"
+  {% else %}
+    value="2024-07-03"
+  {% endif %}
+  />
+
+  <input type="submit" value="{{formSubmitMsg}}"/>
+</form>
+{% endblock %}

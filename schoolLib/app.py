@@ -15,6 +15,7 @@ import schoolLib.classesBorrowers
 import schoolLib.borrowers
 import schoolLib.itemsInfo
 import schoolLib.itemsPhysical
+import schoolLib.itemsBorrowed
 
 @get('/')
 def homepage(request):
