@@ -41,6 +41,8 @@ installScript schoolLib
 
 installScript slTemplateBuilder
 
+installScript slReindex
+
 echo ""
 echo "The editable school library command have been created"
 echo ""

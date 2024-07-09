@@ -15,6 +15,7 @@ license = {text = "MIT"}
 
 [project.scripts]
 slTemplateBuilder = "schoolLib.htmxComponents.cli:cli"
+slReindex         = "schoolLib.tools.reindexer:cli"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
