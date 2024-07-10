@@ -16,6 +16,7 @@ import schoolLib.borrowers
 import schoolLib.itemsInfo
 import schoolLib.itemsPhysical
 import schoolLib.itemsBorrowed
+import schoolLib.headerMenu
 
 @get('/')
 def homepage(request):

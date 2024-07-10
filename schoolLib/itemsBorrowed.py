@@ -26,7 +26,7 @@ async def postSaveNewItemsBorrowed(request,
   if itemsPhysicalId and borrowerId :
     theForm = await request.form()
     with getDatabase() as db :
-      db.execute(InsertSql.().sql('itemsBorrowed', {
+      db.execute(InsertSql().sql('itemsBorrowed', {
         'borrowersId'     : borrowersId,
         'itemsPhysicalId' : itemsPhysicalId,
         'dateBorrowed'    : theForm['dateBorrowed'],

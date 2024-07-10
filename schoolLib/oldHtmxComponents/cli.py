@@ -4,7 +4,7 @@ import os
 import sys
 import yaml
 
-from schoolLib.htmxComponents.forms import buildForm
+from schoolLib.oldHtmxComponents.forms import buildForm
 
 def loadTemplateYaml() :
   templates = {}

@@ -14,7 +14,7 @@ requires-python = ">=3.10"
 license = {text = "MIT"}
 
 [project.scripts]
-slTemplateBuilder = "schoolLib.htmxComponents.cli:cli"
+slTemplateBuilder = "schoolLib.oldHtmxComponents.cli:cli"
 slReindex         = "schoolLib.tools.reindexer:cli"
 
 [build-system]
