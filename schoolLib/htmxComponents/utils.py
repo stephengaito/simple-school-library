@@ -2,6 +2,8 @@
 from copy import deepcopy
 import inspect
 
+from starlette.responses import HTMLResponse
+
 def mergeLists(origList, additionalList) :
   newList = []
   for anItem in origList :
@@ -12,7 +14,16 @@ def mergeLists(origList, additionalList) :
 
   return newList
 
-def computeStyle(styleName, styleDict, style) :
+def getFromKWArgs(aKey, aDefault, kwargs) :
+  theValue = aDefault
+  if aKey in kwargs : theValue = kwargs[aKey]
+  return theValue
+
+def computeStyle(kwargs) :
+  style     = getFromKWArgs('style', [], kwargs)
+  styleName = getFromKWArgs('styleName', None, kwargs)
+  styleDict = getFromKWArgs('styleDict', {}, kwargs)
+
   if isinstance(style, str) : style = [ style ]
   elif isinstance(style, dict) :
     styleList = []
@@ -24,14 +35,22 @@ def computeStyle(styleName, styleDict, style) :
   if not style : return ""
   return f'style="{'; '.join(style)}"'
 
-def computeClass(className, classDict, klass) :
+def computeClass(kwargs) :
+  klass     = getFromKWArgs('klass', [], kwargs)
+  className = getFromKWArgs('className', None, kwargs)
+  classDict = getFromKWArgs('classDict', {}, kwargs)
+
   if isinstance(klass, str) : klass = [ klass ]
   if className and className in classDict :
     klass = mergeLists(classDict[className], klass)
   if not klass : return ""
   return f'class="{' '.join(klass)}"'
 
-def computeAttrs(attrsName, attrsDict, attrs) :
+def computeAttrs(kwargs) :
+  attrs     = getFromKWArgs('attrs', [], kwargs)
+  attrsName = getFromKWArgs('attrsName', None, kwargs)
+  attrsDict = getFromKWArgs('attrsDict', {}, kwargs)
+
   if isinstance(attrs, str) : attrs = [ attrs ]
   elif isinstance(attrs, dict) :
     attrsList = []
@@ -43,15 +62,38 @@ def computeAttrs(attrsName, attrsDict, attrs) :
     attrs = mergeLists(attrsDict[attrsName], attrs)
   return ' '.join(attrs)
 
-def computeGet(get) :
+def computeGet(kwargs) :
+  get = getFromKWArgs('get', None, kwargs)
+
   getStr = ""
   if get : getStr = f'hx-get="{get}"'
   return getStr
 
-def computeId(anId) :
+def computePost(kwargs) :
+  post = getFromKWArgs('post', None, kwargs)
+
+  postStr = ""
+  if post : postStr = f'hx-post="{post}"'
+  return postStr
+
+def computeId(kwargs) :
+  anId = getFromKWArgs('theId', None, kwargs)
+
   idStr = ""
   if anId : idStr = f'id="{anId}"'
   return idStr
+
+def computeHtmxAttrs(kwargs) :
+  allAttrs = [
+    computeId(kwargs),
+    computeGet(kwargs),
+    computePost(kwargs),
+    computeClass(kwargs),
+    computeStyle(kwargs),
+    computeAttrs(kwargs)
+  ]
+  theAttrs = [x for x in allAttrs if x]
+  return " ".join(theAttrs)
 
 def computeComponent(aComponent) :
   if isinstance(aComponent, list) :
@@ -60,7 +102,9 @@ def computeComponent(aComponent) :
       componentHtml.append(computeComponent(aSubComponent))
     return '\n'.join(componentHtml)
 
-  if not isinstance(aComponent, dict) : return aComponent
+  if isinstance(aComponent, str) : return aComponent
+  if not isinstance(aComponent, dict) :
+    raise HTTPException(404, details="Corrupted htmx component")
 
   try :
     theComponentHtml = \
@@ -98,3 +142,6 @@ def selectComponentInList(
     theSelectedComponent[selectorType].append(selectorKey)
 
   return aComponentList
+
+def HTMXResponse(request, theHtmxComponent, *args, **kwargs) :
+  return HTMLResponse(computeComponent(theHtmxComponent), *args, **kwargs)

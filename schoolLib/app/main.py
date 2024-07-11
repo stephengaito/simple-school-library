@@ -6,6 +6,7 @@ from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
 
 from schoolLib.setup import *
+from schoolLib.htmxComponents import *
 
 loadedConfig('config.yaml', verbose=True)
 
@@ -16,11 +17,20 @@ import schoolLib.borrowers
 import schoolLib.itemsInfo
 import schoolLib.itemsPhysical
 import schoolLib.itemsBorrowed
-import schoolLib.headerMenu
+import schoolLib.app.home.menu
+import schoolLib.app.books.menu
+import schoolLib.app.people.menu
+import schoolLib.app.tasks.menu
 
 @get('/')
 def homepage(request):
-    return MarkdownResponse(request, 'homePage')
+  return HTMXResponse(
+    request,
+    htmlPage(
+      stdHeaders(),
+      stdBody()
+    )
+  )
 
 @get('/help/{aPath:path}')
 def helpPages(request, aPath=None) :
