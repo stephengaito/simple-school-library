@@ -7,6 +7,7 @@ from schoolLib.htmxComponents.utils import *
 
 topLevelMenu = [
   { 'component' : 'button',
+    'c-name' : 'home',
     'text' : 'Home',
     'get' : '/menu/home',
     'attrs' : {
@@ -15,6 +16,7 @@ topLevelMenu = [
     }
   },
   { 'component' : 'button',
+    'c-name' : 'books',
     'text' : 'Books',
     'get' : "/menu/books",
     'attrs' : {
@@ -23,6 +25,7 @@ topLevelMenu = [
     }
   },
   { 'component' : 'button',
+    'c-name' : 'people',
     'text' : 'People',
     'get' : '/menu/people',
     'attrs' : {
@@ -31,6 +34,7 @@ topLevelMenu = [
     }
   },
   { 'component' : 'button',
+    'c-name' : 'tasks',
     'text' : 'Tasks',
     'get' : '/menu/tasks',
     'attrs' : {
@@ -54,7 +58,7 @@ def stdHeaders() :
   <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
   <link rel="manifest" href="/static/favicon/site.webmanifest">
 
-  <!-- link rel="stylesheet" href="/static/css/main.css" type="text/css" / -->
+  <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
 
   <script src="/static/js/htmx.min.js"></script>
   """

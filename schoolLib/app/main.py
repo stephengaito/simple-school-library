@@ -11,15 +11,9 @@ from schoolLib.htmxComponents import *
 loadedConfig('config.yaml', verbose=True)
 
 # The ORDER here is important!
-import schoolLib.classes
-import schoolLib.classesBorrowers
-import schoolLib.borrowers
-import schoolLib.itemsInfo
-import schoolLib.itemsPhysical
-import schoolLib.itemsBorrowed
 import schoolLib.app.home.menu
-import schoolLib.app.books.menu
-import schoolLib.app.people.menu
+import schoolLib.app.books
+import schoolLib.app.people
 import schoolLib.app.tasks.menu
 
 @get('/')
@@ -61,8 +55,8 @@ app = Starlette(
 )
 app.mount('/static', StaticFiles(packages=['schoolLib']), name='static')
 
-for aRoute in routes :
-  print(aRoute.path)
-  print(aRoute.methods)
-  print(aRoute.endpoint)
-  print("")
+#for aRoute in routes :
+#  print(aRoute.path)
+#  print(aRoute.methods)
+#  print(aRoute.endpoint)
+#  print("")

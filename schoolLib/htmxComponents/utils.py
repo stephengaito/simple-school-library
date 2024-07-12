@@ -1,6 +1,7 @@
 
 from copy import deepcopy
 import inspect
+import yaml
 
 from starlette.responses import HTMLResponse
 
@@ -14,6 +15,11 @@ def mergeLists(origList, additionalList) :
 
   return newList
 
+def addDictsToKWArgs(classDict, styleDict, attrsDict, kwargs) :
+  if 'classDict' not in kwargs : kwargs['classDict'] = classDict
+  if 'styleDict' not in kwargs : kwargs['styleDict'] = styleDict
+  if 'attrsDict' not in kwargs : kwargs['attrsDict'] = attrsDict
+
 def getFromKWArgs(aKey, aDefault, kwargs) :
   theValue = aDefault
   if aKey in kwargs : theValue = kwargs[aKey]
@@ -21,7 +27,7 @@ def getFromKWArgs(aKey, aDefault, kwargs) :
 
 def computeStyle(kwargs) :
   style     = getFromKWArgs('style', [], kwargs)
-  styleName = getFromKWArgs('styleName', None, kwargs)
+  styleName = getFromKWArgs('styleName', 'default', kwargs)
   styleDict = getFromKWArgs('styleDict', {}, kwargs)
 
   if isinstance(style, str) : style = [ style ]
@@ -30,25 +36,24 @@ def computeStyle(kwargs) :
     for aKey, aValue in style.items() :
       styleList.append(f"{aKey}: {aValue}")
     style = styleList
-  if styleName and styleName in styleDict :
+  if styleName in styleDict :
     style = mergeLists(styleDict[styleName], style)
   if not style : return ""
   return f'style="{'; '.join(style)}"'
 
 def computeClass(kwargs) :
-  klass     = getFromKWArgs('klass', [], kwargs)
-  className = getFromKWArgs('className', None, kwargs)
+  klass     = getFromKWArgs('class', [], kwargs)
+  className = getFromKWArgs('className', 'default', kwargs)
   classDict = getFromKWArgs('classDict', {}, kwargs)
-
   if isinstance(klass, str) : klass = [ klass ]
-  if className and className in classDict :
+  if className in classDict :
     klass = mergeLists(classDict[className], klass)
   if not klass : return ""
   return f'class="{' '.join(klass)}"'
 
 def computeAttrs(kwargs) :
   attrs     = getFromKWArgs('attrs', [], kwargs)
-  attrsName = getFromKWArgs('attrsName', None, kwargs)
+  attrsName = getFromKWArgs('attrsName', 'default', kwargs)
   attrsDict = getFromKWArgs('attrsDict', {}, kwargs)
 
   if isinstance(attrs, str) : attrs = [ attrs ]
@@ -58,7 +63,7 @@ def computeAttrs(kwargs) :
       if aValue : attrsList.append(f'{aKey}="{aValue}"')
       else: attrsList.append(aKey)
     attrs = attrsList
-  if attrsName and attrsName in attrsDict :
+  if attrsName in attrsDict :
     attrs = mergeLists(attrsDict[attrsName], attrs)
   return ' '.join(attrs)
 
@@ -120,26 +125,19 @@ emptySelectors = {
   'class' : []
 }
 
-def selectComponentInList(
-  aComponentIndex, aComponentList,
-  selectorType, selectorKey, selectorValue=""
-) :
-  if not isinstance(aComponentList, list) : return aComponentList
-  if aComponentIndex not in range(len(aComponentList)) :
-    return aComponentList
-
+def selectComponentInList(aComponentName, aComponentList) :
   aComponentList = deepcopy(aComponentList)
 
-  theSelectedComponent = aComponentList[aComponentIndex]
-  if not isinstance(theSelectedComponent, dict) : return aComponentList
+  for aComponent in aComponentList :
+    if 'c-name' in aComponent \
+    and aComponent['c-name'] == aComponentName :
 
-  if selectorType not in theSelectedComponent :
-    theSelectedComponent[selectorType] = \
-      deepcopy(emptySelectors[selectorType])
-  if isinstance(theSelectedComponent[selectorType], dict) :
-    theSelectedComponent[selectorType][selectorKey] = selectorValue
-  else :
-    theSelectedComponent[selectorType].append(selectorKey)
+      if 'className' not in aComponent :
+        aComponent['className'] = 'selected'
+      else :
+        aComponent['className'] +='-selected'
+
+      break
 
   return aComponentList
 

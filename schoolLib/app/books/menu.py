@@ -5,18 +5,22 @@ from schoolLib.htmxComponents import *
 
 secondLevelBooksMenu = [
   { 'component' : 'button',
+    'c-name' : 'takeOut',
     'text' : 'Take out a book',
     'get'  : '/menu/books/takeOut'
   },
   { 'component' : 'button',
+    'c-name' : 'return',
     'text' : 'Return a book',
     'get'  : '/menu/books/return'
   },
   { 'component' : 'button',
+    'c-name' : 'renew',
     'text' : 'Renew a book',
     'get'  : '/menu/books/renew'
   },
   { 'component' : 'button',
+    'c-name' : 'find',
     'text' : 'Find a book',
     'get'  : '/menu/books/find'
   },
@@ -29,9 +33,9 @@ def booksMenu(request) :
   return HTMXResponse(
     request,
     level0div([
-      menu(topLevelMenu, selected=1),
+      menu(topLevelMenu, selected='books'),
       level1div([
-        menu(secondLevelBooksMenu, selected=0),
+        menu(secondLevelBooksMenu, selected='takeOut'),
         markdownDiv(someMarkdown)
       ])
     ])

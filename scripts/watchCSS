@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# This shell script watches our use of TailWindCSS and updates our custom
+# CSS files
+
+exec tailwindcss --watch --output schoolLib/statics/css/main.css

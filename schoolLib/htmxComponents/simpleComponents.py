@@ -1,11 +1,37 @@
+import yaml
 
 from schoolLib.htmxComponents.utils import *
 
-buttonClasses = {}
+buttonClasses = {
+  'default'  : [
+    'p-1', 'm-1',
+    'border-2', 'border-solid', 'rounded-lg'
+  ],
+  'selected' : [
+    'p-1','m-1',
+    'border-2', 'border-solid', 'border-blue-500', 'rounded-lg',
+    'outline', 'outline-offset-1', 'outline-2', 'outline-blue-500'
+  ],
+}
 buttonStyles  = {}
 buttonAttrs   = {}
 
+def button(**kwargs) :
+  addDictsToKWArgs(buttonClasses, buttonStyles, buttonAttrs, kwargs)
+  text = getFromKWArgs('text', 'unknown', kwargs)
+  htmxAttrs = computeHtmxAttrs(kwargs)
+
+  return f"<button {htmxAttrs}>{text}</button>"
+
+
+divClasses = {
+  'default' : ['m-1']
+}
+divStyles  = {}
+divAttrs   = {}
+
 def htmxDiv(children, **kwargs) :
+  addDictsToKWArgs(divClasses, divStyles, divAttrs, kwargs)
   htmxAttrs = computeHtmxAttrs(kwargs)
 
   if not isinstance(children, list) : children = [ children ]
@@ -45,15 +71,17 @@ def level4div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
   return htmxDiv(children, **kwargs)
 
-def button(**kwargs) :
-  text = getFromKWArgs('text', 'unknown', kwargs)
-  htmxAttrs = computeHtmxAttrs(kwargs)
-  return f"<button {htmxAttrs}>{text}</button>"
+menuClasses = {
+  'default' : ['m-1']
+}
+menuStyles  = {}
+menuAttrs   = {}
 
-def menu(menuList, selected=0, **kwargs):
+def menu(menuList, selected="", **kwargs):
+  addDictsToKWArgs(menuClasses, menuStyles, menuAttrs, kwargs)
   htmxAttrs = computeHtmxAttrs(kwargs)
 
-  menuList = selectComponentInList(selected, menuList, 'class', 'selected')
+  menuList = selectComponentInList(selected, menuList)
   menuListHtml = [ f'<div {htmxAttrs}>' ]
   for anItem in menuList :
     menuListHtml.append(computeComponent(anItem))

@@ -13,6 +13,15 @@ description of each class.
 """
 
 from schoolLib.setup import *
+from schoolLib.htmxComponents import *
+
+def editClassForm(**kwargs) :
+  return htmxForm([
+    textInput(label="ClassName"),
+    textInput(label="Description"),
+    numbersInput(label="Class order"),
+    colourInput(label="Class colour")
+  ],**kwargs)
 
 @get('/classes/new')
 def getNewClassForm(request) :

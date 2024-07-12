@@ -4,6 +4,7 @@ from schoolLib.htmxComponents import *
 
 secondLevelTasksMenu = [
   { 'component' : 'button',
+    'c-name' : 'booksCheckedOut',
     'text' : 'Books checked out',
     'get'  : '/menu/tasks/booksCheckedOut'
   },
@@ -16,9 +17,9 @@ def tasksMenu(request) :
   return HTMXResponse(
     request,
     level0div([
-      menu(topLevelMenu, selected=0),
+      menu(topLevelMenu, selected='tasks'),
       level1div([
-        menu(secondLevelTasksMenu, selected=0),
+        menu(secondLevelTasksMenu, selected='booksCheckedOut'),
         markdownDiv(tasksMarkdown)
       ])
     ], theId='level0div')

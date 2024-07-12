@@ -4,6 +4,7 @@ from schoolLib.htmxComponents import *
 
 secondLevelPeopleMenu = [
   { 'component' : 'button',
+    'c-name' : 'add',
     'text' : 'Add a person',
     'get'  : '/menu/people/add'
   },
@@ -16,9 +17,9 @@ def peopleMenu(request) :
   return HTMXResponse(
     request,
     level0div([
-      menu(topLevelMenu, selected=0),
+      menu(topLevelMenu, selected='people'),
       level1div([
-        menu(secondLevelPeopleMenu, selected=0),
+        menu(secondLevelPeopleMenu, selected='add'),
         markdownDiv(peopleMarkdown)
       ])
     ], theId='level0div')

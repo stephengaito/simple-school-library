@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [],
+  content: [
+  	'./schoolLib/**/*.py'
+  ],
   theme: {
     extend: {},
   },
