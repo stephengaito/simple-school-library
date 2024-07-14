@@ -25,13 +25,12 @@ def loadMarkdownFromFile(aMarkdownPath) :
     markdownStr = markdown(mdFile.read())
   return markdownStr
 
-markdownClasses = {}
-markdownStyles  = {}
-markdownAttrs   = {}
-
 def markdownDiv(someMarkdown, **kwargs) :
   htmxAttrs = computeHtmxAttrs(
-    markdownClasses, markdownStyles, markdownAttrs, kwargs
+    theme['markdownClasses'],
+    theme['markdownStyles'],
+    theme['markdownAttrs'],
+    kwargs
   )
 
   markdownHTML = markdown(someMarkdown)

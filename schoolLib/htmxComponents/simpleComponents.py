@@ -2,37 +2,19 @@ import yaml
 
 from schoolLib.htmxComponents.utils import *
 
-buttonClasses = {
-  'default'  : [
-    'p-1', 'm-1',
-    'border-2', 'border-solid', 'rounded-lg'
-  ],
-  'selected' : [
-    'p-1','m-1',
-    'border-2', 'border-solid', 'border-blue-500', 'rounded-lg',
-    'outline', 'outline-offset-1', 'outline-2', 'outline-blue-500'
-  ],
-}
-buttonStyles  = {}
-buttonAttrs   = {}
-
 def button(**kwargs) :
   text = getFromKWArgs('text', 'unknown', kwargs)
   htmxAttrs = computeHtmxAttrs(
-    buttonClasses, buttonStyles, buttonAttrs, kwargs
+    theme['buttonClasses'], theme['buttonStyles'], theme['buttonAttrs'],
+    kwargs
   )
 
   return f"<button {htmxAttrs}>{text}</button>"
 
-
-divClasses = {
-  'default' : ['m-1']
-}
-divStyles  = {}
-divAttrs   = {}
-
 def htmxDiv(children, **kwargs) :
-  htmxAttrs = computeHtmxAttrs(divClasses, divStyles, divAttrs, kwargs)
+  htmxAttrs = computeHtmxAttrs(
+    theme['divClasses'], theme['divStyles'], theme['divAttrs'], kwargs
+  )
 
   if not isinstance(children, list) : children = [ children ]
   someHtml = []
@@ -71,19 +53,15 @@ def level4div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
   return htmxDiv(children, **kwargs)
 
-menuClasses = {
-  'default' : ['m-1']
-}
-menuStyles  = {}
-menuAttrs   = {}
-
 def htmxMenu(
   menuList,
   selected="",
   hxAttrs={'hx-target': '#level0div' },
   **kwargs
 ):
-  htmxAttrs = computeHtmxAttrs(menuClasses, menuStyles, menuAttrs, kwargs)
+  htmxAttrs = computeHtmxAttrs(
+    theme['menuClasses'], theme['menuStyles'], theme['menuAttrs'], kwargs
+  )
 
   if 'hx-swap' not in hxAttrs : hxAttrs['hx-swap'] = 'outerHTML'
 
@@ -97,19 +75,13 @@ def htmxMenu(
   menuListHtml.append('</div>')
   return '\n'.join(menuListHtml)
 
-formClasses = {
-  'default' : ['pl-8', 'pt-4',
-  'border-2', 'border-solid', 'border-blue-500', 'rounded-lg']
-}
-formStyles  = {}
-formAttrs   = {}
-
 def htmxForm(inputs, submitMsg, **kwargs) :
   fAttrs   = computeHtmxAttrs(
-    formClasses, formStyles, formAttrs, kwargs
+    theme['formClasses'], theme['formStyles'], theme['formAttrs'], kwargs
   )
   bAttrs = computeHtmxAttrs(
-    buttonClasses, buttonStyles, buttonAttrs, {}
+    theme['buttonClasses'], theme['buttonStyles'], theme['buttonAttrs'],
+    {}
   )
 
   formHtml = [ f'<form {fAttrs}>' ]
@@ -137,43 +109,40 @@ def getInputHtml(inputType, inputAttrs, label=None) :
   inputHtml.append('</div>')
   return '\n'.join(inputHtml)
 
-textInputClasses = {}
-textInputStyles  = {}
-textInputAttrs   = {}
-
 def textInput(label=None, **kwargs) :
   if 'name' not in kwargs : return "<!-- textInput with NO name -->"
 
   tiAttrs = computeHtmxAttrs(
-    textInputClasses, textInputStyles, textInputAttrs, kwargs
+    theme['textInputClasses'],
+    theme['textInputStyles'],
+    theme['textInputAttrs'],
+    kwargs
   )
   tiAttrs += addInputAttrs(kwargs)
 
   return getInputHtml('text', tiAttrs, label=label)
 
-numberInputClasses = {}
-numberInputStyles  = {}
-numberInputAttrs   = {}
-
 def numberInput(label=None, **kwargs) :
   if 'name' not in kwargs : return "<!-- numberInput with NO name -->"
 
   niAttrs = computeHtmxAttrs(
-    numberInputClasses, numberInputStyles, numberInputAttrs, kwargs
+    theme['numberInputClasses'],
+    theme['numberInputStyles'],
+    theme['numberInputAttrs'],
+    kwargs
   )
   niAttrs += addInputAttrs(kwargs)
 
   return getInputHtml('number', niAttrs, label=label)
 
-colourInputClasses = {}
-colourInputStyles  = {}
-colourInputAttrs   = {}
-
 def colourInput(label=None, **kwargs) :
   if 'name' not in kwargs : return "<!-- colourInput with NO name -->"
 
   ciAttrs = computeHtmxAttrs(
-    colourInputClasses, colourInputStyles, colourInputAttrs, kwargs
+    theme['colourInputClasses'],
+    theme['colourInputStyles'],
+    theme['colourInputAttrs'],
+    kwargs
   )
   ciAttrs += addInputAttrs(kwargs)
 

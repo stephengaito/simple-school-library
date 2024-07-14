@@ -27,6 +27,13 @@ def sanitizeConfig(config, verbose=False) :
       'markdown'
     )
 
+  if 'themeDir' not in config :
+    config['themeDir'] = os.path.join(
+      os.path.dirname(os.path.dirname(__file__)),
+      'htmxComponents',
+      'theme'
+    )
+
   if verbose :
     print("----------------------------------------")
     print(yaml.dump(config))

@@ -1,0 +1,61 @@
+
+buttonClasses:
+  default:
+    - p-1
+    - m-1
+    - border-2
+    - border-solid
+    - rounded-lg
+  selected:
+    - p-1
+    - m-1
+    - border-2
+    - border-solid
+    - border-blue-500
+    - rounded-lg
+    - outline
+    - outline-offset-1
+    - outline-2
+    - outline-blue-500
+buttonStyles: {}
+buttonAttrs: {}
+
+divClasses:
+  default:
+   - m-1
+divStyles: {}
+divAttrs: {}
+
+menuClasses:
+  default:
+   - m-1
+menuStyles: {}
+menuAttrs: {}
+
+formClasses:
+  default:
+    - pl-8
+    - pt-4
+    - border-2
+    - border-solid
+    - border-blue-500
+    - rounded-lg
+formStyles: {}
+formAttrs: {}
+
+textInputClasses: {}
+textInputStyles: {}
+textInputAttrs: {}
+
+numberInputClasses: {}
+numberInputStyles: {}
+numberInputAttrs: {}
+
+colourInputClasses: {}
+colourInputStyles: {}
+colourInputAttrs: {}
+
+markdownClasses: {}
+markdownStyles: {}
+markdownAttrs: {}
+

@@ -1,9 +1,57 @@
 
 from copy import deepcopy
+import glob
 import inspect
+import os
 import yaml
 
 from starlette.responses import HTMLResponse
+
+from schoolLib.setup.configuration import config
+
+#######################################################################
+# theme
+
+theme = {}
+
+requiredSections = [
+  'buttonClasses',      'buttonStyles',      'buttonAttrs',
+  'divClasses',         'divStyles',         'divAttrs',
+  'menuClasses',        'menuStyles',        'menuAttrs',
+  'formClasses',        'formStyles',        'formAttrs',
+  'textInputClasses',   'textInputStyles',   'textInputAttrs',
+  'numberInputClasses', 'numberInputStyles', 'numberInputAttrs',
+  'colourInputClasses', 'colourInputStyles', 'colourInputAttrs',
+  'markdownClasses',    'markdownStyles',    'makrdownAttrs',
+]
+
+def loadedTheme() :
+  if 'themeDir' not in config :
+    config['themeDir'] = os.path.join(
+      os.path.dirname(__file__),
+      'theme'
+    )
+
+  themeGlob = os.path.join(
+    config['themeDir'],
+    '*.yaml'
+  )
+
+  try :
+    for aYamlPath in glob.iglob(themeGlob) :
+      with open(aYamlPath) as yamlFile :
+         theme.update(yaml.safe_load(yamlFile.read()))
+
+    for aRequiredSection in requiredSections :
+      if aRequiredSection not in theme :
+        theme[aRequiredSection] = {}
+    return True
+  except Exception as err :
+    print(f"Could not load theme from [{config['themeDir']}]")
+    print(repr(err))
+  return False
+
+#######################################################################
 
 def mergeLists(origList, additionalList) :
   newList = []

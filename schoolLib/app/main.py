@@ -9,6 +9,7 @@ from schoolLib.setup import *
 from schoolLib.htmxComponents import *
 
 loadedConfig('config.yaml', verbose=True)
+loadedTheme()
 
 # The ORDER here is important!
 import schoolLib.app.home.menu
