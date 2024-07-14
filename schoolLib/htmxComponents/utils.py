@@ -15,21 +15,23 @@ def mergeLists(origList, additionalList) :
 
   return newList
 
-def addDictsToKWArgs(classDict, styleDict, attrsDict, kwargs) :
-  if 'classDict' not in kwargs : kwargs['classDict'] = classDict
-  if 'styleDict' not in kwargs : kwargs['styleDict'] = styleDict
-  if 'attrsDict' not in kwargs : kwargs['attrsDict'] = attrsDict
-
 def getFromKWArgs(aKey, aDefault, kwargs) :
   theValue = aDefault
   if aKey in kwargs : theValue = kwargs[aKey]
   return theValue
 
-def computeStyle(kwargs) :
+def computeClass(classDict, kwargs) :
+  klass     = getFromKWArgs('class', [], kwargs)
+  className = getFromKWArgs('className', 'default', kwargs)
+  if isinstance(klass, str) : klass = [ klass ]
+  if className in classDict :
+    klass = mergeLists(deepcopy(classDict[className]), klass)
+  if not klass : return ""
+  return f'class="{' '.join(klass)}"'
+
+def computeStyle(styleDict, kwargs) :
   style     = getFromKWArgs('style', [], kwargs)
   styleName = getFromKWArgs('styleName', 'default', kwargs)
-  styleDict = getFromKWArgs('styleDict', {}, kwargs)
-
   if isinstance(style, str) : style = [ style ]
   elif isinstance(style, dict) :
     styleList = []
@@ -37,25 +39,13 @@ def computeStyle(kwargs) :
       styleList.append(f"{aKey}: {aValue}")
     style = styleList
   if styleName in styleDict :
-    style = mergeLists(styleDict[styleName], style)
+    style = mergeLists(deepcopy(styleDict[styleName]), style)
   if not style : return ""
   return f'style="{'; '.join(style)}"'
 
-def computeClass(kwargs) :
-  klass     = getFromKWArgs('class', [], kwargs)
-  className = getFromKWArgs('className', 'default', kwargs)
-  classDict = getFromKWArgs('classDict', {}, kwargs)
-  if isinstance(klass, str) : klass = [ klass ]
-  if className in classDict :
-    klass = mergeLists(classDict[className], klass)
-  if not klass : return ""
-  return f'class="{' '.join(klass)}"'
-
-def computeAttrs(kwargs) :
+def computeAttrs(attrsDict, kwargs) :
   attrs     = getFromKWArgs('attrs', [], kwargs)
   attrsName = getFromKWArgs('attrsName', 'default', kwargs)
-  attrsDict = getFromKWArgs('attrsDict', {}, kwargs)
-
   if isinstance(attrs, str) : attrs = [ attrs ]
   elif isinstance(attrs, dict) :
     attrsList = []
@@ -64,15 +54,16 @@ def computeAttrs(kwargs) :
       else: attrsList.append(aKey)
     attrs = attrsList
   if attrsName in attrsDict :
-    attrs = mergeLists(attrsDict[attrsName], attrs)
+    attrs = mergeLists(deepcopy(attrsDict[attrsName]), attrs)
   return ' '.join(attrs)
 
-def computeGet(kwargs) :
-  get = getFromKWArgs('get', None, kwargs)
-
-  getStr = ""
-  if get : getStr = f'hx-get="{get}"'
-  return getStr
+def computeAction(kwargs) :
+  get  = getFromKWArgs('get', None, kwargs)
+  post = getFromKWArgs('post', None, kwargs)
+  actionStr = ""
+  if 'get'    in kwargs : actionStr = f'hx-get="{kwargs['get']}"'
+  elif 'post' in kwargs : actionStr = f'hx-post="{kwargs['post']}"'
+  return actionStr
 
 def computePost(kwargs) :
   post = getFromKWArgs('post', None, kwargs)
@@ -88,14 +79,14 @@ def computeId(kwargs) :
   if anId : idStr = f'id="{anId}"'
   return idStr
 
-def computeHtmxAttrs(kwargs) :
+def computeHtmxAttrs(classDict, styleDict, attrsDict, kwargs) :
   allAttrs = [
     computeId(kwargs),
-    computeGet(kwargs),
+    computeAction(kwargs),
     computePost(kwargs),
-    computeClass(kwargs),
-    computeStyle(kwargs),
-    computeAttrs(kwargs)
+    computeClass(classDict, kwargs),
+    computeStyle(styleDict, kwargs),
+    computeAttrs(attrsDict, kwargs)
   ]
   theAttrs = [x for x in allAttrs if x]
   return " ".join(theAttrs)

@@ -30,7 +30,9 @@ markdownStyles  = {}
 markdownAttrs   = {}
 
 def markdownDiv(someMarkdown, **kwargs) :
-  htmxAttrs = computeHtmxAttrs(kwargs)
+  htmxAttrs = computeHtmxAttrs(
+    markdownClasses, markdownStyles, markdownAttrs, kwargs
+  )
 
   markdownHTML = markdown(someMarkdown)
   # TODO: should this be escaped?

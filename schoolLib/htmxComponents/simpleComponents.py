@@ -17,9 +17,10 @@ buttonStyles  = {}
 buttonAttrs   = {}
 
 def button(**kwargs) :
-  addDictsToKWArgs(buttonClasses, buttonStyles, buttonAttrs, kwargs)
   text = getFromKWArgs('text', 'unknown', kwargs)
-  htmxAttrs = computeHtmxAttrs(kwargs)
+  htmxAttrs = computeHtmxAttrs(
+    buttonClasses, buttonStyles, buttonAttrs, kwargs
+  )
 
   return f"<button {htmxAttrs}>{text}</button>"
 
@@ -31,8 +32,7 @@ divStyles  = {}
 divAttrs   = {}
 
 def htmxDiv(children, **kwargs) :
-  addDictsToKWArgs(divClasses, divStyles, divAttrs, kwargs)
-  htmxAttrs = computeHtmxAttrs(kwargs)
+  htmxAttrs = computeHtmxAttrs(divClasses, divStyles, divAttrs, kwargs)
 
   if not isinstance(children, list) : children = [ children ]
   someHtml = []
@@ -77,13 +77,104 @@ menuClasses = {
 menuStyles  = {}
 menuAttrs   = {}
 
-def menu(menuList, selected="", **kwargs):
-  addDictsToKWArgs(menuClasses, menuStyles, menuAttrs, kwargs)
-  htmxAttrs = computeHtmxAttrs(kwargs)
+def htmxMenu(
+  menuList,
+  selected="",
+  hxAttrs={'hx-target': '#level0div' },
+  **kwargs
+):
+  htmxAttrs = computeHtmxAttrs(menuClasses, menuStyles, menuAttrs, kwargs)
+
+  if 'hx-swap' not in hxAttrs : hxAttrs['hx-swap'] = 'outerHTML'
 
   menuList = selectComponentInList(selected, menuList)
   menuListHtml = [ f'<div {htmxAttrs}>' ]
   for anItem in menuList :
+    if isinstance(anItem, dict) :
+      if 'attrs' not in anItem : anItem['attrs'] = {}
+      anItem['attrs'].update(hxAttrs)
     menuListHtml.append(computeComponent(anItem))
   menuListHtml.append('</div>')
   return '\n'.join(menuListHtml)
+
+formClasses = {
+  'default' : ['pl-8', 'pt-4',
+  'border-2', 'border-solid', 'border-blue-500', 'rounded-lg']
+}
+formStyles  = {}
+formAttrs   = {}
+
+def htmxForm(inputs, submitMsg, **kwargs) :
+  fAttrs   = computeHtmxAttrs(
+    formClasses, formStyles, formAttrs, kwargs
+  )
+  bAttrs = computeHtmxAttrs(
+    buttonClasses, buttonStyles, buttonAttrs, {}
+  )
+
+  formHtml = [ f'<form {fAttrs}>' ]
+  for anInput in inputs :
+    formHtml.append(computeComponent(anInput))
+  formHtml.append(f"""  <button {bAttrs}>{submitMsg}</button>
+  </form>
+  """)
+  return '\n'.join(formHtml)
+
+def addInputAttrs(kwargs) :
+  inputAttrs = f' name="{kwargs['name']}"'
+  if 'value' in kwargs and kwargs['value'] :
+    inputAttrs += f' value="{kwargs['value']}"'
+  elif 'placeholder' in kwargs and kwargs['placeholder'] :
+    inputAttrs += f' placeholder="{kwargs['placeholder']}"'
+  elif 'defaultValue' in kwargs :
+    inputAttrs += f' value="{kwargs['defaultValue']}"'
+  return inputAttrs
+
+def getInputHtml(inputType, inputAttrs, label=None) :
+  inputHtml = ['<div>']
+  if label : inputHtml.append(f"<label>{label}</label>")
+  inputHtml.append(f'<input type="{inputType}" {inputAttrs} />')
+  inputHtml.append('</div>')
+  return '\n'.join(inputHtml)
+
+textInputClasses = {}
+textInputStyles  = {}
+textInputAttrs   = {}
+
+def textInput(label=None, **kwargs) :
+  if 'name' not in kwargs : return "<!-- textInput with NO name -->"
+
+  tiAttrs = computeHtmxAttrs(
+    textInputClasses, textInputStyles, textInputAttrs, kwargs
+  )
+  tiAttrs += addInputAttrs(kwargs)
+
+  return getInputHtml('text', tiAttrs, label=label)
+
+numberInputClasses = {}
+numberInputStyles  = {}
+numberInputAttrs   = {}
+
+def numberInput(label=None, **kwargs) :
+  if 'name' not in kwargs : return "<!-- numberInput with NO name -->"
+
+  niAttrs = computeHtmxAttrs(
+    numberInputClasses, numberInputStyles, numberInputAttrs, kwargs
+  )
+  niAttrs += addInputAttrs(kwargs)
+
+  return getInputHtml('number', niAttrs, label=label)
+
+colourInputClasses = {}
+colourInputStyles  = {}
+colourInputAttrs   = {}
+
+def colourInput(label=None, **kwargs) :
+  if 'name' not in kwargs : return "<!-- colourInput with NO name -->"
+
+  ciAttrs = computeHtmxAttrs(
+    colourInputClasses, colourInputStyles, colourInputAttrs, kwargs
+  )
+  ciAttrs += addInputAttrs(kwargs)
+
+  return getInputHtml('color', ciAttrs, label=label)

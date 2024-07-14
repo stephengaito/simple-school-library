@@ -33,9 +33,9 @@ def booksMenu(request) :
   return HTMXResponse(
     request,
     level0div([
-      menu(topLevelMenu, selected='books'),
+      htmxMenu(topLevelMenu, selected='books'),
       level1div([
-        menu(secondLevelBooksMenu, selected='takeOut'),
+        htmxMenu(secondLevelBooksMenu, selected='takeOut'),
         markdownDiv(someMarkdown)
       ])
     ])

@@ -10,37 +10,37 @@ topLevelMenu = [
     'c-name' : 'home',
     'text' : 'Home',
     'get' : '/menu/home',
-    'attrs' : {
-      'hx-target' : '#level0div',
-      'hx-swap'   : 'outerHTML'
-    }
+#    'attrs' : {
+#      'hx-target' : '#level0div',
+#      'hx-swap'   : 'outerHTML'
+#    }
   },
   { 'component' : 'button',
     'c-name' : 'books',
     'text' : 'Books',
     'get' : "/menu/books",
-    'attrs' : {
-      'hx-target' : '#level0div',
-      'hx-swap'   : 'outerHTML'
-    }
+#    'attrs' : {
+#      'hx-target' : '#level0div',
+#      'hx-swap'   : 'outerHTML'
+#    }
   },
   { 'component' : 'button',
     'c-name' : 'people',
     'text' : 'People',
     'get' : '/menu/people',
-    'attrs' : {
-      'hx-target' : '#level0div',
-      'hx-swap'   : 'outerHTML'
-    }
+#    'attrs' : {
+#      'hx-target' : '#level0div',
+#      'hx-swap'   : 'outerHTML'
+#    }
   },
   { 'component' : 'button',
     'c-name' : 'tasks',
     'text' : 'Tasks',
     'get' : '/menu/tasks',
-    'attrs' : {
-      'hx-target' : '#level0div',
-      'hx-swap'   : 'outerHTML'
-    }
+#    'attrs' : {
+#      'hx-target' : '#level0div',
+#      'hx-swap'   : 'outerHTML'
+#    }
   }
 ]
 

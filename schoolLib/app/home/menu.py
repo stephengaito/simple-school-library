@@ -9,7 +9,7 @@ def homeMenu(request) :
   return HTMXResponse(
     request,
     level0div([
-      menu(topLevelMenu, selected='home'),
+      htmxMenu(topLevelMenu, selected='home'),
       level1div(markdownDiv(homePageMarkdown))
     ], theId='level0div')
   )
