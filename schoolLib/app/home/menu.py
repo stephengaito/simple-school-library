@@ -1,6 +1,7 @@
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
+from schoolLib.app.menus import *
 
 @get('/menu/home')
 def homeMenu(request) :

@@ -1,14 +1,7 @@
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-
-secondLevelTasksMenu = [
-  { 'component' : 'button',
-    'c-name' : 'booksCheckedOut',
-    'text' : 'Books checked out',
-    'get'  : '/menu/tasks/booksCheckedOut'
-  },
-]
+from schoolLib.app.menus import *
 
 @get('/menu/tasks')
 def tasksMenu(request) :

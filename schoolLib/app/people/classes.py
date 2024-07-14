@@ -14,23 +14,44 @@ description of each class.
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
+from schoolLib.app.menus import *
 
-def editClassForm(**kwargs) :
+def editClassForm(
+  className=None, classDesc=None, classOrder=None, classColour=None,
+  submitMessage="Save changes", postUrl=None,
+  **kwargs
+) :
+  if not postUrl : return "<!-- htmxForm with NO postUrl -->"
+
   return htmxForm([
-    textInput(label="ClassName"),
-    textInput(label="Description"),
-    numbersInput(label="Class order"),
-    colourInput(label="Class colour")
-  ],**kwargs)
+    textInput(
+      label='Class name',
+      name='className',
+      value=className,
+      placeholder='A class name...'
+    ),
+    textInput(
+      label='Description',
+      name='classDesc',
+      value=classDesc,
+      placeholder='A description of your class...'
+    ),
+    numberInput(
+      label='Class order',
+      name='classOrder',
+      value=classOrder,
+      defaultValue=0
+    ),
+    colourInput(
+      label='Class colour',
+      name='classColour',
+      value=classColour,
+      defaultValue='#000000'
+    )
+  ], submitMsg=submitMessage, post=postUrl, **kwargs)
 
-@get('/classes/new')
-def getNewClassForm(request) :
-  """
-  /classes/new
 
-  GET the HTML Form used to add a new class
-
-  """
+def addAClass() :
   maxClassOrder = 0
   with getDatabase() as db :
     classes = getClasses(db)
@@ -38,12 +59,35 @@ def getNewClassForm(request) :
       if maxClassOrder < aClass['classOrder'] :
         maxClassOrder = aClass['classOrder']
     maxClassOrder += 1
-  return TemplateResponse(request, 'classes/editClassForm.html', {
-    'formAction'    : '/classes/new',
-    'formMethod'    : 'POST',
-    'formSubmitMsg' : 'Add new class',
-    'maxClassOrder' : maxClassOrder
-  })
+
+  return level1div([
+    htmxMenu(secondLevelPeopleMenu, selected='addClass', hxAttrs={
+      'hx-target' : '#level1div'
+    }),
+    editClassForm(
+      classOrder=maxClassOrder,
+      submitMessage='Add new class',
+      postUrl='/classes/new'
+    )
+  ])
+
+@get('/menu/people')
+def peopleMenu(request) :
+
+  return HTMXResponse(
+    request,
+    level0div([
+      htmxMenu(topLevelMenu, selected='people'),
+      addAClass()
+    ], theId='level0div')
+  )
+
+@get('/menu/people/addClass')
+def addAClassMenu(request) :
+  return HTMXResponse(
+    request,
+    addAClass()
+  )
 
 @post('/classes/new')
 async def postSaveNewClass(request) :

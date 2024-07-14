@@ -23,6 +23,7 @@ requiredSections = [
   'numberInputClasses', 'numberInputStyles', 'numberInputAttrs',
   'colourInputClasses', 'colourInputStyles', 'colourInputAttrs',
   'markdownClasses',    'markdownStyles',    'makrdownAttrs',
+  'tableClasses',       'tableStyles',       'tableAttrs',
 ]
 
 def loadedTheme() :
