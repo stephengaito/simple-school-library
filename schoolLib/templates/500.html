@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-{% block content %}
-<p>Opps! Something in the server went wrong! We can't supply that page!</p>
-<p>{{errorMessage}}</p>
-<p>{{errorType}}</p>
-{% if helpMessage %}<p>{{helpMessage}}</p>{% endif %}
-{% if origError %}<p>{{origError}}</p>{% endif %}
-{% endblock %}

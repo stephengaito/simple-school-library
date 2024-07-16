@@ -1,4 +1,6 @@
 
+# There should not be ANY imports
+
 topLevelMenu = [
   { 'component' : 'button',
     'c-name' : 'home',

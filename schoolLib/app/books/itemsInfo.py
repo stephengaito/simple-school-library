@@ -8,16 +8,89 @@ Work with itemsInfo
 
 from schoolLib.setup import *
 
+##########################################################################
+# content
+
+def editItemsInfoForm(
+  title=None, authors=None, publisher=None, series=None,
+  bookType=None, keywords=None, summary=None,
+  dewey=None, isbn=None,
+  submitMessage="Save changes", postUrl=None,
+  **kwargs
+) :
+  if not postUrl : return "<!-- edit itemsInfo form with NO postUrl -->"
+
+  return formTable([
+    textInput(
+      label='Title',
+      name='title',
+      value=title,
+      placeholder='A title...'
+    ),
+    textInput(
+      label='Authors',
+      name='authors',
+      value=authors,
+      placeholder='Some authors...'
+    ),
+    textInput(
+      label='Publisher',
+      name='publisher',
+      value=publisher,
+      placeholder='A publisher...'
+    ),
+    textInput(
+      label='A book type',
+      name='type',
+      value=bookType,
+      placeholder=' A book type...'
+    ),
+    textAreaInput(
+      label='Keywords',
+      name='keywords',
+      value=keywords,
+      placeholder='Some keywords...'
+    ),
+    textAreaInput(
+      label='Summary',
+      name='summary',
+      value=summary,
+      placeholder='A summary...'
+    ),
+    textInput(
+      label='Series',
+      name='series',
+      value=series,
+      placeholder='The series...'
+    ),
+    textInput(
+      label='Dewey decimal classification',
+      name='dewey',
+      value=dewey,
+      placeholder='The dewey decimal classificaton...'
+    ),
+    textInput(
+      label='ISBN',
+      name='isbn',
+      value=isbn,
+      placeholder='The ISBN...'
+    )
+  ], submitMessage,
+    theId='level2div', target='this', post=postUrl, **kwargs
+  )
+
+##########################################################################
+# routes
+
 @get('/itemsInfo/new')
 def getNewItemsInfoForm(request) :
-  """
-  /itemsInfo/new
-  """
-  return TemplateResponse(request, 'items/editItemsInfoForm.html', {
-    'formAction'    : '/itemsInfo/new',
-    'formMethod'    : 'POST',
-    'formSubmitMsg' : 'Add new book',
-  })
+  return HTMXResponse(
+    request,
+    editItemsInfoForm(
+      submitMessage='Add new book',
+      postUrl='/itemsInfo/new',
+    )
+  )
 
 @post('/itemsInfo/new')
 async def postSaveNewItemsInfo(request) :
@@ -35,7 +108,13 @@ async def postSaveNewItemsInfo(request) :
       'isbn'      : theForm['isbn']
     }))
     db.commit()
-  return GotoResponse('/')
+  return HTMXResponse(
+    request,
+    editItemsInfoForm(
+      submitMessage='Add new book',
+      postUrl='/itemsInfo/new',
+    )
+  )
 
 @get('/itemsInfo/edit/{itemsInfoId:int}')
 def getEditAnItemsInfoForm(request, itemsInfoId=None) :
@@ -52,22 +131,29 @@ def getEditAnItemsInfoForm(request, itemsInfoId=None) :
         fetchAll=False
       )
       if itemsInfo :
-        return TemplateResponse(request, 'items/editItemsInfoForm.html', {
-          'formAction'    : f'/itemsInfo/edit/{itemsInfoId}',
-          'formMethod'    : 'POST',
-          'formSubmitMsg' : 'Save changes',
-          'title'     : itemsInfo[0]['title'],
-          'authors'   : itemsInfo[0]['authors'],
-          'publisher' : itemsInfo[0]['publisher'],
-          'type'      : itemsInfo[0]['type'],
-          'keywords'  : itemsInfo[0]['keywords'],
-          'summary'   : itemsInfo[0]['summary'],
-          'series'    : itemsInfo[0]['series'],
-          'dewey'     : itemsInfo[0]['dewey'],
-          'isbn'      : itemsInfo[0]['isbn']
-
-        })
-  return GotoResponse('/')
+        return HTMXResponse(
+          request,
+          editItemsInfoForm(
+            title=itemsInfo[0]['title'],
+            authors=itemsInfo[0]['authors'],
+            publisher=itemsInfo[0]['publisher'],
+            bookType=itemsInfo[0]['type'],
+            keywords=itemsInfo[0]['keywords'],
+            summary=itemsInfo[0]['summary'],
+            series=itemsInfo[0]['series'],
+            dewey=itemsInfo[0]['dewey'],
+            isbn=itemsInfo[0]['isbn'],
+            submitMessage='Save changes',
+            postUrl=f'/itemsInfo/edit/{itemsInfoId}',
+          )
+        )
+  return HTMXResponse(
+    request,
+    editItemsInfoForm(
+      submitMessage='Add new book',
+      postUrl='/itemsInfo/new',
+    )
+  )
 
 @put('/itemsInfo/edit/{itemsInfoId:int}')
 async def putUpdateAnItemsInfo(request, itemsInfoId=None) :
@@ -88,4 +174,10 @@ async def putUpdateAnItemsInfo(request, itemsInfoId=None) :
       'isbn'      : theForm['isbn']
       }))
       db.commit()
-  return GotoResponse('/')
+  return HTMXResponse(
+    request,
+    editItemsInfoForm(
+      submitMessage='Add new book',
+      postUrl='/itemsInfo/new',
+    )
+  )

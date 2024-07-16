@@ -1,9 +1,0 @@
-
-  <label><=label=></label>
-  <input type="date" min="2000-01-01" id="<=name=>" name="<=name=>"
-  {% if <=name=> is defined %}
-    value="{{<=name=>}}"
-  {% else %}
-    value="<=today=>"
-  {% endif %}
-  />

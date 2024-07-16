@@ -30,21 +30,50 @@ def homepage(request):
 @get('/help/{aPath:path}')
 def helpPages(request, aPath=None) :
   if not aPath : aPath = 'help'
-  return MarkdownResponse(request, aPath)
+  someMarkdown = loadMarkdownFromFile(aPath)
+
+  return HTMXResponse(
+    request,
+    level0div([
+      menu(topLevelMenu, selected='home'),
+      level1div(markdownDiv(someMarkdown))
+    ])
+  )
 
 async def notFound(request, theException) :
   print("-------------")
   print(repr(request))
   print(repr(theException))
   print("-------------")
-  return TemplateResponse(request, "404.html", status_code=404)
+  return HTMXResponse(
+    request,
+    level0div([
+      menu(topLevelMenu, selected='home'),
+      level1div([
+        text("Opps! Something went wrong! We can't find that page!", type='p'),
+        text(f"Looking for: [{request.url}]", type='p')
+      ])
+    ]),
+    status_code=404
+  )
 
 async def serverError(request, theException) :
   print("-------------")
   print(repr(request))
   print(repr(theException))
   print("-------------")
-  return TemplateResponse(request, "500.html", status_code=500)
+  return HTMXResponse(
+    request,
+    level0div([
+      menu(topLevelMenu, selected='home'),
+      level1div([
+        text("Opps! Something went wrong! We can't find that page!", type='p'),
+        text(f"Looking for: [{request.url}]", type='p'),
+        text(f"Error: {repr(theException)}", type="p"),
+      ])
+    ]),
+    status_code=500
+  )
 
 app = Starlette(
   debug=True,

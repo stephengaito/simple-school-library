@@ -5,7 +5,7 @@ from functools import wraps
 from starlette.routing import Route #, Mount, WebSocketRoute
 
 from schoolLib.setup.exceptions import SLException
-from schoolLib.setup.responses import TemplateResponse
+from schoolLib.htmxComponents import *
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -27,12 +27,20 @@ def callWithParameters(request, func) :
   try :
     return func(request, **params)
   except SLException as slErr :
-    return TemplateResponse(request, '500.html', {
-      'errorMessage' : slErr.slMessage,
-      'errorType'    : slErr.slErrType,
-      'helpMessage'  : slErr.slHelpMsg,
-      'origError'    : slErr.slOrigErr
-    })
+    errorText = [
+      text("Opps! Something in the server went wrong! We can't supply that page!", type='p'),
+      text(slErr.slMessage, type='p'),
+      text(slErr.slErrType, type='p'),
+    ]
+    if slErr.HelpMsg : errorText.append(text(slErr.slHelpMsg, type='p'))
+    if slErr.OrigErr : errorText.append(text(slErr.slOrigErr, type='p'))
+    return HTMXResponse(
+      request,
+      level0div([
+        menu(topLevelMenu, selected='home'),
+        level1div(errorText)
+      ])
+    )
 
 def get(aRoute, name=None) :
   def getDecorator(func) :

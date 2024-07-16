@@ -6,18 +6,57 @@ Work with itemsBorrowed
 """
 
 from schoolLib.setup import *
+from schoolLib.htmxComponents import *
+from schoolLib.app.menus import *
+
+##########################################################################
+# content
+
+def editItemsBorrowedForm(
+  dateBorrowed=None, dateDue=None,
+  submitMessage="Save changes", postUrl=None,
+  **kwargs
+) :
+  if not postUrl : return "<!-- edit itemsBorrowed form with NO postUrl -->"
+
+  return formTable([
+    dateInput(
+      label='Date borrowed',
+      name='dateBorrowed',
+      value=dateBorrowed,
+      placeholder='The date last borrowed...'
+    ),
+    dateInput(
+      label='Date due',
+      name='dateDue',
+      value=dateDue,
+      placeholder='The date due....'
+    )
+  ], submitMessage,
+    theId='level2div', target='this', post=postUrl, **kwargs
+  )
+
+##########################################################################
+# routes
 
 @get('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new')
 def getNewItemsBorrowedForm(request,
   itemsPhysicalId=None, borrowerId=None
 ) :
   if itemsPhysicalId and borrowersId :
-    return TemplateResponse(request, 'items/editItemsBorrowedForm.html', {
-      'formAction'    : f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
-      'formMethod'    : 'POST',
-      'formSubmitMsg' : 'Take out a new book',
-    })
-  return GotoResponse('/')
+    return HTMXResponse(
+      request,
+      editItemsBorrowedForm(
+        submitMessage='Take out a new book',
+        postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
+      )
+    )
+  return HTMXResponse(
+    request,
+    level0div(
+      menu(topLevelMenu)
+    )
+  )
 
 @post('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new')
 async def postSaveNewItemsBorrowed(request,
@@ -33,7 +72,12 @@ async def postSaveNewItemsBorrowed(request,
         'dateDue'         : theForm['dateDue']
       }))
       db.commit()
-  return GotoResponse('/')
+  return HTMXResponse(
+    request,
+    level0div(
+      menu(topLevelMenu)
+    )
+  )
 
 @get('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}')
 def getEditItemsBorrowedForm(request,
@@ -52,14 +96,21 @@ def getEditItemsBorrowedForm(request,
       fetchAll=False
     )
     if itemsBorrowed :
-      return TemplateResponse(request, 'items/editItemsBorrowedForm.html', {
-        'formAction'    : f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
-        'formMethod'    : 'POST',
-        'formSubmitMsg' : 'Save changes',
-        'dateBorrowed' : itemsBorrowed[0]['dateBorrowed'],
-        'dateDue'      : itemsBorrowed[0]['dateDue']
-      })
-  return GotoResponse('/')
+      return HTMXResponse(
+        request,
+        editItemsBorrowedForm(
+          dateBorrowed=itemsBorrowed[0]['dateBorrowed'],
+          dateDue=itemsBorrowed[0]['dateDue'],
+          submitMessage='Save changes',
+          postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
+        )
+      )
+  return HTMXResponse(
+    request,
+    level0div(
+      menu(topLevelMenu)
+    )
+  )
 
 @put('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}')
 async def putUpdateAnItemsBorrowed(requeset,
@@ -77,4 +128,9 @@ async def putUpdateAnItemsBorrowed(requeset,
         'dateDue'      : theForm['dateDue']
       }))
       db.commit()
-  return GotoResponse('/')
+  return HTMXResponse(
+    request,
+    level0div(
+      menu(topLevelMenu)
+    )
+  )
