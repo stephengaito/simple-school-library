@@ -10,9 +10,9 @@ def tasksMenu(request) :
   return HTMXResponse(
     request,
     level0div([
-      htmxMenu(topLevelMenu, selected='tasks'),
+      menu(topLevelMenu, selected='tasks'),
       level1div([
-        htmxMenu(secondLevelTasksMenu, selected='booksCheckedOut'),
+        menu(secondLevelTasksMenu, selected='booksCheckedOut'),
         markdownDiv(tasksMarkdown)
       ])
     ], theId='level0div')

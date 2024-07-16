@@ -16,14 +16,17 @@ from schoolLib.setup import *
 from schoolLib.htmxComponents import *
 from schoolLib.app.menus import *
 
+##########################################################################
+# content
+
 def editClassForm(
   className=None, classDesc=None, classOrder=None, classColour=None,
   submitMessage="Save changes", postUrl=None,
   **kwargs
 ) :
-  if not postUrl : return "<!-- htmxForm with NO postUrl -->"
+  if not postUrl : return "<!-- htmx form with NO postUrl -->"
 
-  return htmxForm([
+  return formTable([
     textInput(
       label='Class name',
       name='className',
@@ -48,8 +51,37 @@ def editClassForm(
       value=classColour,
       defaultValue='#000000'
     )
-  ], submitMsg=submitMessage, post=postUrl, **kwargs)
+  ], submitMessage,
+    theId='level2div', target='this', post=postUrl, **kwargs
+  )
 
+def listClasses(**kwargs) :
+  tableRows = []
+  tableRows.append(tableRow([
+    tableHeader(text('Name')),
+    tableHeader(text('Description')),
+    tableHeader(text('Actions'), colspan=3)
+  ]))
+
+  with getDatabase() as db :
+    theClasses = getClasses(db)
+    sortedClasses = getSortedClasses(theClasses)
+    for aClass in sortedClasses :
+      tableRows.append(tableRow([
+        tableEntry(text(aClass['name'])),
+        tableEntry(text(aClass['desc'])),
+        tableEntry(link(
+          f'/classes/list/{aClass['id']}', 'List', target='level1div'
+        )),
+        tableEntry(link(
+          f'/classes/update/{aClass['id']}', 'Update', target='level1div'
+        )),
+        tableEntry(link(
+          f'/classes/edit/{aClass['id']}', 'Edit', target='level1div'
+        )),
+      ]))
+
+  return table(tableRows, theId='level2div')
 
 def addAClass() :
   maxClassOrder = 0
@@ -61,7 +93,7 @@ def addAClass() :
     maxClassOrder += 1
 
   return level1div([
-    htmxMenu(secondLevelPeopleMenu, selected='addClass', hxAttrs={
+    menu(secondLevelPeopleMenu, selected='addClass', hxAttrs={
       'hx-target' : '#level1div'
     }),
     editClassForm(
@@ -71,13 +103,15 @@ def addAClass() :
     )
   ])
 
+##########################################################################
+# routes
+
 @get('/menu/people')
 def peopleMenu(request) :
-
   return HTMXResponse(
     request,
     level0div([
-      htmxMenu(topLevelMenu, selected='people'),
+      menu(topLevelMenu, selected='people'),
       addAClass()
     ], theId='level0div')
   )
@@ -91,13 +125,6 @@ def addAClassMenu(request) :
 
 @post('/classes/new')
 async def postSaveNewClass(request) :
-  """
-  /classes/new
-
-  Save (POST) the new class as edited by the `getNewClassForm`
-
-  """
-
   theForm = await request.form()
   with getDatabase() as db :
     db.execute(InsertSql().sql('classes', {
@@ -107,47 +134,27 @@ async def postSaveNewClass(request) :
       'colour'     : theForm['classColour']
     }))
     db.commit()
-  return GotoResponse('/classes/list')
+  return HTMXResponse(request, listClasses())
 
 @get('/classes/edit/{classId:int}')
 def getEditAClassForm(request, classId=None) :
-  """
-  /classes/edit/{classId:int}
-
-  GET the HTML Form used to edit an existing class
-
-  """
-
   if classId :
     with getDatabase() as db :
       theClasses = getClasses(db)
       if classId in theClasses :
-        return TemplateResponse(request, 'classes/editClassForm.html', {
-          'formAction'    : f'/classes/edit/{classId}',
-          'formMethod'    : 'POST',
-          'formSubmitMsg' : 'Save changes',
-          'className'     : theClasses[classId]['name'],
-          'classOrder'    : theClasses[classId]['classOrder'],
-          'classDesc'     : theClasses[classId]['desc'],
-          'classColour'   : theClasses[classId]['colour']
-        })
-  return GotoResponse('/classes/list')
+        return HTMXResponse(request, editClassForm(
+          className=theClasses[classId]['name'],
+          classDesc=theClasses[classId]['desc'],
+          classOrder=theClasses[classId]['classOrder'],
+          classColour=theClasses[classId]['colour'],
+          submitMsg='Save changes',
+          postUrl=f'/classes/edit/{classId}'
+        ))
+  return HTMXResponse(request, listClasses())
 
 @put('/classes/edit/{classId:int}')
 async def putUpdateAClass(request, classId=None) :
-  """
-  /classes/edit/{classId:int}
-
-  Update (PUT) the details of an existing class as edited by the
-  `getEditClassForm`
-
-  """
-
   theForm = await request.form()
-  print("--------------")
-  print(classId)
-  print(yaml.dump(theForm))
-  print("--------------")
   with getDatabase() as db :
     db.execute(UpdateSql(
     ).whereValue('id', classId
@@ -158,17 +165,10 @@ async def putUpdateAClass(request, classId=None) :
       'colour'     : theForm['classColour']
     }))
     db.commit()
-  return GotoResponse('/')
+  return HTMXResponse(request, listClasses())
 
 @delete('/classes/delete/{classId:int}')
 def deleteAnEmptyClass(request, classId=None) :
-  """
-  /classes/delete/{classId:int}
-
-  DELETE an existing class IF AND ONLY IF this class is empty.
-
-  """
-  print("DELETE AN EMPTY CLASS")
   with getDatabase() as db :
     selectSql = SelectSql(
     ).fields('id').tables('borrowers'
@@ -176,23 +176,8 @@ def deleteAnEmptyClass(request, classId=None) :
     results = selectSql.parseResults(db.execute(selectSql.sql()))
     if not results :
       cmd = DeleteSql().whereValue('id', classId).sql('classes')
-      print(cmd)
       db.execute(cmd)
       db.commit()
     else :
       print("Can NOT delete a class which is not empty!")
-  return GotoResponse('/classes/list')
-
-@get('/classes/list')
-def getListOfClassNames(request) :
-  """
-  /classes/list
-
-  GET the list of existing classes
-
-  """
-  with getDatabase() as db :
-    theClasses = getClasses(db)
-    return TemplateResponse(request, 'classes/listClasses.html', {
-      'theClasses' : theClasses,
-    })
+  return HTMXResponse(request, listClasses())

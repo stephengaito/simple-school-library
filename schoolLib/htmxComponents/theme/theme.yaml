@@ -17,20 +17,14 @@ buttonClasses:
     - outline-offset-1
     - outline-2
     - outline-blue-500
-buttonStyles: {}
-buttonAttrs: {}
 
 divClasses:
   default:
    - m-1
-divStyles: {}
-divAttrs: {}
 
 menuClasses:
   default:
    - m-1
-menuStyles: {}
-menuAttrs: {}
 
 formClasses:
   default:
@@ -40,22 +34,19 @@ formClasses:
     - border-solid
     - border-blue-500
     - rounded-lg
-formStyles: {}
-formAttrs: {}
 
-textInputClasses: {}
-textInputStyles: {}
-textInputAttrs: {}
+textInputClasses:
+  default:
+    - border-2
+    - border-solid
+    - rounded-lg
 
-numberInputClasses: {}
-numberInputStyles: {}
-numberInputAttrs: {}
+numberInputClasses:
+  default:
+    - border-2
+    - border-solid
+    - rounded-lg
 
-colourInputClasses: {}
-colourInputStyles: {}
-colourInputAttrs: {}
-
-markdownClasses: {}
-markdownStyles: {}
-markdownAttrs: {}
-
+colourInputClasses:
+  default:
+    - max-h-4

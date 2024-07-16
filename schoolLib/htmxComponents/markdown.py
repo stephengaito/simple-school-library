@@ -26,18 +26,15 @@ def loadMarkdownFromFile(aMarkdownPath) :
   return markdownStr
 
 def markdownDiv(someMarkdown, **kwargs) :
-  htmxAttrs = computeHtmxAttrs(
-    theme['markdownClasses'],
-    theme['markdownStyles'],
-    theme['markdownAttrs'],
-    kwargs
+  mdAttrs = computeHtmxAttrs(
+    'markdownClasses', 'markdownStyles', 'markdownAttrs', kwargs
   )
 
   markdownHTML = markdown(someMarkdown)
   # TODO: should this be escaped?
 
   return f"""
-  <div {htmxAttrs}>
+  <div {mdAttrs}>
   {markdownHTML}
   </div>
   """

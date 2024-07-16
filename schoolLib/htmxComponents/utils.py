@@ -14,18 +14,6 @@ from schoolLib.setup.configuration import config
 
 theme = {}
 
-requiredSections = [
-  'buttonClasses',      'buttonStyles',      'buttonAttrs',
-  'divClasses',         'divStyles',         'divAttrs',
-  'menuClasses',        'menuStyles',        'menuAttrs',
-  'formClasses',        'formStyles',        'formAttrs',
-  'textInputClasses',   'textInputStyles',   'textInputAttrs',
-  'numberInputClasses', 'numberInputStyles', 'numberInputAttrs',
-  'colourInputClasses', 'colourInputStyles', 'colourInputAttrs',
-  'markdownClasses',    'markdownStyles',    'makrdownAttrs',
-  'tableClasses',       'tableStyles',       'tableAttrs',
-]
-
 def loadedTheme() :
   if 'themeDir' not in config :
     config['themeDir'] = os.path.join(
@@ -42,10 +30,6 @@ def loadedTheme() :
     for aYamlPath in glob.iglob(themeGlob) :
       with open(aYamlPath) as yamlFile :
          theme.update(yaml.safe_load(yamlFile.read()))
-
-    for aRequiredSection in requiredSections :
-      if aRequiredSection not in theme :
-        theme[aRequiredSection] = {}
     return True
   except Exception as err :
     print(f"Could not load theme from [{config['themeDir']}]")
@@ -114,12 +98,17 @@ def computeAction(kwargs) :
   elif 'post' in kwargs : actionStr = f'hx-post="{kwargs['post']}"'
   return actionStr
 
-def computePost(kwargs) :
-  post = getFromKWArgs('post', None, kwargs)
+def computeTarget(kwargs) :
+  target = getFromKWArgs('target', None, kwargs)
+  swap   = getFromKWArgs('swap', None, kwargs)
 
-  postStr = ""
-  if post : postStr = f'hx-post="{post}"'
-  return postStr
+  targetStr = ""
+  if target :
+    targetStr = f'hx-target="{target}"'
+    if not swap : swap = 'outerHTML'
+  if swap :
+    targetStr += f' hx-swap="{swap}"'
+  return targetStr
 
 def computeId(kwargs) :
   anId = getFromKWArgs('theId', None, kwargs)
@@ -129,10 +118,19 @@ def computeId(kwargs) :
   return idStr
 
 def computeHtmxAttrs(classDict, styleDict, attrsDict, kwargs) :
+  if isinstance(classDict, str) :
+    if classDict not in theme : theme[classDict] = {}
+    classDict = theme[classDict]
+  if isinstance(styleDict, str) :
+    if styleDict not in theme : theme[styleDict] = {}
+    styleDict = theme[styleDict]
+  if isinstance(attrsDict, str) :
+    if attrsDict not in theme : theme[attrsDict] = {}
+    attrsDict = theme[attrsDict]
   allAttrs = [
     computeId(kwargs),
     computeAction(kwargs),
-    computePost(kwargs),
+    computeTarget(kwargs),
     computeClass(classDict, kwargs),
     computeStyle(styleDict, kwargs),
     computeAttrs(attrsDict, kwargs)

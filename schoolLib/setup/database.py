@@ -7,6 +7,7 @@ A simple tool to access the database
 from contextlib import contextmanager
 import os
 import sqlite3
+import traceback
 import yaml
 
 from schoolLib.setup.exceptions    import SLException
@@ -265,6 +266,7 @@ def getDatabase(path=None, asCursor=False) :
   except Exception as err :
     print(f"Could not connect to the database: [{path}]")
     print(repr(err))
+    print(traceback.format_exc())
     raise SLException(
       f"Could not open database [{path}]",
       'Trying to open the database',

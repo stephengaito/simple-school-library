@@ -4,28 +4,21 @@ from schoolLib.htmxComponents.utils import *
 
 def button(**kwargs) :
   text = getFromKWArgs('text', 'unknown', kwargs)
-  htmxAttrs = computeHtmxAttrs(
-    theme['buttonClasses'], theme['buttonStyles'], theme['buttonAttrs'],
-    kwargs
+  bAttrs = computeHtmxAttrs(
+    'buttonClasses', 'buttonStyles', 'buttonAttrs', kwargs
   )
 
-  return f"<button {htmxAttrs}>{text}</button>"
+  return f"<button {bAttrs}>{text}</button>"
 
-def htmxDiv(children, **kwargs) :
-  htmxAttrs = computeHtmxAttrs(
-    theme['divClasses'], theme['divStyles'], theme['divAttrs'], kwargs
-  )
+def div(children, **kwargs) :
+  dAttrs = computeHtmxAttrs('divClasses', 'divStyles', 'divAttrs', kwargs)
 
   if not isinstance(children, list) : children = [ children ]
-  someHtml = []
+  divHtml = [ f'<div {dAttrs}>' ]
   for aChild in children :
-    someHtml.append(computeComponent(aChild))
-  someHtml = '\n'.join(someHtml)
-  return f"""
-  <div {htmxAttrs}>
-  {someHtml}
-  </div>
-  """
+    divHtml.append(computeComponent(aChild))
+  divHtml.append('</div>')
+  return '\n'.join(divHtml)
 
 # we defined a set of level divs which each act as replacement points.
 
@@ -53,24 +46,52 @@ def level4div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
   return htmxDiv(children, **kwargs)
 
-def htmxMenu(
+def menu(
   menuList,
   selected="",
-  hxAttrs={'hx-target': '#level0div' },
+  target='#level0div',
+  swap='outerHTML',
   **kwargs
 ):
-  htmxAttrs = computeHtmxAttrs(
-    theme['menuClasses'], theme['menuStyles'], theme['menuAttrs'], kwargs
+  kwargs['target'] = taget
+  kwargs['swap']   = swap
+  mAttrs = computeHtmxAttrs(
+    'menuClasses', 'menuStyles', 'menuAttrs', kwargs
   )
 
-  if 'hx-swap' not in hxAttrs : hxAttrs['hx-swap'] = 'outerHTML'
-
   menuList = selectComponentInList(selected, menuList)
-  menuListHtml = [ f'<div {htmxAttrs}>' ]
+  menuListHtml = [ f'<div {mAttrs}>' ]
   for anItem in menuList :
     if isinstance(anItem, dict) :
-      if 'attrs' not in anItem : anItem['attrs'] = {}
-      anItem['attrs'].update(hxAttrs)
+      if 'target' not in anItem : anItem['target'] = target
+      if 'swap'   not in anItem : anItem['swap']   = target
     menuListHtml.append(computeComponent(anItem))
   menuListHtml.append('</div>')
   return '\n'.join(menuListHtml)
+
+def text(someText, type=None, **kwargs) :
+  tAttrs = computeHtmxAttrs(
+    'textClasses', 'textStyles', 'textAttrs', kwargs
+  )
+  textHtml = [ someText ]
+  if type :
+    if type.startswith('p') :
+      textHtml.insert(0, '<p {tAttrs}>')
+      textHtml.append('<\p>')
+    elif type.startswith('s') :
+      textHtml.insert(0, '<span {tAttrs}>')
+      textHtml.append('<\span>')
+    else :
+      textHtml.insert(0, '<div {tAttrs}>')
+      textHtml.append('<\div>')
+
+  return '\n'.join(textHtml)
+
+def link(url, text, method='get', **kwargs) :
+  lAttrs = ""
+  if 'target' not in kwargs : lAttrs = f'href="{url}" '
+  else                      : kwargs[method] = url
+  lAttrs += computeHtmxAttrs(
+    'linkClasses', 'linkStyles', 'linkAttrs', kwargs
+  )
+  return f'<a {lAttrs}>{text}</a>'

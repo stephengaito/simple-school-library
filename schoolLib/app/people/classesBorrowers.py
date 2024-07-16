@@ -12,67 +12,84 @@ Provide a listing of Borrowers in each class.
 
 from schoolLib.setup import *
 
-@get('/classes/list/{classId:int}')
-def getListOfPupilsInAClass(request, classId=None) :
-  """
-  /classes/list/{classId:int}
+##########################################################################
+# content
 
-  GET the list of Pupils in an existing class
+def listPupilsInAClassTable(classId) :
+  tableRows = []
+  tableRows.append(tableRow([
+    tableHeader(text('First name')),
+    tableHeader(text('Family name')),
+    tableHeader(text('Cohort')),
+    tableHeader(text('Class')),
+    tableHeader(text('Actions'))
+  ]))
+  with getDatabase() as db :
+    selectSql = SelectSql(
+    ).fields(
+      "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
+    ).tables(
+      "borrowers", "classes"
+    ).whereValue("classId", classId
+    ).whereField("classId", "classes.id")
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    for aRow in results :
+      tableRows.append(tableRow([
+        tableEntry(text(aRow['firstName'])),
+        tableEntry(text(aRow['familyName'])),
+        tableEntry(text(aRow['cohort'])),
+        tableEntry(text(aRow['classes_name'])),
+        tableEntry(link(f'/borrowers/edit/{ aRow['borrowers_id']}', 'Edit'))
+      ]))
+  return table(tableRows, theId='level1div')
 
-  """
+def updatePupilsInClassForm(classId, postUrl) :
+  tableRows = []
+  tableRows.append(tableRow([
+    tableHeader(text('First name')),
+    tableHeader(text('Family name')),
+    tableHeader(text('Cohort')),
+    tableHeader(text('Old class')),
+    tableHeader(text('New class'))
+  ]))
+  with getDatabase() as db :
+    theClasses = getClasses(db)
+    sortedClasses = getSortedClasses(theClasses)
+    selectSql = SelectSql(
+    ).fields(
+      "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
+    ).tables(
+      "borrowers", "classes"
+    ).whereValue("classId", classId
+    ).whereField("classId", "classes.id")
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    for aRow in results :
+      tableRows.append(tableRow([
+        tableEntry(text(aRow['firstName'])),
+        tableEntry(text(aRow['familyName'])),
+        tableEntry(text(aRow['cohort'])),
+        tableEntry(text(aRow['classes_name'])),
+        tableEntry(classesSelector(
+          sortedClasses,
+          name=f'rowClass-{aRow['borrowers_id']}'
+        ))
+      ]))
+  return formTable(tableRows, 'Save changes', post=postUrl)
 
-  if classId :
-    with getDatabase() as db :
-      selectSql = SelectSql(
-      ).fields(
-        "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
-      ).tables(
-        "borrowers", "classes"
-      ).whereValue("classId", classId
-      ).whereField("classId", "classes.id")
-      results = selectSql.parseResults(db.execute(selectSql.sql()))
-      return TemplateResponse(request, 'classes/listPupilsInClass.html', {
-        'results' : results,
-      })
-  return GotoResponse('/classes/list')
+##########################################################################
+# routes
 
 @get('/classes/update/{classId:int}')
 def getUpdatePupilsInAClassForm(request, classId=None) :
-  """
-  /classes/update/{classId:int}
-
-  GET the HTML Form allowing Pupils to be (re)assigned to different
-  classes
-
-  """
-
   if classId :
-    with getDatabase() as db :
-      classes = getOrderedClassList(db, selectedClass=classId)
-      selectSql = SelectSql(
-      ).fields(
-        "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
-      ).tables(
-        "borrowers", "classes"
-      ).whereValue("classId", classId
-      ).whereField("classId", "classes.id")
-      results = selectSql.parseResults(db.execute(selectSql.sql()))
-      return TemplateResponse(request, 'classes/updatePupilsInClass.html', {
-        'classes' : classes,
-        'results' : results
-      })
-  return GotoResponse('/classes/list')
+    return HTMXResponse(
+      request,
+      updatePupilsInClassForm(classId, 'classes/update')
+    )
+  return HTMXResponse(request, listClasses())
 
 @put('/classes/update')
 async def putUpdatePupilesInAClass(request) :
-  """
-  /classes/update
-
-  Update (PUT) the resulting (re)assigned classes for each Pupil as
-  edited by the `getUpdatePupilsInAClassForm`
-
-  """
-
   theForm = await request.form()
   with getDatabase() as db :
     for aKey in theForm.keys() :
@@ -84,4 +101,4 @@ async def putUpdatePupilesInAClass(request) :
         'classId' : rowClass[2]
       }))
     db.commit()
-  return GotoResponse('/classes/list')
+  return HTMXResponse(request, listClasses())
