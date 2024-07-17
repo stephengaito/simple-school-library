@@ -1,4 +1,6 @@
 
+from datetime import date
+
 from schoolLib.htmxComponents.utils import *
 from schoolLib.htmxComponents.tables import *
 
@@ -29,7 +31,6 @@ def formTable(inputs, submitMsg, **kwargs) :
     table(inputs, **tKWArgs),
     submitMsg, **kwargs
   )
-
 
 def addInputAttrs(kwargs) :
   inputAttrs = f' name="{kwargs['name']}"'
@@ -89,6 +90,56 @@ def colourInput(label=None, **kwargs) :
   ciAttrs += addInputAttrs(kwargs)
 
   return getInputHtml('color', ciAttrs, label=label)
+
+today = date.today()
+
+def dateInput(label=None, **kwargs) :
+  if 'name' not in kwargs : return "<!-- dateInput with NO name -->"
+
+  if 'value' not in kwargs or not kwargs['value'] :
+    kwargs['value'] = today
+
+  diAttrs = computeHtmxAttrs(
+    'dateInputClasses', 'dateInputStyles', 'dateInputAttrs', kwargs
+  )
+  diAttrs += addInputAttrs(kwargs)
+
+  return getInputHtml('date', diAttrs, label=label)
+
+def searchBox(label=None, **kwargs) :
+  if 'name' not in kwargs : return "<!-- searchBox with NO name -->"
+
+  sbAttrs = computeHtmxAttrs(
+    'searchBoxClasses', 'searchBoxStyles', 'searchBoxAttrs', kwargs
+  )
+  sbAttrs += addInputAttrs(kwargs)
+
+  return getInputHtml('search', sbAttrs, label=label)
+
+def textAreaInput(label=None, **kwargs) :
+  if 'name' not in kwargs : return "<!-- textAreaInput with NO name -->"
+
+  taAttrs = computeHtmxAttrs(
+    'textAreaInputClasses', 'textAreaInputStyles', 'textAreaAttrs',
+    kwargs
+  )
+
+  # for textareas we don't use a value attribute....
+  taValue = ""
+  if 'value' in kwargs and kwargs['value'] :
+    taValue = kwargs['value']
+    del kwargs['value']
+  taAttrs += addInputAttrs(kwargs)
+
+  inputHtml = []
+  if label :
+    inputHtml.append('<tr>')
+    inputHtml.append(f"<td><label>{label}</label></td>")
+    inputHtml.append(f'<td><textarea {taAttrs}>{taValue}</textarea></td>')
+    inputHtml.append('</tr>')
+  else :
+    inputHtml.append(f'<textarea {taAttrs}>{taValue}</textarea>')
+  return '\n'.join(inputHtml)
 
 def classesSelector(sortedClasses, label=None, inRow=False, **kwargs) :
   if 'name' not in kwargs : return "<!-- classesSelector with NO name -->"

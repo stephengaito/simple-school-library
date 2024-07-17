@@ -22,6 +22,7 @@ def stdHeaders() :
   <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
 
   <script src="/static/js/htmx.min.js"></script>
+  <script src="/static/js/idiomorph-ext.min.js"></script>
   """
 
 def stdBody() :

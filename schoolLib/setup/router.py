@@ -6,6 +6,7 @@ from starlette.routing import Route #, Mount, WebSocketRoute
 
 from schoolLib.setup.exceptions import SLException
 from schoolLib.htmxComponents import *
+from schoolLib.app.menus import *
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -32,8 +33,8 @@ def callWithParameters(request, func) :
       text(slErr.slMessage, type='p'),
       text(slErr.slErrType, type='p'),
     ]
-    if slErr.HelpMsg : errorText.append(text(slErr.slHelpMsg, type='p'))
-    if slErr.OrigErr : errorText.append(text(slErr.slOrigErr, type='p'))
+    if slErr.slHelpMsg : errorText.append(text(slErr.slHelpMsg, type='p'))
+    if slErr.slOrigErr : errorText.append(text(slErr.slOrigErr, type='p'))
     return HTMXResponse(
       request,
       level0div([

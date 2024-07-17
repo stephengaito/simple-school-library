@@ -5,6 +5,7 @@ def table(rows, **kwargs) :
   tAttrs = computeHtmxAttrs(
     'tableClasses', 'tableStyles', 'tableAttrs', kwargs
   )
+  if isinstance(rows, str) : rows = [ rows ]
   rowHtml = []
   for aRow in rows :
     rowHtml.append(computeComponent(aRow))
@@ -19,6 +20,8 @@ def tableRow(columns, **kwargs) :
   trAttrs = computeHtmxAttrs(
     'tableRowClasses', 'tableRowStyles', 'tableRowAttrs', kwargs
   )
+  if isinstance(columns, str) : columns = [ columns ]
+
   columnHtml = []
   for aColumn in columns :
     columnHtml.append(computeComponent(aColumn))

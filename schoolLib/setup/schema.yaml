@@ -9,6 +9,8 @@ borrowers.familyName: text
 borrowers.cohort: integer
 borrowers.classId: integer
 
+borrowersFTS.borrowersFTS: text
+
 # classes
 classes.id: integer
 classes.name: text

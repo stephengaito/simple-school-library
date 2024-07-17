@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/************************************************************
+ We apply some of our own css to allow markdownDiv to work.
+
+ See https://tailwindcss.com/docs/functions-and-directives
+   for details on the @layer and @apply functions used below
+
+*************************************************************/
+
+@layer base {
+	ul {
+		@apply ml-4 list-inside list-disc ;
+	}
+	ol {
+		@apply ml-4 list-inside list-decimal;
+	}
+}

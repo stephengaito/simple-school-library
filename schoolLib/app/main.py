@@ -7,6 +7,7 @@ from starlette.staticfiles import StaticFiles
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
+from schoolLib.app.menus import *
 
 loadedConfig('config.yaml', verbose=True)
 loadedTheme()
@@ -25,6 +26,23 @@ def homepage(request):
       stdHeaders(),
       stdBody()
     )
+  )
+
+@get('/routes/{aPath:path}')
+def listRoutes(request, aPath=None) :
+  if aPath : aPath = '/'+aPath
+  routesHtml = []
+  for aRoute in routes :
+    if aPath and not aRoute.path.startswith(aPath) : continue
+    routesHtml.append(
+      text([
+        str(aRoute.path),
+        str(aRoute.methods),
+        str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
+      ], type='p'))
+  return HTMXResponse(
+    request,
+    sorted(routesHtml)
   )
 
 @get('/help/{aPath:path}')
@@ -85,8 +103,3 @@ app = Starlette(
 )
 app.mount('/static', StaticFiles(packages=['schoolLib']), name='static')
 
-#for aRoute in routes :
-#  print(aRoute.path)
-#  print(aRoute.methods)
-#  print(aRoute.endpoint)
-#  print("")

@@ -24,6 +24,7 @@ divClasses:
 
 menuClasses:
   default:
+   - menu
    - m-1
 
 formClasses:
@@ -50,3 +51,27 @@ numberInputClasses:
 colourInputClasses:
   default:
     - max-h-4
+
+
+tableEntryClasses:
+  default:
+    - border
+
+# see: https://cruip.com/tailwind-css-nth-child-selector-cheat-sheet/
+
+tableRowClasses:
+  default:
+    - '[&:nth-child(5n+2)]:bg-gray-100'
+
+searchBoxClasses:
+  default:
+    - border-2
+    - border-solid
+    - rounded-lg
+searchBoxAttrs:
+  default:
+    - autocomplete="off"
+    - autofocus
+    - hx-trigger="input changed delay:500ms"
+    - hx-target="#level2div"
+    - hx-swap="morph:{ignoreActiveValue:true}"

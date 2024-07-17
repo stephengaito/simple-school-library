@@ -28,23 +28,23 @@ def div(children, **kwargs) :
 
 def level0div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level0div'
-  return htmxDiv(children, **kwargs)
+  return div(children, **kwargs)
 
 def level1div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level1div'
-  return htmxDiv(children, **kwargs)
+  return div(children, **kwargs)
 
 def level2div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level2div'
-  return htmxDiv(children, **kwargs)
+  return div(children, **kwargs)
 
 def level3div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level3div'
-  return htmxDiv(children, **kwargs)
+  return div(children, **kwargs)
 
 def level4div(children, **kwargs) :
   if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
-  return htmxDiv(children, **kwargs)
+  return div(children, **kwargs)
 
 def menu(
   menuList,
@@ -53,8 +53,8 @@ def menu(
   swap='outerHTML',
   **kwargs
 ):
-  kwargs['target'] = taget
-  kwargs['swap']   = swap
+  #kwargs['target'] = target
+  #kwargs['swap']   = swap
   mAttrs = computeHtmxAttrs(
     'menuClasses', 'menuStyles', 'menuAttrs', kwargs
   )
@@ -64,7 +64,7 @@ def menu(
   for anItem in menuList :
     if isinstance(anItem, dict) :
       if 'target' not in anItem : anItem['target'] = target
-      if 'swap'   not in anItem : anItem['swap']   = target
+      if 'swap'   not in anItem : anItem['swap']   = swap
     menuListHtml.append(computeComponent(anItem))
   menuListHtml.append('</div>')
   return '\n'.join(menuListHtml)
@@ -73,17 +73,24 @@ def text(someText, type=None, **kwargs) :
   tAttrs = computeHtmxAttrs(
     'textClasses', 'textStyles', 'textAttrs', kwargs
   )
+
+  if isinstance(someText, list) :
+    someTextHtml = []
+    for aPart in someText :
+      someTextHtml.append(computeComponent(aPart))
+    someText = ' '.join(someTextHtml)
+
   textHtml = [ someText ]
   if type :
     if type.startswith('p') :
-      textHtml.insert(0, '<p {tAttrs}>')
-      textHtml.append('<\p>')
+      textHtml.insert(0, f'<p {tAttrs}>')
+      textHtml.append('</p>')
     elif type.startswith('s') :
-      textHtml.insert(0, '<span {tAttrs}>')
-      textHtml.append('<\span>')
+      textHtml.insert(0, f'<span {tAttrs}>')
+      textHtml.append('</span>')
     else :
-      textHtml.insert(0, '<div {tAttrs}>')
-      textHtml.append('<\div>')
+      textHtml.insert(0, f'<div {tAttrs}>')
+      textHtml.append('</div>')
 
   return '\n'.join(textHtml)
 

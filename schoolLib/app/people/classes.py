@@ -60,7 +60,7 @@ def listClasses(**kwargs) :
   tableRows.append(tableRow([
     tableHeader(text('Name')),
     tableHeader(text('Description')),
-    tableHeader(text('Actions'), colspan=3)
+    tableHeader(text('Actions'), colspan=4)
   ]))
 
   with getDatabase() as db :
@@ -70,18 +70,24 @@ def listClasses(**kwargs) :
       tableRows.append(tableRow([
         tableEntry(text(aClass['name'])),
         tableEntry(text(aClass['desc'])),
-        tableEntry(link(
-          f'/classes/list/{aClass['id']}', 'List', target='level1div'
+        tableEntry(button(
+          get=f'/classes/list/{aClass['id']}', text='List', target='#level1div'
         )),
-        tableEntry(link(
-          f'/classes/update/{aClass['id']}', 'Update', target='level1div'
+        tableEntry(button(
+          get=f'/classes/update/{aClass['id']}', text='Update', target='#level1div'
         )),
-        tableEntry(link(
-          f'/classes/edit/{aClass['id']}', 'Edit', target='level1div'
+        tableEntry(button(
+          get=f'/classes/edit/{aClass['id']}', text='Edit', target='#level1div'
+        )),
+        tableEntry(button(
+          get=f'/classes/delete/{aClass['id']}', text='Delete', target='#level1div'
         )),
       ]))
 
-  return table(tableRows, theId='level2div')
+  return level1div([
+    menu(secondLevelPeopleMenu, selected='listClasses', target='#level1div'),
+    table(tableRows, theId='level2div')
+  ])
 
 def addAClass() :
   maxClassOrder = 0
@@ -123,6 +129,13 @@ def addAClassMenu(request) :
     addAClass()
   )
 
+@get('/menu/people/listClasses')
+def listClassesMenu(request) :
+  return HTMXResponse(
+    request,
+    listClasses()
+  )
+
 @post('/classes/new')
 async def postSaveNewClass(request) :
   theForm = await request.form()
@@ -147,7 +160,7 @@ def getEditAClassForm(request, classId=None) :
           classDesc=theClasses[classId]['desc'],
           classOrder=theClasses[classId]['classOrder'],
           classColour=theClasses[classId]['colour'],
-          submitMsg='Save changes',
+          submitMessage='Save changes',
           postUrl=f'/classes/edit/{classId}'
         ))
   return HTMXResponse(request, listClasses())

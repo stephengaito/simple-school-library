@@ -98,6 +98,13 @@ def computeAction(kwargs) :
   elif 'post' in kwargs : actionStr = f'hx-post="{kwargs['post']}"'
   return actionStr
 
+def computeTrigger(kwargs) :
+  trigger = getFromKWArgs('trigger', None, kwargs)
+  triggerStr = ""
+  if trigger :
+    triggerStr = f'hx-trigger="{trigger}"'
+  return triggerStr
+
 def computeTarget(kwargs) :
   target = getFromKWArgs('target', None, kwargs)
   swap   = getFromKWArgs('swap', None, kwargs)
@@ -131,6 +138,7 @@ def computeHtmxAttrs(classDict, styleDict, attrsDict, kwargs) :
     computeId(kwargs),
     computeAction(kwargs),
     computeTarget(kwargs),
+    computeTrigger(kwargs),
     computeClass(classDict, kwargs),
     computeStyle(styleDict, kwargs),
     computeAttrs(attrsDict, kwargs)

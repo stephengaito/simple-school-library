@@ -37,9 +37,13 @@ def listPupilsInAClassTable(classId) :
       tableRows.append(tableRow([
         tableEntry(text(aRow['firstName'])),
         tableEntry(text(aRow['familyName'])),
-        tableEntry(text(aRow['cohort'])),
+        tableEntry(text(str(aRow['cohort']))),
         tableEntry(text(aRow['classes_name'])),
-        tableEntry(link(f'/borrowers/edit/{ aRow['borrowers_id']}', 'Edit'))
+        tableEntry(button(
+          text='Edit',
+          get=f'/borrowers/edit/{aRow['borrowers_id']}',
+          target='#level1div'
+        ))
       ]))
   return table(tableRows, theId='level1div')
 
@@ -67,7 +71,7 @@ def updatePupilsInClassForm(classId, postUrl) :
       tableRows.append(tableRow([
         tableEntry(text(aRow['firstName'])),
         tableEntry(text(aRow['familyName'])),
-        tableEntry(text(aRow['cohort'])),
+        tableEntry(text(str(aRow['cohort']))),
         tableEntry(text(aRow['classes_name'])),
         tableEntry(classesSelector(
           sortedClasses,
@@ -78,6 +82,15 @@ def updatePupilsInClassForm(classId, postUrl) :
 
 ##########################################################################
 # routes
+
+@get('/classes/list/{classId:int}')
+def getListPupilsInAClass(request, classId=None) :
+  if classId :
+    return HTMXResponse(
+      request,
+      listPupilsInAClassTable(classId)
+    )
+  return HTMXResponse(request, listClasses())
 
 @get('/classes/update/{classId:int}')
 def getUpdatePupilsInAClassForm(request, classId=None) :

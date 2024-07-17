@@ -51,8 +51,9 @@ loadSchema()
 class SqlBuilder :
 
   def __init__(self) :
-    self.whereList   = []
-    self.orderByList = []
+    self.whereList    = []
+    self.orderByList  = []
+    self.limitToValue = None
 
   def whereField(self, fieldA, fieldB, operator='=') :
     self.whereList.append(f"{fieldA} {operator} {fieldB}")
@@ -83,6 +84,16 @@ class SqlBuilder :
       subCmd += ", ".join(self.orderByList)
     return subCmd
 
+  def limitTo(self, anExp) :
+    self.limitToValue = anExp
+    return self
+
+  def _buildLimitTo(self) :
+    subCmd = ""
+    if self.limitTo :
+      subCmd = f" LIMIT {self.limitToValue}"
+    return subCmd
+
 class CreateSql(SqlBuilder) :
 
   def sql(self, table) :
@@ -109,11 +120,11 @@ class IndexSql(SqlBuilder) :
   def sql(self, indexName, tableName, *fields) :
     return ""
 
-class FullTextSearchIndexSql(SqlBuilder) :
-
-  def sql(self, indexName, tableName, *fields) :
-    # see: https://sqlite.org/fts5.html
-    return ""
+#class FullTextSearchIndexSql(SqlBuilder) :
+#
+#  def sql(self, indexName, tableName, *fields) :
+#    # see: https://sqlite.org/fts5.html
+#    return ""
 
 class SelectSql(SqlBuilder) :
 
@@ -137,6 +148,7 @@ class SelectSql(SqlBuilder) :
     cmd += ", ".join(self.tablesList)
     cmd += self._buildWhere()
     cmd += self._buildOrderBy()
+    cmd += self._buildLimitTo()
     return cmd
 
   def parseResults(self, results, fetchAll=True) :
