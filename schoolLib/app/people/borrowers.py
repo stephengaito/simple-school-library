@@ -207,7 +207,7 @@ def getShowBorrowerInfo(request, borrowerId=None) :
         borrower['className'] = theClasses[borrower['classId']]['name']
         ibSelectSql = SelectSql(
         ).fields(
-          'itemsInfo.title', 'itemsInfo.dewey',
+          'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
           'itemsPhysical.barCode',
           'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue'
         ).tables(
@@ -237,8 +237,16 @@ def getShowBorrowerInfo(request, borrowerId=None) :
           for anItem in itemsBorrowed :
             itemsBorrowedRows.append(
               tableRow([
-                tableEntry(anItem['itemsInfo_title']),
-                tableEntry(anItem['itemsPhysical_barCode']),
+                tableEntry(link(
+                  f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+                  anItem['itemsInfo_title'],
+                  target='#level1div'
+                )),
+                tableEntry(link(
+                  f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+                  anItem['itemsPhysical_barCode'],
+                  target='#level1div'
+                )),
                 tableEntry(anItem['itemsInfo_dewey']),
                 tableEntry(anItem['itemsBorrowed_dateBorrowed']),
                 tableEntry(anItem['itemsBorrowed_dateDue']),

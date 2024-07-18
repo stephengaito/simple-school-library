@@ -82,6 +82,134 @@ def editItemsInfoForm(
 ##########################################################################
 # routes
 
+@get('/itemsInfo/show/{itemsInfoId:int}')
+def getShowItemsInfo(request, itemsInfoId=None) :
+  if itemsInfoId :
+    with getDatabase() as db :
+      infoSelectSql = SelectSql(
+      ).fields(
+        'title', 'authors',
+        'publisher', 'series',
+        'isbn', 'dewey',
+        'type', 'keywords', 'summary'
+      ).tables(
+        'itemsInfo'
+      ).whereValue(
+        'id', itemsInfoId
+      )
+      print(infoSelectSql.sql())
+      itemInfo = infoSelectSql.parseResults(
+        db.execute(infoSelectSql.sql()),
+        fetchAll=False
+      )
+      if itemInfo :
+        itemInfo = itemInfo[0]
+        physicalSelectSql = SelectSql(
+        ).fields(
+          'itemsPhysical.barCode', 'itemsPhysical.dateAdded',
+          'itemsPhysical.dateLastSeen', 'itemsPhysical.status',
+          'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue',
+          'borrowers.firstName', 'borrowers.familyName',
+          'borrowers.classId', 'borrowers.id'
+        ).tables(
+          'itemsPhysical'
+        ).join(
+          'itemsBorrowed', 'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
+        ).join(
+          'borrowers', 'borrowers.id', 'itemsBorrowed.borrowersId',
+          joinType="LEFT"
+        ).whereValue(
+          'itemsPhysical.itemsInfoId', itemsInfoId
+        ).orderBy(
+          'barCode'
+        )
+        print(physicalSelectSql.sql())
+        physicalItems = physicalSelectSql.parseResults(
+          db.execute(physicalSelectSql.sql())
+        )
+        physicalItemsRow = []
+        physicalItemsRow.append(tableRow([
+          tableHeader("Barcode"),
+          tableHeader("Date added"),
+          tableHeader("Date last seen"),
+          tableHeader("Status"),
+          tableHeader("Date borrowed"),
+          tableHeader("Date due"),
+          tableHeader("Borrower"),
+          tableHeader("Class")
+        ]))
+        if physicalItems :
+          classes = getClasses(db)
+          for aBook in physicalItems :
+            borrowerName = ""
+            if aBook['borrowers_firstName'] and aBook['borrowers_familyName'] :
+              borrowerName = aBook['borrowers_firstName']+' '+aBook['borrowers_familyName']
+            borrowerClass = ""
+            if aBook['borrowers_classId'] :
+              borrowerClass = classes[aBook['borrowers_classId']]['name']
+            physicalItemsRow.append(tableRow([
+              tableEntry(aBook['itemsPhysical_barCode']),
+              tableEntry(aBook['itemsPhysical_dateAdded']),
+              tableEntry(aBook['itemsPhysical_dateLastSeen']),
+              tableEntry(aBook['itemsPhysical_status']),
+              tableEntry(aBook['itemsBorrowed_dateBorrowed']),
+              tableEntry(aBook['itemsBorrowed_dateDue']),
+              tableEntry(link(
+                f'/borrowers/show/{aBook['borrowers_id']}',
+                borrowerName,
+                target='#level1div'
+              )),
+              tableEntry(borrowerClass)
+            ]))
+        return HTMXResponse(
+          request,
+          level1div([
+            table([
+              tableRow([
+                tableEntry("Title"),
+                tableEntry(itemInfo['title'])
+              ]),
+              tableRow([
+                tableEntry("Authors"),
+                tableEntry(itemInfo['authors'])
+              ]),
+              tableRow([
+                tableEntry("Publisher"),
+                tableEntry(itemInfo['publisher'])
+              ]),
+              tableRow([
+                tableEntry("Series"),
+                tableEntry(itemInfo['series'])
+              ]),
+              tableRow([
+                tableEntry("ISBN"),
+                tableEntry(itemInfo['isbn'])
+              ]),
+              tableRow([
+                tableEntry("Dewey Decimal Code"),
+                tableEntry(itemInfo['dewey'])
+              ]),
+              tableRow([
+                tableEntry("Book type"),
+                tableEntry(itemInfo['type'])
+              ]),
+              tableRow([
+                tableEntry("Keywords"),
+                tableEntry(itemInfo['keywords'])
+              ]),
+              tableRow([
+                tableEntry("Summary"),
+                tableEntry(itemInfo['summary'])
+              ])
+            ]),
+            table(physicalItemsRow)
+          ])
+        )
+  return HTMXResponse(
+    request,
+    markdownDiv("some thing about itemsInfo")
+  )
+
 @get('/itemsInfo/new')
 def getNewItemsInfoForm(request) :
   return HTMXResponse(

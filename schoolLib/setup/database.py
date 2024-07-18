@@ -144,6 +144,7 @@ class SelectSql(SqlBuilder) :
     super().__init__()
     self.fieldsList  = []
     self.tablesList  = []
+    self.joinsList   = []
 
   def fields(self, *fields) :
     self.fieldsList.extend(fields)
@@ -153,11 +154,18 @@ class SelectSql(SqlBuilder) :
     self.tablesList.extend(tables)
     return self
 
+  def join(self, aTable, fieldA, fieldB, joinType="", operator="=") :
+    self.joinsList.append(
+      f" {joinType} JOIN {aTable} ON {fieldA} {operator} {fieldB}"
+    )
+    return self
+
   def sql(self) :
     cmd = "SELECT "
     cmd += ", ".join(self.fieldsList)
     cmd += " FROM "
     cmd += ", ".join(self.tablesList)
+    cmd += " ".join(self.joinsList)
     cmd += self._buildWhere()
     cmd += self._buildGroupBy()
     cmd += self._buildOrderBy()

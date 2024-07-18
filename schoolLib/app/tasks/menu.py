@@ -55,7 +55,7 @@ def booksCheckedOut() :
             target='#level1div'
           )),
           tableEntry(link(
-            f'/books/show/{aBook['itemsInfo_id']}',
+            f'/itemsInfo/show/{aBook['itemsInfo_id']}',
             aBook['itemsInfo_title'],
             target='#level1div'
           )),
