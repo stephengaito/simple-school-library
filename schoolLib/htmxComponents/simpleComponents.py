@@ -88,11 +88,17 @@ def text(someText, type=None, **kwargs) :
     elif type.startswith('s') :
       textHtml.insert(0, f'<span {tAttrs}>')
       textHtml.append('</span>')
+    elif type.startswith('l') :
+      textHtml.insert(0, f'<label {tAttrs}>')
+      textHtml.append('</label>')
     else :
       textHtml.insert(0, f'<div {tAttrs}>')
       textHtml.append('</div>')
 
   return '\n'.join(textHtml)
+
+def label(someText, **kwargs) :
+  return text(someText, type='l', **kwargs)
 
 def link(url, text, method='get', **kwargs) :
   lAttrs = ""

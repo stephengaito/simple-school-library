@@ -69,9 +69,6 @@ def findABorrower(probe, nameRows) :
       post='/search/borrowers',
       name='search',
       value=probe,
-      #trigger='input changed delay:500ms',
-      #target='#level2div',
-      #swap='morph:outerHTML',
       placeholder="Type a person's name"
     ),
     table(nameRows, theId='searchResults')
@@ -122,8 +119,8 @@ async def postSearchForBorrower(request) :
     results = selectSql.parseResults(db.execute(selectSql.sql()))
     for aRow in results :
       nameRows.append(tableRow(tableEntry(link(
-        f'/borrowers/edit/{aRow['borrowerId']}',
-        f'{aRow['familyName']}, {aRow['firstName']}',
+        f'/borrowers/show/{aRow['borrowerId']}',
+        f'{aRow['firstName']} {aRow['familyName']}',
         target='#level2div'
       ))))
   return HTMXResponse(
@@ -189,4 +186,93 @@ async def putUpdatedBorrower(request, borrowerId=None) :
       submitMsg='Add a new borrower',
       postUrl='/borrowers/new'
     )
+  )
+
+@get('/borrowers/show/{borrowerId:int}')
+def getShowBorrowerInfo(request, borrowerId=None) :
+  if borrowerId :
+    with getDatabase() as db :
+      bSelectSql = SelectSql(
+      ).fields(
+        'id', 'firstName', 'familyName', 'cohort', 'classId'
+      ).tables('borrowers'
+      ).whereValue('id', borrowerId)
+      borrower = bSelectSql.parseResults(
+        db.execute(bSelectSql.sql()),
+        fetchAll=False
+      )
+      if borrower :
+        borrower = borrower[0]
+        theClasses = getClasses(db)
+        borrower['className'] = theClasses[borrower['classId']]['name']
+        ibSelectSql = SelectSql(
+        ).fields(
+          'itemsInfo.title', 'itemsInfo.dewey',
+          'itemsPhysical.barCode',
+          'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue'
+        ).tables(
+          'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
+        ).whereValue(
+          'itemsBorrowed.borrowersId', borrowerId
+        ).whereField(
+          'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
+        ).whereField(
+          'itemsInfo.id', 'itemsPhysical.itemsInfoId'
+        )
+        itemsBorrowed = ibSelectSql.parseResults(
+          db.execute(ibSelectSql.sql())
+        )
+        itemsBorrowedRows = []
+        itemsBorrowedRows.append(
+          tableRow([
+            tableHeader('Title'),
+            tableHeader('Barcode'),
+            tableHeader('Dewey Decimal Code'),
+            tableHeader('Date Borrowed'),
+            tableHeader('Date Due'),
+            tableHeader('Date Returned'),
+          ])
+        )
+        if itemsBorrowed :
+          for anItem in itemsBorrowed :
+            itemsBorrowedRows.append(
+              tableRow([
+                tableEntry(anItem['itemsInfo_title']),
+                tableEntry(anItem['itemsPhysical_barCode']),
+                tableEntry(anItem['itemsInfo_dewey']),
+                tableEntry(anItem['itemsBorrowed_dateBorrowed']),
+                tableEntry(anItem['itemsBorrowed_dateDue']),
+                tableEntry(""),
+              ])
+            )
+        return HTMXResponse(
+          request,
+          level1div([
+            table([
+              tableRow([
+                tableEntry(text('First Name')),
+                tableEntry(text(borrower['firstName']))
+              ]),
+              tableRow([
+                tableEntry(text('Family Name')),
+                tableEntry(text(borrower['familyName']))
+              ]),
+              tableRow([
+                tableEntry(text('Cohort')),
+                tableEntry(text(str(borrower['cohort'])))
+              ]),
+              tableRow([
+                tableEntry(text('Class')),
+                tableEntry(text(borrower['className']))
+              ]),
+            ]),
+            table(itemsBorrowedRows)
+          ])
+        )
+  return HTMXResponse(
+    request,
+    level1div([
+      menu(secondLevelPeopleMenu, selected='findBorrower'),
+      findABorrower(None, [])
+    ])
   )

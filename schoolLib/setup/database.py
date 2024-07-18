@@ -54,6 +54,7 @@ class SqlBuilder :
     self.whereList    = []
     self.orderByList  = []
     self.limitToValue = None
+    self.groupByList  = []
 
   def whereField(self, fieldA, fieldB, operator='=') :
     self.whereList.append(f"{fieldA} {operator} {fieldB}")
@@ -90,8 +91,19 @@ class SqlBuilder :
 
   def _buildLimitTo(self) :
     subCmd = ""
-    if self.limitTo :
+    if self.limitToValue :
       subCmd = f" LIMIT {self.limitToValue}"
+    return subCmd
+
+  def groupBy(self, *keys) :
+    self.groupByList.extend(keys)
+    return self
+
+  def _buildGroupBy(self) :
+    subCmd = ""
+    if self.groupByList :
+      subCmd += " GROUP BY "
+      subCmd += ', '.join(self.groupByList)
     return subCmd
 
 class CreateSql(SqlBuilder) :
@@ -147,6 +159,7 @@ class SelectSql(SqlBuilder) :
     cmd += " FROM "
     cmd += ", ".join(self.tablesList)
     cmd += self._buildWhere()
+    cmd += self._buildGroupBy()
     cmd += self._buildOrderBy()
     cmd += self._buildLimitTo()
     return cmd
@@ -228,7 +241,7 @@ def getClasses(db, selectedClass=None) :
   ).tables("classes"
   ).orderBy('classOrder'
   )
-
+  print(selectSql.sql())
   results = selectSql.parseResults(db.execute(selectSql.sql()))
   theClasses = {}
   for aClass in results :
