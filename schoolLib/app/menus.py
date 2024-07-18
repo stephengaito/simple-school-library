@@ -44,9 +44,9 @@ secondLevelBooksMenu = [
     'target'    : '#level1div'
   },
   { 'component' : 'button',
-    'c-name'    : 'find',
+    'c-name'    : 'findBook',
     'text'      : 'Find a book',
-    'get'       : '/menu/books/find',
+    'get'       : '/search/items',
     'target'    : '#level1div'
   },
 ]
@@ -73,7 +73,7 @@ secondLevelPeopleMenu = [
   { 'component' : 'button',
     'c-name'    : 'findBorrower',
     'text'      : 'Find a person',
-    'get'       : '/menu/people/findBorrower',
+    'get'       : '/search/borrowers',
     'target'    : '#level1div'
   },
 ]

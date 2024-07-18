@@ -5,6 +5,8 @@ This "module" manages the collection of borrowers.
 import yaml
 
 from schoolLib.setup import *
+from schoolLib.htmxComponents import *
+from schoolLib.app.finders import *
 
 ##########################################################################
 # content
@@ -63,29 +65,8 @@ def editBorrowerForm(
     )
   ], submitMsg="Save changes")
 
-def findABorrower(probe, nameRows) :
-  return level2div([
-    searchBox(
-      post='/search/borrowers',
-      name='search',
-      value=probe,
-      placeholder="Type a person's name"
-    ),
-    table(nameRows, theId='searchResults')
-  ], attrs={'hx-ext':'morph'})
-
 ##########################################################################
 # routes
-
-@get('/menu/people/findBorrower')
-def getFindBorrowerForm(request) :
-  return HTMXResponse(
-    request,
-    level1div([
-      menu(secondLevelPeopleMenu, selected='findBorrower'),
-      findABorrower(None, [])
-    ])
-  )
 
 @get('/menu/people/addBorrower')
 def getNewBorrowerForm(request) :
@@ -98,34 +79,6 @@ def getNewBorrowerForm(request) :
         postUrl='/borrowers/new'
       )
     ])
-  )
-
-@post('/search/borrowers')
-async def postSearchForBorrower(request) :
-  theForm = await request.form()
-  nameRows =[]
-  selectSql = SelectSql(
-  ).fields(
-    'borrowerId', 'firstName', 'familyName'
-  ).tables('borrowersFTS'
-  ).limitTo(10
-  ).orderBy('rank')
-  if theForm['search'] :
-    selectSql.whereValue(
-      'borrowersFTS', theForm['search']+'*', operator='MATCH'
-    )
-  print(selectSql.sql())
-  with getDatabase() as db :
-    results = selectSql.parseResults(db.execute(selectSql.sql()))
-    for aRow in results :
-      nameRows.append(tableRow(tableEntry(link(
-        f'/borrowers/show/{aRow['borrowerId']}',
-        f'{aRow['firstName']} {aRow['familyName']}',
-        target='#level2div'
-      ))))
-  return HTMXResponse(
-    request,
-    findABorrower(theForm['search'], nameRows)
   )
 
 @post('/borrowers/new')

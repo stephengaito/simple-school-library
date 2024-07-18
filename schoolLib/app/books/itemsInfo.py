@@ -5,7 +5,7 @@ Work with itemsInfo
     - edit a new itemsInfo
 
 """
-
+import yaml
 from schoolLib.setup import *
 
 ##########################################################################
@@ -114,7 +114,8 @@ def getShowItemsInfo(request, itemsInfoId=None) :
         ).tables(
           'itemsPhysical'
         ).join(
-          'itemsBorrowed', 'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
+          'itemsBorrowed', 'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId',
+          joinType='LEFT'
         ).join(
           'borrowers', 'borrowers.id', 'itemsBorrowed.borrowersId',
           joinType="LEFT"
@@ -141,6 +142,7 @@ def getShowItemsInfo(request, itemsInfoId=None) :
         if physicalItems :
           classes = getClasses(db)
           for aBook in physicalItems :
+            print(yaml.dump(aBook))
             borrowerName = ""
             if aBook['borrowers_firstName'] and aBook['borrowers_familyName'] :
               borrowerName = aBook['borrowers_firstName']+' '+aBook['borrowers_familyName']

@@ -6,6 +6,7 @@ import os
 import yaml
 
 from starlette.responses import HTMLResponse
+from starlette.exceptions import HTTPException
 
 from schoolLib.setup.configuration import config
 
@@ -147,6 +148,7 @@ def computeHtmxAttrs(classDict, styleDict, attrsDict, kwargs) :
   return " ".join(theAttrs)
 
 def computeComponent(aComponent) :
+  if not aComponent : return ""
   if isinstance(aComponent, list) :
     componentHtml = []
     for aSubComponent in aComponent :

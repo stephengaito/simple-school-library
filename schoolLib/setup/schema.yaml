@@ -10,6 +10,7 @@ borrowers.cohort: integer
 borrowers.classId: integer
 
 borrowersFTS.borrowersFTS: text
+itemsFTS.itemsFTS: text
 
 # classes
 classes.id: integer
