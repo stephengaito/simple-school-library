@@ -1,49 +1,38 @@
 
-from schoolLib.htmxComponents.utils import *
+from schoolLib.htmxComponents.htmx import *
 
-def table(rows, **kwargs) :
-  tAttrs = computeHtmxAttrs(
-    'tableClasses', 'tableStyles', 'tableAttrs', kwargs
-  )
-  if isinstance(rows, str) : rows = [ rows ]
-  rowHtml = []
-  for aRow in rows :
-    rowHtml.append(computeComponent(aRow))
-  rowHtml = '\n'.join(rowHtml)
-  return f"""
-    <table {tAttrs}>
-    {rowHtml}
-    </table>
-  """
+class Table(HtmxChildrenBase) :
+  def __init__(self, rows, **kwargs) :
+    super().__init__(rows, **kwargs)
 
-def tableRow(columns, **kwargs) :
-  trAttrs = computeHtmxAttrs(
-    'tableRowClasses', 'tableRowStyles', 'tableRowAttrs', kwargs
-  )
-  if isinstance(columns, str) : columns = [ columns ]
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append(f"<table {self.computeHtmxAttrs()}>")
+    self.collectChildrenHtml(htmlFragments)
+    htmlFragments.append("</table>")
 
-  columnHtml = []
-  for aColumn in columns :
-    columnHtml.append(computeComponent(aColumn))
-  columnHtml = '\n'.join(columnHtml)
-  return f"""
-    <tr {trAttrs}>
-    {columnHtml}
-    </tr>
-  """
+class TableRow(HtmxChildrenBase) :
+  def __init__(self, columns, **kwargs) :
+    super().__init__(columns, **kwargs)
 
-def tableEntry(aComponent, tableCode='td', colspan=None, **kwargs) :
-  teAttrs = computeHtmxAttrs(
-    'tableEntryClasses', 'tableEntryStyles', 'tableEntryAttrs', kwargs
-  )
-  if colspan :
-    teAttrs += f' colspan="{colspan}"'
-  entryHtml = computeComponent(aComponent)
-  return f"""
-    <{tableCode} {teAttrs}>
-    {entryHtml}
-    </{tableCode}>
-  """
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append(f"<tr {self.computeHtmxAttrs()}>")
+    self.collectChildrenHtml(htmlFragments)
+    htmlFragments.append("</tr>")
 
-def tableHeader(aComponent, **kwargs) :
-  return tableEntry(aComponent, tableCode='th', **kwargs)
+class TableEntry(HtmxBase) :
+  def __init__(self, aComponent, tableCode='td', colspan=None, **kwargs) :
+    super().__init__(**kwargs)
+    self.component = aComponent
+    self.tableCode = tableCode
+    self.colspan   = colspan
+
+  def collectHtml(self, htmlFragments) :
+    teAttrs = selfcomputeHtmxAttrs()
+    if self.colspan : teAttrs += f' colspan="{self.colspan}"'
+    htmlFragments.append(f'<{self.tableCode} {teAttrs}>')
+    self.component.collectHtml(htmlFragments)
+    htmlFragments.append(f"</{self.tableCode}>")
+
+class TableHeader(TableEntry) :
+  def __init__(self, aComponent, tableCode='th', colspan=None, **kwargs) :
+    super().__init__(aComponent, tableCode=tableCode, colspan=colspan, **kwargs)

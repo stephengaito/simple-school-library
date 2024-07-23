@@ -6,12 +6,12 @@ from markdown import markdown
 from starlette.exceptions import HTTPException
 
 from schoolLib.setup.configuration import config
-from schoolLib.htmxComponents.htmx import *
+from schoolLib.htmxComponents.utils import *
 
 def loadMarkdownFromFile(aMarkdownPath) :
   if 'markdownDir' not in config :
     print("Markdown directory not configured")
-    raise HTTPException(404, detail="Markdown directory not configures")
+    raise HTTPException(404, detail="Markdown direcotry not configures")
 
   markdownDir = config['markdownDir']
 
@@ -25,16 +25,16 @@ def loadMarkdownFromFile(aMarkdownPath) :
     markdownStr = markdown(mdFile.read())
   return markdownStr
 
-class MarkdownDiv(HtmxBase) :
-  def __init__(self, someMarkdown, **kwargs) :
-    super().__init__(**kwargs)
-    self.someMarkdown = someMarkdown
+def markdownDiv(someMarkdown, **kwargs) :
+  mdAttrs = computeHtmxAttrs(
+    'markdownClasses', 'markdownStyles', 'markdownAttrs', kwargs
+  )
 
-  def collectHtml(self, htmlFragments) :
-    markdownHTML = markdown(someMarkdown)
-    # TODO: should this be escaped?
-    htmlFragments.append(f"""
-      <div {mdAttrs}>
-      {markdownHTML}
-      </div>
-    """)
+  markdownHTML = markdown(someMarkdown)
+  # TODO: should this be escaped?
+
+  return f"""
+  <div {mdAttrs}>
+  {markdownHTML}
+  </div>
+  """

@@ -20,13 +20,10 @@ import schoolLib.app.tasks.menu
 
 @get('/')
 def homepage(request):
-  return HTMXResponse(
-    request,
-    htmlPage(
-      stdHeaders(),
-      stdBody()
-    )
-  )
+  return HtmlPage(
+    StdHeaders(),
+    StdBody()
+  ).response()
 
 @get('/routes/{aPath:path}')
 def listRoutes(request, aPath=None) :

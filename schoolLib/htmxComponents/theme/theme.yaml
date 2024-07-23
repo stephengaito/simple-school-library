@@ -1,12 +1,12 @@
 
-buttonClasses:
+ButtonClasses:
   default:
     - p-1
     - m-1
     - border-2
     - border-solid
     - rounded-lg
-  selected:
+  default-selected:
     - p-1
     - m-1
     - border-2
@@ -18,16 +18,16 @@ buttonClasses:
     - outline-2
     - outline-blue-500
 
-divClasses:
+DivClasses:
   default:
    - m-1
 
-menuClasses:
+MenuClasses:
   default:
    - menu
    - m-1
 
-formClasses:
+FormClasses:
   default:
     - pl-8
     - pt-4
@@ -36,39 +36,39 @@ formClasses:
     - border-blue-500
     - rounded-lg
 
-textInputClasses:
+TextInputClasses:
   default:
     - border-2
     - border-solid
     - rounded-lg
 
-numberInputClasses:
+NumberInputClasses:
   default:
     - border-2
     - border-solid
     - rounded-lg
 
-colourInputClasses:
+ColourInputClasses:
   default:
     - max-h-4
 
 
-tableEntryClasses:
+TableEntryClasses:
   default:
     - border
 
 # see: https://cruip.com/tailwind-css-nth-child-selector-cheat-sheet/
 
-tableRowClasses:
+TableRowClasses:
   default:
     - '[&:nth-child(5n+2)]:bg-gray-100'
 
-searchBoxClasses:
+SearchBoxClasses:
   default:
     - border-2
     - border-solid
     - rounded-lg
-searchBoxAttrs:
+SearchBoxAttrs:
   default:
     - autocomplete="off"
     - autofocus

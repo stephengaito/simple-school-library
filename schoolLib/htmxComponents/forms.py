@@ -1,169 +1,223 @@
 
 from datetime import date
 
-from schoolLib.htmxComponents.utils import *
+from schoolLib.htmxComponents.htmx import *
 from schoolLib.htmxComponents.tables import *
 
-def form(aComponent, submitMsg, **kwargs) :
-  fAttrs   = computeHtmxAttrs(
-    'formClasses', 'formStyles', 'formAttrs', kwargs
-  )
+class Form(HtmxChildrenBase) :
+  def __init__(self, aComponent, submitMsg, **kwargs) :
+    super().__init__(aCompnent, **kwargs)
+    self.submitButton = Button(submitMsg)
 
-  bKWArgs = {}
-  if 'buttonKWArgs' in kwargs : bKWArgs = kwargs['buttonKWArgs']
-  bAttrs = computeHtmxAttrs(
-    'buttonClasses', 'buttonStyles', 'buttonAttrs', bKWArgs
-  )
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append(f'<form {self.computeHtmxAttrs()}>')
+    self.collectChildrenHtml(htmlFragments)
+    self.submitButton.collectHtml(htmlFragments)
+    htmlFragments.append(f'</form>')
 
-  formHtml = [ f'<form {fAttrs}>' ]
-  formHtml.append(computeComponent(aComponent))
-  formHtml.append(f"""
-  <button {bAttrs}>{submitMsg}</button>
-  </form>
-  """)
-  return '\n'.join(formHtml)
+class FormTable(Form) :
+  def __init__(self, someInputs, submitMsg, tableKWArgs={}, **kwargs) :
+    theTable = Table(someInputs, tableKWArgs)
+    super().__init__(theTable, submitMsg, **kwargs)
 
-def formTable(inputs, submitMsg, **kwargs) :
-  tKWArgs = {}
-  if 'tableKWArgs' in kwargs : tKWArgs = kwargs['tableKWArgs']
+class FormInputsBase(HtmxBase) :
+  def __init__(
+    self,
+    name,
+    inputType='text',
+    label=None,
+    value=None,
+    defaultValue=None,
+    placeholder=None,
+    **kwargs
+  ) :
+    super().__init__(**kwargs)
+    if inputType.startswith('t')   : inputType = 'text'
+    elif inputType.startswith('c') : inputType = 'color'
+    elif inputType.startswith('n') : inputType = 'number'
+    elif inputType.startswith('d') : inputType = 'date'
+    elif inputType.startswith('s') : inputType = 'search'
+    else : inputType  = 'text'
+    self.inputType    = inputType
+    self.name         = name
+    self.value        = value
+    self.defaultValue = defaultValue
+    self.placeholder  = placeholder
+    self.label        = label
 
-  return form(
-    table(inputs, **tKWArgs),
-    submitMsg, **kwargs
-  )
+  def computeHtmxAttrs(self) :
+    fiAttrs = super().computeHtmxAttrs()
+    fiAttrs = f' name="{kwargs['name']}"'
+    if self.value          : fiAttrs += f' value="{self.value}"'
+    elif self.placeholder  : fiAttrs += f' placeholder="{self.placeholder}"'
+    elif self.defaultValue : fiAttrs += f' value="{self.defaultValue}"'
 
-def addInputAttrs(kwargs) :
-  inputAttrs = f' name="{kwargs['name']}"'
-  if 'value' in kwargs and kwargs['value'] :
-    inputAttrs += f' value="{kwargs['value']}"'
-  elif 'placeholder' in kwargs and kwargs['placeholder'] :
-    inputAttrs += f' placeholder="{kwargs['placeholder']}"'
-  elif 'defaultValue' in kwargs :
-    inputAttrs += f' value="{kwargs['defaultValue']}"'
-  return inputAttrs
+class FormInputs(FormInputsBase) :
+  def collectHtml(self, htmlFragments) :
+    if self.label :
+      htmlFragments.append(f"""
+        <tr>)
+        <td><label>{self.label}</label></td>
+        <td><input type="{self.inputType}" {self.computeHtmxAttrs()} /></td>
+        </tr>
+      """)
+    else :
+      htmlFragments.append(f'<input type="{self.inputType}" {self.computeHtmxAttrs()} />')
 
-# We cheat here...
-# IF a label has been specified,
-#  THEN we wrap everything in tableEntries inside a tableRow
-# IF NO label has been specified,
-#  THEN we do not add any tableEntries or tableRows
-#
-def getInputHtml(inputType, inputAttrs, label=None, inRow=True) :
-  inputHtml = []
-  if label :
-    inputHtml.append('<tr>')
-    inputHtml.append(f"<td><label>{label}</label></td>")
-    inputHtml.append(f'<td><input type="{inputType}" {inputAttrs} /></td>')
-    inputHtml.append('</tr>')
-  else :
-    inputHtml.append(f'<input type="{inputType}" {inputAttrs} />')
-  return '\n'.join(inputHtml)
-
-def textInput(label=None, **kwargs) :
-  if 'name' not in kwargs : return "<!-- textInput with NO name -->"
-
-  tiAttrs = computeHtmxAttrs(
-    'textInputClasses', 'textInputStyles', 'textInputAttrs', kwargs
-  )
-  tiAttrs += addInputAttrs(kwargs)
-
-  return getInputHtml('text', tiAttrs, label=label)
-
-def numberInput(label=None, **kwargs) :
-  if 'name' not in kwargs : return "<!-- numberInput with NO name -->"
-
-  niAttrs = computeHtmxAttrs(
-    'numberInputClasses', 'numberInputStyles', 'numberInputAttrs',
-    kwargs
-  )
-  niAttrs += addInputAttrs(kwargs)
-
-  return getInputHtml('number', niAttrs, label=label)
-
-def colourInput(label=None, **kwargs) :
-  if 'name' not in kwargs : return "<!-- colourInput with NO name -->"
-
-  ciAttrs = computeHtmxAttrs(
-    'colourInputClasses', 'colourInputStyles', 'colourInputAttrs',
-    kwargs
-  )
-  ciAttrs += addInputAttrs(kwargs)
-
-  return getInputHtml('color', ciAttrs, label=label)
-
-today = date.today()
-
-def dateInput(label=None, **kwargs) :
-  if 'name' not in kwargs : return "<!-- dateInput with NO name -->"
-
-  if 'value' not in kwargs or not kwargs['value'] :
-    kwargs['value'] = today
-
-  diAttrs = computeHtmxAttrs(
-    'dateInputClasses', 'dateInputStyles', 'dateInputAttrs', kwargs
-  )
-  diAttrs += addInputAttrs(kwargs)
-
-  return getInputHtml('date', diAttrs, label=label)
-
-def searchBox(label=None, **kwargs) :
-  if 'name' not in kwargs : return "<!-- searchBox with NO name -->"
-
-  sbAttrs = computeHtmxAttrs(
-    'searchBoxClasses', 'searchBoxStyles', 'searchBoxAttrs', kwargs
-  )
-  sbAttrs += addInputAttrs(kwargs)
-
-  return getInputHtml('search', sbAttrs, label=label)
-
-def textAreaInput(label=None, **kwargs) :
-  if 'name' not in kwargs : return "<!-- textAreaInput with NO name -->"
-
-  taAttrs = computeHtmxAttrs(
-    'textAreaInputClasses', 'textAreaInputStyles', 'textAreaAttrs',
-    kwargs
-  )
-
-  # for textareas we don't use a value attribute....
-  taValue = ""
-  if 'value' in kwargs and kwargs['value'] :
-    taValue = kwargs['value']
-    del kwargs['value']
-  taAttrs += addInputAttrs(kwargs)
-
-  inputHtml = []
-  if label :
-    inputHtml.append('<tr>')
-    inputHtml.append(f"<td><label>{label}</label></td>")
-    inputHtml.append(f'<td><textarea {taAttrs}>{taValue}</textarea></td>')
-    inputHtml.append('</tr>')
-  else :
-    inputHtml.append(f'<textarea {taAttrs}>{taValue}</textarea>')
-  return '\n'.join(inputHtml)
-
-def classesSelector(sortedClasses, label=None, inRow=False, **kwargs) :
-  if 'name' not in kwargs : return "<!-- classesSelector with NO name -->"
-
-  csAttrs = computeHtmxAttrs(
-    'classesSelectorClasses', 'classesSelectorStyles', 'classesSelectorAttrs',
-    kwargs
-  )
-  csAttrs += f' name="{kwargs['name']}"'
-
-  csHtml = [f'<select {csAttrs}>' ]
-  for aClass in sortedClasses :
-    csHtml.append(
-      f'<option value="{kwargs['name']}-{aClass['id']}" {aClass['selected']} style="color: {aClass['colour']};">{aClass['name']}</option>'
+class TextInput(FormInputs) :
+  def __init__(
+    self,
+    name,
+    label=None,
+    value=None,
+    defaultValue=None,
+    placeholder=None,
+    **kwargs
+  ) :
+    super().__init(
+      name,
+      inputType='text',
+      label=label,
+      value=value,
+      defaultValue=defaultValue,
+      placeholder=placeholder,
+      **kwargs
     )
-  csHtml.append('</select>')
 
-  if label :
-    # add the prefixes in reverse order
-    csHtml.insert(0, '<td>')
-    csHtml.insert(0, f'<td><label>{label}</label></td>')
-    csHtml.insert(0, '<tr>')
-    # add the suffic in normal order
-    csHtml.append('</td>')
-    csHtml.append('</tr>')
+class NumberInput(FormInputs) :
+  def __init__(
+    self,
+    name,
+    label=None,
+    value=None,
+    defaultValue=None,
+    placeholder=None,
+    **kwargs
+  ) :
+    super().__init(
+      name,
+      inputType='number',
+      label=label,
+      value=value,
+      defaultValue=defaultValue,
+      placeholder=placeholder,
+      **kwargs
+    )
 
-  return '\n'.join(csHtml)
+class ColourInput(FormInputs) :
+  def __init__(
+    self,
+    name,
+    label=None,
+    value=None,
+    defaultValue=None,
+    placeholder=None,
+    **kwargs
+  ) :
+    super().__init(
+      name,
+      inputType='color',
+      label=label,
+      value=value,
+      defaultValue=defaultValue,
+      placeholder=placeholder,
+      **kwargs
+    )
+
+class DateInput(FormInputs) :
+  def __init__(
+    self,
+    name,
+    label=None,
+    value=None,
+    defaultValue=None,
+    placeholder=None,
+    **kwargs
+  ) :
+    if not value : value = today
+    super().__init(
+      name,
+      inputType='date',
+      label=label,
+      value=value,
+      defaultValue=defaultValue,
+      placeholder=placeholder,
+      **kwargs
+    )
+
+class SearchBox(FormInputs) :
+  def __init__(
+    self,
+    name,
+    label=None,
+    value=None,
+    defaultValue=None,
+    placeholder=None,
+    **kwargs
+  ) :
+    super().__init(
+      name,
+      inputType='search',
+      label=label,
+      value=value,
+      defaultValue=defaultValue,
+      placeholder=placeholder,
+      **kwargs
+    )
+
+class TextAreaInput(FormInputsBase) :
+  def collectHtml(self, htmlFragments) :
+    # for textareas we don't use a value attribute....
+    taValue = self.value
+    self.value = None
+    self.defaultValue = None
+
+    if self.label :
+      htmlFragments.append(f"""
+        <tr>)
+        <td><label>{self.label}</label></td>
+        <td><textarea {self.computeHtmxAttrs()}>{taValue}</textarea></td>
+        </tr>
+      """)
+    else :
+      htmlFragments.append(
+        f'<textarea {self.computeHtmxAttrs()}>{taValue}</textarea>'
+      )
+
+class ClassesSelector(HtmxBase) :
+  def __init__(
+    self,
+    sortedClasses,
+    name,
+    label=None,
+    inRow=False,
+    **kwargs
+  ) :
+    raise Exception("not yet implemented!")
+
+#def classesSelector(sortedClasses, label=None, inRow=False, **kwargs) :
+#  if 'name' not in kwargs : return "<!-- classesSelector with NO name -->"
+#
+#  csAttrs = computeHtmxAttrs(
+#    'classesSelectorClasses', 'classesSelectorStyles', 'classesSelectorAttrs',
+#    kwargs
+#  )
+#  csAttrs += f' name="{kwargs['name']}"'
+#
+#  csHtml = [f'<select {csAttrs}>' ]
+#  for aClass in sortedClasses :
+#    csHtml.append(
+#      f'<option value="{kwargs['name']}-{aClass['id']}" {aClass['selected']} style="color: {aClass['colour']};">{aClass['name']}</option>'
+#    )
+#  csHtml.append('</select>')
+#
+#  if label :
+#    # add the prefixes in reverse order
+#    csHtml.insert(0, '<td>')
+#    csHtml.insert(0, f'<td><label>{label}</label></td>')
+#    csHtml.insert(0, '<tr>')
+#    # add the suffic in normal order
+#    csHtml.append('</td>')
+#    csHtml.append('</tr>')
+#
+#  return '\n'.join(csHtml)

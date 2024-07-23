@@ -3,50 +3,51 @@
 # see: https://hidde.blog/accessible-page-titles-in-a-single-page-app/
 
 from schoolLib.setup.configuration import config
-from schoolLib.htmxComponents.utils import *
+from schoolLib.htmxComponents.htmx import *
 
-def stdHeaders() :
-  title = "Simple School Library"
-  if 'title' in config : title = config['title']
+class StdHeaders(HtmxBase) :
+  def collectHtml(self, htmlFragments) :
 
-  return f"""
-  <meta charset="utf-8">
-  <title>{title}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    title = "Simple School Library"
+    if 'title' in config : title = config['title']
 
-  <link rel="apple-touch-icon" sizes="192x192" href="/static/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
-  <link rel="manifest" href="/static/favicon/site.webmanifest">
+    htmlFragments.append(f"""
+      <meta charset="utf-8">
+      <title>{title}</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 
-  <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
+      <link rel="apple-touch-icon" sizes="192x192" href="/static/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/static/favicon/site.webmanifest">
 
-  <script src="/static/js/htmx.min.js"></script>
-  <script src="/static/js/idiomorph-ext.min.js"></script>
-  """
+      <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
 
-def stdBody() :
-  return """
-  <div
-    id="initialOuterDiv"
-    hx-get="/menu/home"
-    hx-trigger="load delay:100ms"
-    hx-target="#initialOuterDiv"
-    hx-swap="outerHTML"
-  ></div>
-  """
+      <script src="/static/js/htmx.min.js"></script>
+      <script src="/static/js/idiomorph-ext.min.js"></script>
+    """)
 
-def htmlPage(headers, body) :
-  headers = computeComponent(headers)
-  body    = computeComponent(body)
-  return f"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-{headers}
-</head>
-<body>
-{body}
-</body>
-</html>
-  """
+class StdBody(HtmxBase) :
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append("""
+      <div
+        id="initialOuterDiv"
+        hx-get="/menu/home"
+        hx-trigger="load delay:100ms"
+        hx-target="#initialOuterDiv"
+        hx-swap="outerHTML"
+      ></div>
+    """)
+
+class HtmlPage(HtmxBase) :
+  def __init__(self, headers, body, **kwargs) :
+    super().__init__(**kwargs)
+    self.headers = headers
+    self.body    = body
+
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append('<!DOCTYPE html><html lang="en"><head>')
+    self.headers.collectHtml(htmlFragments)
+    htmlFragments.append("</head><body>")
+    self.body.collectHtml(htmlFragments)
+    htmlFragments.append("</body></html>")

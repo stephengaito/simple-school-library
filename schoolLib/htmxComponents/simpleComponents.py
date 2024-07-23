@@ -1,24 +1,12 @@
-import yaml
 
-from schoolLib.htmxComponents.utils import *
+from schoolLib.htmxComponents.htmx import *
 
-def button(**kwargs) :
-  text = getFromKWArgs('text', 'unknown', kwargs)
-  bAttrs = computeHtmxAttrs(
-    'buttonClasses', 'buttonStyles', 'buttonAttrs', kwargs
-  )
+class Div(HtmxChildrenBase) :
 
-  return f"<button {bAttrs}>{text}</button>"
-
-def div(children, **kwargs) :
-  dAttrs = computeHtmxAttrs('divClasses', 'divStyles', 'divAttrs', kwargs)
-
-  if not isinstance(children, list) : children = [ children ]
-  divHtml = [ f'<div {dAttrs}>' ]
-  for aChild in children :
-    divHtml.append(computeComponent(aChild))
-  divHtml.append('</div>')
-  return '\n'.join(divHtml)
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append(f'<div {self.computeHtmxAttrs()}>')
+    self.collectChildrenHtml(htmlFragments)
+    htmlFragments.append('</div>')
 
 # we defined a set of level divs which each act as replacement points.
 
@@ -26,85 +14,98 @@ def div(children, **kwargs) :
 # numbers, so that only the dom which needs to be replaced can be
 # replaced.
 
-def level0div(children, **kwargs) :
-  if 'theId' not in kwargs : kwargs['theId'] = 'level0div'
-  return div(children, **kwargs)
+class Level0div(Div) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'level0div'
+    super().__init__(someChildren, **kwargs)
 
-def level1div(children, **kwargs) :
-  if 'theId' not in kwargs : kwargs['theId'] = 'level1div'
-  return div(children, **kwargs)
+class Level1div(Div) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'level1div'
+    super().__init__(someChildren, **kwargs)
 
-def level2div(children, **kwargs) :
-  if 'theId' not in kwargs : kwargs['theId'] = 'level2div'
-  return div(children, **kwargs)
+class Level2div(Div) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'level2div'
+    super().__init__(someChildren, **kwargs)
 
-def level3div(children, **kwargs) :
-  if 'theId' not in kwargs : kwargs['theId'] = 'level3div'
-  return div(children, **kwargs)
+class Level3div(Div) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'level3div'
+    super().__init__(someChildren, **kwargs)
 
-def level4div(children, **kwargs) :
-  if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
-  return div(children, **kwargs)
+class Level4div(Div) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
+    super().__init__(someChildren, **kwargs)
 
-def menu(
-  menuList,
-  selected="",
-  target='#level0div',
-  swap='outerHTML',
-  **kwargs
-):
-  #kwargs['target'] = target
-  #kwargs['swap']   = swap
-  mAttrs = computeHtmxAttrs(
-    'menuClasses', 'menuStyles', 'menuAttrs', kwargs
-  )
+class Menu(HtmxChildrenBase) :
+  def __init__(
+    self,
+    someChildren,
+    selectedId=None,
+    target='#level0div',
+    swap='outerHTML',
+    **kwargs
+  ) :
+    super().__init__(someChildren, **kwargs)
+    self.childKWArgs = {
+      'target' : target,
+      'swap'   : swap
+    }
+    self.selectedId=selectedId
 
-  menuList = selectComponentInList(selected, menuList)
-  menuListHtml = [ f'<div {mAttrs}>' ]
-  for anItem in menuList :
-    if isinstance(anItem, dict) :
-      if 'target' not in anItem : anItem['target'] = target
-      if 'swap'   not in anItem : anItem['swap']   = swap
-    menuListHtml.append(computeComponent(anItem))
-  menuListHtml.append('</div>')
-  return '\n'.join(menuListHtml)
+  def select(self, selectedId) :
+    self.selectedId=selectedId
+    return self
 
-def text(someText, type=None, **kwargs) :
-  tAttrs = computeHtmxAttrs(
-    'textClasses', 'textStyles', 'textAttrs', kwargs
-  )
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append(f'<div {self.computeHtmxAttrs()}>')
+    for aChild in self.children :
+      selected = None
+      if self.selectedId and aChild.theId == self.selectedId :
+        selected = "selected"
+      aChild.collectHtml(
+        htmlFragments, selected=selected, **self.childKWArgs
+      )
+    htmlFragments.append('</div>')
 
-  if isinstance(someText, list) :
-    someTextHtml = []
-    for aPart in someText :
-      someTextHtml.append(computeComponent(aPart))
-    someText = ' '.join(someTextHtml)
+class Text(HtmxBase) :
+  def __init__(self, text, textType='p', **kwargs) :
+    super().__init__(**kwargs)
+    self.text     = text
+    # sanitize textType
+    if textType.startswith('p')   : textType = 'p'
+    elif textType.startswith('s') : textType = 'span'
+    elif textType.startswith('l') : textType = 'label'
+    elif textType.startswith('b') : textType = 'button'
+    elif textType.startswith('a') : textType = 'a'
+    else                          : textType = 'div'
+    self.textType = textType
 
-  textHtml = [ someText ]
-  if type :
-    if type.startswith('p') :
-      textHtml.insert(0, f'<p {tAttrs}>')
-      textHtml.append('</p>')
-    elif type.startswith('s') :
-      textHtml.insert(0, f'<span {tAttrs}>')
-      textHtml.append('</span>')
-    elif type.startswith('l') :
-      textHtml.insert(0, f'<label {tAttrs}>')
-      textHtml.append('</label>')
-    else :
-      textHtml.insert(0, f'<div {tAttrs}>')
-      textHtml.append('</div>')
+  def collectHtml(self, htmlFragments, selected=None, **kwargs) :
+    oldKlassName = self.klassName
+    if self.textType == 'button' and selected :
+      self.klassName += '-selected'
+    tAttrs = self.computeHtmxAttrs()
+    self.klassName = oldKlassName
+    htmlFragments.append(
+      f"<{self.textType} {tAttrs}>{self.text}</{self.textType}>"
+    )
 
-  return '\n'.join(textHtml)
+class Button(Text) :
+  def __init__(self, text, textType='b', **kwargs) :
+    super().__init__(text, textType=textType, **kwargs)
 
-def label(someText, **kwargs) :
-  return text(someText, type='l', **kwargs)
+class Span(Text) :
+  def __init__(self, text, textType='s', **kwargs) :
+    super().__init__(text, textType=textType, **kwargs)
 
-def link(url, text, method='get', **kwargs) :
-  lAttrs = ""
-  if 'target' not in kwargs : lAttrs = f'href="{url}" '
-  else                      : kwargs[method] = url
-  lAttrs += computeHtmxAttrs(
-    'linkClasses', 'linkStyles', 'linkAttrs', kwargs
-  )
-  return f'<a {lAttrs}>{text}</a>'
+class Label(Text) :
+  def __init__(self, text, textType='l', **kwargs) :
+    super().__init__(text, textType=textType, **kwargs)
+
+class Link(Text) :
+  def __init__(self, url, text, textType='a', **kwargs) :
+    # PUT url into kwargs...
+    super().__init__(text, textType=textType, **kwargs)

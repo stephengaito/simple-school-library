@@ -7,10 +7,7 @@ from schoolLib.app.menus import *
 def homeMenu(request) :
   homePageMarkdown = loadMarkdownFromFile('homePage')
 
-  return HTMXResponse(
-    request,
-    level0div([
-      menu(topLevelMenu, selected='home'),
-      level1div(markdownDiv(homePageMarkdown))
-    ], theId='level0div')
-  )
+  return Level0div([
+    TopLevelMenu.select('home'),
+    Level1div(MarkdownDiv(homePageMarkdown))
+  ], theId='level0div').response()
