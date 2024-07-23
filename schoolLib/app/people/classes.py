@@ -58,9 +58,9 @@ def editClassForm(
 def listClasses(**kwargs) :
   tableRows = []
   tableRows.append(TableRow([
-    TableHeader(text('Name')),
-    TableHeader(text('Description')),
-    TableHeader(text('Actions'), colspan=4)
+    TableHeader(Text('Name')),
+    TableHeader(Text('Description')),
+    TableHeader(Text('Actions'), colspan=4)
   ]))
 
   with getDatabase() as db :
@@ -99,7 +99,7 @@ def addAClass() :
     maxClassOrder += 1
 
   return Level1div([
-    SecondLevelPeopleMenu.selected('addClass'),
+    SecondLevelPeopleMenu.select('addClass'),
     editClassForm(
       classOrder=maxClassOrder,
       submitMessage='Add new class',

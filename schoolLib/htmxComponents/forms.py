@@ -3,10 +3,11 @@ from datetime import date
 
 from schoolLib.htmxComponents.htmx import *
 from schoolLib.htmxComponents.tables import *
+from schoolLib.htmxComponents.simpleComponents import *
 
 class Form(HtmxChildrenBase) :
   def __init__(self, aComponent, submitMsg, **kwargs) :
-    super().__init__(aCompnent, **kwargs)
+    super().__init__(aComponent, **kwargs)
     self.submitButton = Button(submitMsg)
 
   def collectHtml(self, htmlFragments) :
@@ -17,7 +18,7 @@ class Form(HtmxChildrenBase) :
 
 class FormTable(Form) :
   def __init__(self, someInputs, submitMsg, tableKWArgs={}, **kwargs) :
-    theTable = Table(someInputs, tableKWArgs)
+    theTable = Table(someInputs, **tableKWArgs)
     super().__init__(theTable, submitMsg, **kwargs)
 
 class FormInputsBase(HtmxBase) :
@@ -47,22 +48,23 @@ class FormInputsBase(HtmxBase) :
 
   def computeHtmxAttrs(self) :
     fiAttrs = super().computeHtmxAttrs()
-    fiAttrs = f' name="{kwargs['name']}"'
+    fiAttrs += f' name="{self.name}"'
     if self.value          : fiAttrs += f' value="{self.value}"'
     elif self.placeholder  : fiAttrs += f' placeholder="{self.placeholder}"'
     elif self.defaultValue : fiAttrs += f' value="{self.defaultValue}"'
+    return fiAttrs
 
 class FormInputs(FormInputsBase) :
   def collectHtml(self, htmlFragments) :
     if self.label :
       htmlFragments.append(f"""
-        <tr>)
+        <tr>
         <td><label>{self.label}</label></td>
-        <td><input type="{self.inputType}" {self.computeHtmxAttrs()} /></td>
+        <td><input type="{self.inputType}" {self.computeHtmxAttrs()}/></td>
         </tr>
       """)
     else :
-      htmlFragments.append(f'<input type="{self.inputType}" {self.computeHtmxAttrs()} />')
+      htmlFragments.append(f'<input type="{self.inputType}" {self.computeHtmxAttrs()}/>')
 
 class TextInput(FormInputs) :
   def __init__(
@@ -74,7 +76,7 @@ class TextInput(FormInputs) :
     placeholder=None,
     **kwargs
   ) :
-    super().__init(
+    super().__init__(
       name,
       inputType='text',
       label=label,
@@ -94,7 +96,7 @@ class NumberInput(FormInputs) :
     placeholder=None,
     **kwargs
   ) :
-    super().__init(
+    super().__init__(
       name,
       inputType='number',
       label=label,
@@ -114,7 +116,7 @@ class ColourInput(FormInputs) :
     placeholder=None,
     **kwargs
   ) :
-    super().__init(
+    super().__init__(
       name,
       inputType='color',
       label=label,
@@ -135,7 +137,7 @@ class DateInput(FormInputs) :
     **kwargs
   ) :
     if not value : value = today
-    super().__init(
+    super().__init__(
       name,
       inputType='date',
       label=label,
@@ -155,7 +157,7 @@ class SearchBox(FormInputs) :
     placeholder=None,
     **kwargs
   ) :
-    super().__init(
+    super().__init__(
       name,
       inputType='search',
       label=label,
@@ -166,15 +168,18 @@ class SearchBox(FormInputs) :
     )
 
 class TextAreaInput(FormInputsBase) :
-  def collectHtml(self, htmlFragments) :
+  def __init__(self, value=None, **kwargs) :
     # for textareas we don't use a value attribute....
-    taValue = self.value
-    self.value = None
-    self.defaultValue = None
+    super().__init__(value=None, defaultValue=None, **kwargs)
+    self.taValue = value
+
+  def collectHtml(self, htmlFragments) :
+    taValue = ""
+    if self.value : taValue = self.value
 
     if self.label :
       htmlFragments.append(f"""
-        <tr>)
+        <tr>
         <td><label>{self.label}</label></td>
         <td><textarea {self.computeHtmxAttrs()}>{taValue}</textarea></td>
         </tr>

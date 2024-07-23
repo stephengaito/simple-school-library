@@ -27,7 +27,7 @@ class TableEntry(HtmxBase) :
     self.colspan   = colspan
 
   def collectHtml(self, htmlFragments) :
-    teAttrs = selfcomputeHtmxAttrs()
+    teAttrs = self.computeHtmxAttrs()
     if self.colspan : teAttrs += f' colspan="{self.colspan}"'
     htmlFragments.append(f'<{self.tableCode} {teAttrs}>')
     self.component.collectHtml(htmlFragments)

@@ -29,12 +29,12 @@ def callWithParameters(request, func) :
     return func(request, **params)
   except SLException as slErr :
     errorText = [
-      text("Opps! Something in the server went wrong! We can't supply that page!", type='p'),
-      text(slErr.slMessage, type='p'),
-      text(slErr.slErrType, type='p'),
+      Text("Opps! Something in the server went wrong! We can't supply that page!", type='p'),
+      Text(slErr.slMessage, type='p'),
+      Text(slErr.slErrType, type='p'),
     ]
-    if slErr.slHelpMsg : errorText.append(text(slErr.slHelpMsg, type='p'))
-    if slErr.slOrigErr : errorText.append(text(slErr.slOrigErr, type='p'))
+    if slErr.slHelpMsg : errorText.append(Text(slErr.slHelpMsg, type='p'))
+    if slErr.slOrigErr : errorText.append(Text(slErr.slOrigErr, type='p'))
     return Level0div([
       TopLevelMenu,
       Level1div(errorText)

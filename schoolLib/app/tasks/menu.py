@@ -47,7 +47,7 @@ def booksCheckedOut() :
     if booksCheckedOut :
       classes = getClasses(db)
       for aBook in booksCheckedOut :
-        bcoRows.append(tableRow([
+        bcoRows.append(TableRow([
           TableEntry(Text(classes[aBook['borrowers_classId']]['name'])),
           TableEntry(Link(
             f'/borrowers/show/{aBook['borrowers_id']}',

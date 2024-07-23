@@ -42,7 +42,7 @@ async def postSearchForBorrower(request) :
   with getDatabase() as db :
     results = selectSql.parseResults(db.execute(selectSql.sql()))
     for aRow in results :
-      nameRows.append(tableRow(tableEntry(link(
+      nameRows.append(TableRow(TableEntry(Link(
         f'/borrowers/show/{aRow['borrowerId']}',
         f'{aRow['firstName']} {aRow['familyName']}',
         target='#level2div'
@@ -89,7 +89,7 @@ async def postSearchForAnItem(request) :
   with getDatabase() as db :
     results = selectSql.parseResults(db.execute(selectSql.sql()))
     for aRow in results :
-      itemRows.append(tableRow(tableEntry(link(
+      itemRows.append(TableRow(TableEntry(Link(
         f'/itemsInfo/show/{aRow['itemsInfoId']}',
         aRow['title'],
         target='#level2div'

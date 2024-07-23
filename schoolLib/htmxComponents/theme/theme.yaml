@@ -42,6 +42,12 @@ TextInputClasses:
     - border-solid
     - rounded-lg
 
+TextAreaInputClasses:
+  default:
+    - border-2
+    - border-solid
+    - rounded-lg
+
 NumberInputClasses:
   default:
     - border-2

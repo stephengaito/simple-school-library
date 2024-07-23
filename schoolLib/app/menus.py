@@ -3,10 +3,30 @@
 from schoolLib.htmxComponents import *
 
 TopLevelMenu = Menu([
-  Button('Home',   theId = 'home',   get='/menu/home'),
-  Button('Books',  theId = 'books',  get = "/menu/books"),
-  Button('People', theId = 'people', get = '/menu/people'),
-  Button('Tasks',  theId = 'tasks',  get = '/menu/tasks')
+  Button(
+    'Home',
+    theId = 'home',
+    get='/menu/home',
+    target='#level0div'
+  ),
+  Button(
+    'Books',
+    theId = 'books',
+    get = "/menu/books",
+    target='#level0div'
+  ),
+  Button(
+    'People',
+    theId = 'people',
+    get = '/menu/people',
+    target='#level0div'
+  ),
+  Button(
+    'Tasks',
+    theId = 'tasks',
+    get = '/menu/tasks',
+    target='#level0div'
+  )
 ])
 
 SecondLevelBooksMenu = Menu([
