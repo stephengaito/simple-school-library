@@ -40,25 +40,25 @@ def editBorrowerForm(
         borrower = borrower[0]
     if not sortedClasses : sortedClasses = getOrderedClassList(db)
 
-  return formTable([
-    textInput(
+  return FormTable([
+    TextInput(
       label="First name",
       name='firstname',
       value=borrower['firstName'],
       placeholder='A first name...'
     ),
-    textInput(
+    TextInput(
       label="Family name",
       name='familyName',
       value=borrower['familyName'],
       placeholder="A family name..."
     ),
-    numberInput(
+    NumberInput(
       label='Cohort (year entered education)',
       name='cohort',
       value=borrower['cohort'],
     ),
-    classesSelector(
+    ClassesSelector(
       sortedClasses,
       label='Class',
       name='assignedClass',
@@ -70,16 +70,13 @@ def editBorrowerForm(
 
 @get('/menu/people/addBorrower')
 def getNewBorrowerForm(request) :
-  return HTMXResponse(
-    request,
-    level1div([
-      menu(secondLevelPeopleMenu, selected='addBorrower'),
-      editBorrowerForm(
-        submitMsg='Add a new borrower',
-        postUrl='/borrowers/new'
-      )
-    ])
-  )
+  return Level1div([
+    SecondLevelPeopleMenu.select('addBorrower'),
+    editBorrowerForm(
+      submitMsg='Add a new borrower',
+      postUrl='/borrowers/new'
+    )
+  ]).response()
 
 @post('/borrowers/new')
 async def postSaveNewBorrower(request) :
@@ -92,32 +89,23 @@ async def postSaveNewBorrower(request) :
       'classId'    : theForm['assignedClass']
     }))
     db.commit()
-  return HTMXResponse(
-    request,
-    editBorrowerForm(
-      submitMsg='Add a new borrower',
-      postUrl='/borrowers/new'
-    )
-  )
+  return editBorrowerForm(
+    submitMsg='Add a new borrower',
+    postUrl='/borrowers/new'
+  ).response()
 
 @get('/borrowers/edit/{borrowerId:int}')
 def getEditABorrowerForm(request, borrowerId=None) :
   if borrowerId :
-    return HTMXResponse(
-      request,
-      editBorrowerForm(
-        borrowerId=borrowerId,
-        submitMsg= 'Save changes',
-        postUrl=f"/borrowers/edit/{borrowerId}"
-      )
-    )
-  return HTMXResponse(
-    request,
-    editBorrowerForm(
-      submitMsg='Add a new borrower',
-      postUrl='/borrowers/new'
-    )
-  )
+    return editBorrowerForm(
+      borrowerId=borrowerId,
+      submitMsg= 'Save changes',
+      postUrl=f"/borrowers/edit/{borrowerId}"
+    ).response()
+  return editBorrowerForm(
+    submitMsg='Add a new borrower',
+    postUrl='/borrowers/new'
+  ).response()
 
 @put('/borrowers/edit/{borrowerId:int}')
 async def putUpdatedBorrower(request, borrowerId=None) :
@@ -133,13 +121,10 @@ async def putUpdatedBorrower(request, borrowerId=None) :
         'classId'    : theForm['assignedClass']
       }))
       db.commit()
-  return HTMXResponse(
-    request,
-    editBorrowerForm(
-      submitMsg='Add a new borrower',
-      postUrl='/borrowers/new'
-    )
-  )
+  return editBorrowerForm(
+    submitMsg='Add a new borrower',
+    postUrl='/borrowers/new'
+  ).response()
 
 @get('/borrowers/show/{borrowerId:int}')
 def getShowBorrowerInfo(request, borrowerId=None) :
@@ -177,63 +162,57 @@ def getShowBorrowerInfo(request, borrowerId=None) :
         )
         itemsBorrowedRows = []
         itemsBorrowedRows.append(
-          tableRow([
-            tableHeader('Title'),
-            tableHeader('Barcode'),
-            tableHeader('Dewey Decimal Code'),
-            tableHeader('Date Borrowed'),
-            tableHeader('Date Due'),
-            tableHeader('Date Returned'),
+          TableRow([
+            TableHeader('Title'),
+            TableHeader('Barcode'),
+            TableHeader('Dewey Decimal Code'),
+            TableHeader('Date Borrowed'),
+            TableHeader('Date Due'),
+            TableHeader('Date Returned'),
           ])
         )
         if itemsBorrowed :
           for anItem in itemsBorrowed :
             itemsBorrowedRows.append(
-              tableRow([
-                tableEntry(link(
+              TableRow([
+                TableEntry(Link(
                   f'/itemsInfo/show/{anItem['itemsInfo_id']}',
                   anItem['itemsInfo_title'],
                   target='#level1div'
                 )),
-                tableEntry(link(
+                TableEntry(Link(
                   f'/itemsInfo/show/{anItem['itemsInfo_id']}',
                   anItem['itemsPhysical_barCode'],
                   target='#level1div'
                 )),
-                tableEntry(anItem['itemsInfo_dewey']),
-                tableEntry(anItem['itemsBorrowed_dateBorrowed']),
-                tableEntry(anItem['itemsBorrowed_dateDue']),
-                tableEntry(""),
+                TableEntry(anItem['itemsInfo_dewey']),
+                TableEntry(anItem['itemsBorrowed_dateBorrowed']),
+                TableEntry(anItem['itemsBorrowed_dateDue']),
+                TableEntry(""),
               ])
             )
-        return HTMXResponse(
-          request,
-          level1div([
-            table([
-              tableRow([
-                tableEntry(text('First Name')),
-                tableEntry(text(borrower['firstName']))
-              ]),
-              tableRow([
-                tableEntry(text('Family Name')),
-                tableEntry(text(borrower['familyName']))
-              ]),
-              tableRow([
-                tableEntry(text('Cohort')),
-                tableEntry(text(str(borrower['cohort'])))
-              ]),
-              tableRow([
-                tableEntry(text('Class')),
-                tableEntry(text(borrower['className']))
-              ]),
+        return Level1div([
+          Table([
+            TableRow([
+              TableEntry(text('First Name')),
+              TableEntry(text(borrower['firstName']))
             ]),
-            table(itemsBorrowedRows)
-          ])
-        )
-  return HTMXResponse(
-    request,
-    level1div([
-      menu(secondLevelPeopleMenu, selected='findBorrower'),
-      findABorrower(None, [])
-    ])
-  )
+            TableRow([
+              TableEntry(text('Family Name')),
+              TableEntry(text(borrower['familyName']))
+            ]),
+            TableRow([
+              TableEntry(text('Cohort')),
+              TableEntry(text(str(borrower['cohort'])))
+            ]),
+            TableRow([
+              TableEntry(text('Class')),
+              TableEntry(text(borrower['className']))
+            ]),
+          ]),
+          Table(itemsBorrowedRows)
+        ]).response()
+  return Level1div([
+    SecondLevelPeopleMenu.select('findBorrower'),
+    findABorrower(None, [])
+  ]).response()

@@ -47,32 +47,32 @@ def editItemsPhysicalForm(
 ) :
   if not postUrl : return "<!-- edit itemsPhysical form with NO postUrl -->"
 
-  return formTable([
-    textInput(
+  return FormTable([
+    TextInput(
       label='Barcode',
       name='barcode',
       value=barcode,
       placeholder='A barcode...'
     ),
-    dateInput(
+    DateInput(
       label='Date aquired',
       name='dateAdded',
       value=dateAdded,
       placeholder='The date aquired...'
     ),
-    dateInput(
+    DateInput(
       label='Date last borrowed',
       name='dateBorrowed',
       value=dateBorrowed,
       placeholder='The date last borrowed...'
     ),
-    dateInput(
+    DateInput(
       label='Date last seen',
       name='dateLastSeen',
       value=dateLastSeen,
       placeholder='The date last seen...'
     ),
-    textInput(
+    TextInput(
       label='Status',
       name='status',
       value=status,
@@ -82,27 +82,20 @@ def editItemsPhysicalForm(
     theId='level2div', target='this', post=postUrl, **kwargs
   )
 
-
 ##########################################################################
 # routes
 
 @get('/itemsPhysical/{itemsInfoId:int}/new')
 def getNewItemsPhysicalForm(request, itemsInfoId=None) :
   if itemsInfoId :
-    return HTMXResponse(
-      request,
-      editItemsPhysicalForm(
-        postUrl=f'/itemsPhysical/{itemsInfoId}/new',
-        submitMessage='Add new copy',
-      )
-    )
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+    return editItemsPhysicalForm(
+      postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+      submitMessage='Add new copy',
+    ).response()
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()
 
 @post('/itemsPhysical/{itemsInfoId:int}/new')
 async def postSaveNewItemsPhysical(request, itemsInfoId=None) :
@@ -122,20 +115,14 @@ async def postSaveNewItemsPhysical(request, itemsInfoId=None) :
         'status'       : theForm['status']
       }))
       db.commit()
-    return HTMXResponse(
-      request,
-      editItemsPhysicalForm(
-        submitMessage='Add new copy',
-        postUrl=f'/itemsPhysical/{itemsInfoId}/new',
-      )
-    )
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+    return editItemsPhysicalForm(
+      submitMessage='Add new copy',
+      postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+    ).response()
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()
 
 @get('/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}')
 def getEditItemsPhysicalForm(request, itemsInfoId=None, itemsPhysicalId=None) :
@@ -151,25 +138,19 @@ def getEditItemsPhysicalForm(request, itemsInfoId=None, itemsPhysicalId=None) :
         fetchAll=False
       )
       if itemsPhysical :
-        return HTMXResponse(
-          request,
-          editItemsPhysicalForm(
-            postUrl=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
-            barcode=itemsPhysical[0]['barcode'],
-            dateAdded=itemsPhysical[0]['dateAdded'],
-            dateBorrowed=itemsPhysical[0]['dateBorrowed'],
-            dateLastSeen=itemsPhysical[0]['dateLastSeen'],
-            status=itemsPhysical[0]['status'],
-            submitMessage='Save changes',
-          )
-        )
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+        return editItemsPhysicalForm(
+          postUrl=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
+          barcode=itemsPhysical[0]['barcode'],
+          dateAdded=itemsPhysical[0]['dateAdded'],
+          dateBorrowed=itemsPhysical[0]['dateBorrowed'],
+          dateLastSeen=itemsPhysical[0]['dateLastSeen'],
+          status=itemsPhysical[0]['status'],
+          submitMessage='Save changes',
+        ).response()
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()
 
 @put('/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}')
 async def putUpdateAnItemsPhysical(request, itemsInfoId=None, itemsPhysicalId=None) :
@@ -191,17 +172,11 @@ async def putUpdateAnItemsPhysical(request, itemsInfoId=None, itemsPhysicalId=No
         'status'       : theForm['status']
       }))
       db.commit()
-    return HTMXResponse(
-      request,
-      editItemsPhysicalForm(
-        submitMessage='Add new copy',
-        postUrl=f'/itemsPhysical/{itemsInfoId}/new',
-      )
-    )
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+    return editItemsPhysicalForm(
+      submitMessage='Add new copy',
+      postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+    ).response()
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()

@@ -35,13 +35,10 @@ def callWithParameters(request, func) :
     ]
     if slErr.slHelpMsg : errorText.append(text(slErr.slHelpMsg, type='p'))
     if slErr.slOrigErr : errorText.append(text(slErr.slOrigErr, type='p'))
-    return HTMXResponse(
-      request,
-      level0div([
-        menu(topLevelMenu, selected='home'),
-        level1div(errorText)
-      ])
-    )
+    return Level0div([
+      TopLevelMenu,
+      Level1div(errorText)
+    ]).response()
 
 def get(aRoute, name=None) :
   def getDecorator(func) :

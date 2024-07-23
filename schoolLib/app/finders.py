@@ -7,25 +7,22 @@ from schoolLib.htmxComponents import *
 # borrowers
 
 def findABorrower(probe, nameRows) :
-  return level2div([
-    searchBox(
+  return Level2div([
+    SearchBox(
       post='/search/borrowers',
       name='search',
       value=probe,
       placeholder="Type a person's name"
     ),
-    table(nameRows, theId='searchResults')
+    Table(nameRows, theId='searchResults')
   ], attrs={'hx-ext':'morph'})
 
 @get('/search/borrowers')
 def getFindBorrowerForm(request) :
-  return HTMXResponse(
-    request,
-    level1div([
-      menu(secondLevelPeopleMenu, selected='findBorrower'),
-      findABorrower(None, [])
-    ])
-  )
+  return Level1div([
+    SecondLevelPeopleMenu.select('findBorrower'),
+    findABorrower(None, [])
+  ]).response()
 
 @post('/search/borrowers')
 async def postSearchForBorrower(request) :
@@ -50,34 +47,28 @@ async def postSearchForBorrower(request) :
         f'{aRow['firstName']} {aRow['familyName']}',
         target='#level2div'
       ))))
-  return HTMXResponse(
-    request,
-    findABorrower(theForm['search'], nameRows)
-  )
+  return findABorrower(theForm['search'], nameRows).response()
 
 ##########################################################################
 # items (aka Books)
 
 def findAnItem(probe, itemRows) :
-  return level2div([
-    searchBox(
+  return Level2div([
+    SearchBox(
       post='/search/items',
       name='search',
       value=probe,
       placeholder='Type a book title...'
     ),
-    table(itemRows, theId='searchResults')
+    Table(itemRows, theId='searchResults')
   ], attrs={'hx-ext':'morph'})
 
 @get('/search/items')
 def getFindAnItemForm(request) :
-  return HTMXResponse(
-    request,
-    level1div([
-      menu(secondLevelBooksMenu, selected='findBook'),
-      findAnItem(None, [])
-    ])
-  )
+  return Level1div([
+    SecondLevelBooksMenu.select('findBook'),
+    findAnItem(None, [])
+  ]).response()
 
 @post('/search/items')
 async def postSearchForAnItem(request) :
@@ -103,7 +94,4 @@ async def postSearchForAnItem(request) :
         aRow['title'],
         target='#level2div'
       ))))
-  return HTMXResponse(
-    request,
-    findAnItem(theForm['search'], itemRows)
-  )
+  return findAnItem(theForm['search'], itemRows).response()

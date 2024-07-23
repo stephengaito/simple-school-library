@@ -26,26 +26,26 @@ def editClassForm(
 ) :
   if not postUrl : return "<!-- htmx form with NO postUrl -->"
 
-  return formTable([
-    textInput(
+  return FormTable([
+    TextInput(
       label='Class name',
       name='className',
       value=className,
       placeholder='A class name...'
     ),
-    textInput(
+    TextInput(
       label='Description',
       name='classDesc',
       value=classDesc,
       placeholder='A description of your class...'
     ),
-    numberInput(
+    NumberInput(
       label='Class order',
       name='classOrder',
       value=classOrder,
       defaultValue=0
     ),
-    colourInput(
+    ColourInput(
       label='Class colour',
       name='classColour',
       value=classColour,
@@ -57,36 +57,36 @@ def editClassForm(
 
 def listClasses(**kwargs) :
   tableRows = []
-  tableRows.append(tableRow([
-    tableHeader(text('Name')),
-    tableHeader(text('Description')),
-    tableHeader(text('Actions'), colspan=4)
+  tableRows.append(TableRow([
+    TableHeader(text('Name')),
+    TableHeader(text('Description')),
+    TableHeader(text('Actions'), colspan=4)
   ]))
 
   with getDatabase() as db :
     theClasses = getClasses(db)
     sortedClasses = getSortedClasses(theClasses)
     for aClass in sortedClasses :
-      tableRows.append(tableRow([
-        tableEntry(text(aClass['name'])),
-        tableEntry(text(aClass['desc'])),
-        tableEntry(button(
-          get=f'/classes/list/{aClass['id']}', text='List', target='#level1div'
+      tableRows.append(TableRow([
+        TableEntry(Text(aClass['name'])),
+        TableEntry(Text(aClass['desc'])),
+        TableEntry(Button(
+          'List', get=f'/classes/list/{aClass['id']}', target='#level1div'
         )),
-        tableEntry(button(
-          get=f'/classes/update/{aClass['id']}', text='Update', target='#level1div'
+        TableEntry(Button(
+          'Update', get=f'/classes/update/{aClass['id']}', target='#level1div'
         )),
-        tableEntry(button(
-          get=f'/classes/edit/{aClass['id']}', text='Edit', target='#level1div'
+        TableEntry(Button(
+          'Edit', get=f'/classes/edit/{aClass['id']}', target='#level1div'
         )),
-        tableEntry(button(
-          get=f'/classes/delete/{aClass['id']}', text='Delete', target='#level1div'
+        TableEntry(Button(
+          'Delete', get=f'/classes/delete/{aClass['id']}', target='#level1div'
         )),
       ]))
 
-  return level1div([
-    menu(secondLevelPeopleMenu, selected='listClasses', target='#level1div'),
-    table(tableRows, theId='level2div')
+  return Level1div([
+    SecondLevelPeopleMenu.select('listClasses'),
+    Table(tableRows, theId='level2div')
   ])
 
 def addAClass() :
@@ -98,10 +98,8 @@ def addAClass() :
         maxClassOrder = aClass['classOrder']
     maxClassOrder += 1
 
-  return level1div([
-    menu(secondLevelPeopleMenu, selected='addClass', hxAttrs={
-      'hx-target' : '#level1div'
-    }),
+  return Level1div([
+    SecondLevelPeopleMenu.selected('addClass'),
     editClassForm(
       classOrder=maxClassOrder,
       submitMessage='Add new class',
@@ -114,27 +112,18 @@ def addAClass() :
 
 @get('/menu/people')
 def peopleMenu(request) :
-  return HTMXResponse(
-    request,
-    level0div([
-      menu(topLevelMenu, selected='people'),
-      addAClass()
-    ], theId='level0div')
-  )
+  return Level0div([
+    TopLevelMenu.select('people'),
+    addAClass()
+  ], theId='level0div').response()
 
 @get('/menu/people/addClass')
 def addAClassMenu(request) :
-  return HTMXResponse(
-    request,
-    addAClass()
-  )
+  return addAClass().response()
 
 @get('/menu/people/listClasses')
 def listClassesMenu(request) :
-  return HTMXResponse(
-    request,
-    listClasses()
-  )
+  return listClasses().response()
 
 @post('/classes/new')
 async def postSaveNewClass(request) :
@@ -147,7 +136,7 @@ async def postSaveNewClass(request) :
       'colour'     : theForm['classColour']
     }))
     db.commit()
-  return HTMXResponse(request, listClasses())
+  return listClasses().response()
 
 @get('/classes/edit/{classId:int}')
 def getEditAClassForm(request, classId=None) :
@@ -155,15 +144,15 @@ def getEditAClassForm(request, classId=None) :
     with getDatabase() as db :
       theClasses = getClasses(db)
       if classId in theClasses :
-        return HTMXResponse(request, editClassForm(
+        return editClassForm(
           className=theClasses[classId]['name'],
           classDesc=theClasses[classId]['desc'],
           classOrder=theClasses[classId]['classOrder'],
           classColour=theClasses[classId]['colour'],
           submitMessage='Save changes',
           postUrl=f'/classes/edit/{classId}'
-        ))
-  return HTMXResponse(request, listClasses())
+        ).response()
+  return listClasses().response()
 
 @put('/classes/edit/{classId:int}')
 async def putUpdateAClass(request, classId=None) :
@@ -178,7 +167,7 @@ async def putUpdateAClass(request, classId=None) :
       'colour'     : theForm['classColour']
     }))
     db.commit()
-  return HTMXResponse(request, listClasses())
+  return listClasses().response()
 
 @delete('/classes/delete/{classId:int}')
 def deleteAnEmptyClass(request, classId=None) :
@@ -193,4 +182,4 @@ def deleteAnEmptyClass(request, classId=None) :
       db.commit()
     else :
       print("Can NOT delete a class which is not empty!")
-  return HTMXResponse(request, listClasses())
+  return listClasses().response()

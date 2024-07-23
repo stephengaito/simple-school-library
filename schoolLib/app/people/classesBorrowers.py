@@ -17,12 +17,12 @@ from schoolLib.setup import *
 
 def listPupilsInAClassTable(classId) :
   tableRows = []
-  tableRows.append(tableRow([
-    tableHeader(text('First name')),
-    tableHeader(text('Family name')),
-    tableHeader(text('Cohort')),
-    tableHeader(text('Class')),
-    tableHeader(text('Actions'))
+  tableRows.append(TableRow([
+    TableHeader(Text('First name')),
+    TableHeader(Text('Family name')),
+    TableHeader(Text('Cohort')),
+    TableHeader(Text('Class')),
+    TableHeader(Text('Actions'))
   ]))
   with getDatabase() as db :
     selectSql = SelectSql(
@@ -34,27 +34,27 @@ def listPupilsInAClassTable(classId) :
     ).whereField("classId", "classes.id")
     results = selectSql.parseResults(db.execute(selectSql.sql()))
     for aRow in results :
-      tableRows.append(tableRow([
-        tableEntry(text(aRow['firstName'])),
-        tableEntry(text(aRow['familyName'])),
-        tableEntry(text(str(aRow['cohort']))),
-        tableEntry(text(aRow['classes_name'])),
-        tableEntry(button(
-          text='Edit',
+      tableRows.append(TableRow([
+        TableEntry(Text(aRow['firstName'])),
+        TableEntry(Text(aRow['familyName'])),
+        TableEntry(Text(str(aRow['cohort']))),
+        TableEntry(Text(aRow['classes_name'])),
+        TableEntry(Button(
+          'Edit',
           get=f'/borrowers/edit/{aRow['borrowers_id']}',
           target='#level1div'
         ))
       ]))
-  return table(tableRows, theId='level1div')
+  return Table(tableRows, theId='level1div')
 
 def updatePupilsInClassForm(classId, postUrl) :
   tableRows = []
-  tableRows.append(tableRow([
-    tableHeader(text('First name')),
-    tableHeader(text('Family name')),
-    tableHeader(text('Cohort')),
-    tableHeader(text('Old class')),
-    tableHeader(text('New class'))
+  tableRows.append(TableRow([
+    TableHeader(Text('First name')),
+    TableHeader(Text('Family name')),
+    TableHeader(Text('Cohort')),
+    TableHeader(Text('Old class')),
+    TableHeader(Text('New class'))
   ]))
   with getDatabase() as db :
     theClasses = getClasses(db, selectedClass=classId)
@@ -68,17 +68,17 @@ def updatePupilsInClassForm(classId, postUrl) :
     ).whereField("classId", "classes.id")
     results = selectSql.parseResults(db.execute(selectSql.sql()))
     for aRow in results :
-      tableRows.append(tableRow([
-        tableEntry(text(aRow['firstName'])),
-        tableEntry(text(aRow['familyName'])),
-        tableEntry(text(str(aRow['cohort']))),
-        tableEntry(text(aRow['classes_name'])),
-        tableEntry(classesSelector(
+      tableRows.append(TableRow([
+        TableEntry(Text(aRow['firstName'])),
+        TableEntry(Text(aRow['familyName'])),
+        TableEntry(Text(str(aRow['cohort']))),
+        TableEntry(Text(aRow['classes_name'])),
+        TableEntry(ClassesSelector(
           sortedClasses,
           name=f'rowClass-{aRow['borrowers_id']}'
         ))
       ]))
-  return formTable(tableRows, 'Save changes', post=postUrl)
+  return FormTable(tableRows, 'Save changes', post=postUrl)
 
 ##########################################################################
 # routes
@@ -86,20 +86,14 @@ def updatePupilsInClassForm(classId, postUrl) :
 @get('/classes/list/{classId:int}')
 def getListPupilsInAClass(request, classId=None) :
   if classId :
-    return HTMXResponse(
-      request,
-      listPupilsInAClassTable(classId)
-    )
-  return HTMXResponse(request, listClasses())
+    return listPupilsInAClassTable(classId).response()
+  return listClasses().response()
 
 @get('/classes/update/{classId:int}')
 def getUpdatePupilsInAClassForm(request, classId=None) :
   if classId :
-    return HTMXResponse(
-      request,
-      updatePupilsInClassForm(classId, 'classes/update')
-    )
-  return HTMXResponse(request, listClasses())
+    return updatePupilsInClassForm(classId, 'classes/update').response()
+  return listClasses().response()
 
 @put('/classes/update')
 async def putUpdatePupilesInAClass(request) :
@@ -114,4 +108,4 @@ async def putUpdatePupilesInAClass(request) :
         'classId' : rowClass[2]
       }))
     db.commit()
-  return HTMXResponse(request, listClasses())
+  return listClasses().response()

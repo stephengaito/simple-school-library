@@ -14,13 +14,10 @@ from schoolLib.app.menus import *
 def booksMenu(request) :
   someMarkdown = "somthing about **books**"
 
-  return HTMXResponse(
-    request,
-    level0div([
-      menu(topLevelMenu, selected='books'),
-      level1div([
-        menu(secondLevelBooksMenu, selected='takeOut'),
-        markdownDiv(someMarkdown)
-      ])
+  return Level0div([
+    TopLevelMenu.select('books'),
+    Level1div([
+      SecondLevelBooksMenu.select('takeOut'),
+      MarkdownDiv(someMarkdown)
     ])
-  )
+  ]).response()

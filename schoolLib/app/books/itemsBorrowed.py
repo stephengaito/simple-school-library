@@ -19,14 +19,14 @@ def editItemsBorrowedForm(
 ) :
   if not postUrl : return "<!-- edit itemsBorrowed form with NO postUrl -->"
 
-  return formTable([
-    dateInput(
+  return FormTable([
+    DateInput(
       label='Date borrowed',
       name='dateBorrowed',
       value=dateBorrowed,
       placeholder='The date last borrowed...'
     ),
-    dateInput(
+    DateInput(
       label='Date due',
       name='dateDue',
       value=dateDue,
@@ -44,19 +44,13 @@ def getNewItemsBorrowedForm(request,
   itemsPhysicalId=None, borrowerId=None
 ) :
   if itemsPhysicalId and borrowersId :
-    return HTMXResponse(
-      request,
-      editItemsBorrowedForm(
-        submitMessage='Take out a new book',
-        postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
-      )
-    )
-  return HTMXResponse(
-    request,
-    level0div(
-      menu(topLevelMenu)
-    )
-  )
+    return editItemsBorrowedForm(
+      submitMessage='Take out a new book',
+      postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
+    ).response()
+  return Level0div(
+      TopLevelMenu
+  ).response()
 
 @post('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new')
 async def postSaveNewItemsBorrowed(request,
@@ -72,12 +66,9 @@ async def postSaveNewItemsBorrowed(request,
         'dateDue'         : theForm['dateDue']
       }))
       db.commit()
-  return HTMXResponse(
-    request,
-    level0div(
-      menu(topLevelMenu)
-    )
-  )
+  return Level0div(
+    TopLevelMenu
+  ).response()
 
 @get('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}')
 def getEditItemsBorrowedForm(request,
@@ -96,21 +87,15 @@ def getEditItemsBorrowedForm(request,
       fetchAll=False
     )
     if itemsBorrowed :
-      return HTMXResponse(
-        request,
-        editItemsBorrowedForm(
-          dateBorrowed=itemsBorrowed[0]['dateBorrowed'],
-          dateDue=itemsBorrowed[0]['dateDue'],
-          submitMessage='Save changes',
-          postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
-        )
-      )
-  return HTMXResponse(
-    request,
-    level0div(
-      menu(topLevelMenu)
-    )
-  )
+      return editItemsBorrowedForm(
+        dateBorrowed=itemsBorrowed[0]['dateBorrowed'],
+        dateDue=itemsBorrowed[0]['dateDue'],
+        submitMessage='Save changes',
+        postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
+      ).response()
+  return Level0div(
+    TopLevelMenu
+  ).response()
 
 @put('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}')
 async def putUpdateAnItemsBorrowed(requeset,
@@ -128,9 +113,6 @@ async def putUpdateAnItemsBorrowed(requeset,
         'dateDue'      : theForm['dateDue']
       }))
       db.commit()
-  return HTMXResponse(
-    request,
-    level0div(
-      menu(topLevelMenu)
-    )
-  )
+  return Level0div(
+    TopLevelMenu
+  ).response()

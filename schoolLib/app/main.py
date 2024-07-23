@@ -32,63 +32,49 @@ def listRoutes(request, aPath=None) :
   for aRoute in routes :
     if aPath and not aRoute.path.startswith(aPath) : continue
     routesHtml.append(
-      text([
+      Text(' '.join([
         str(aRoute.path),
         str(aRoute.methods),
         str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
-      ], type='p'))
-  return HTMXResponse(
-    request,
-    sorted(routesHtml)
-  )
+      ])).response())
+  return HTMLResponse('\n'.join(sorted(routesHtml)))
 
 @get('/help/{aPath:path}')
 def helpPages(request, aPath=None) :
   if not aPath : aPath = 'help'
   someMarkdown = loadMarkdownFromFile(aPath)
 
-  return HTMXResponse(
-    request,
-    level0div([
-      menu(topLevelMenu, selected='home'),
-      level1div(markdownDiv(someMarkdown))
-    ])
-  )
+  return Level0div([
+    TopLevelMenu.select('home'),
+    Level1div(MarkdownDiv(someMarkdown))
+  ]).response()
 
 async def notFound(request, theException) :
   print("-------------")
   print(repr(request))
   print(repr(theException))
   print("-------------")
-  return HTMXResponse(
-    request,
-    level0div([
-      menu(topLevelMenu, selected='home'),
-      level1div([
-        text("Opps! Something went wrong! We can't find that page!", type='p'),
-        text(f"Looking for: [{request.url}]", type='p')
-      ])
-    ]),
-    status_code=404
-  )
+  return Level0div([
+    TopLevelMenu.select('home'),
+    Level1div([
+      Text("Opps! Something went wrong! We can't find that page!"),
+      Text(f"Looking for: [{request.url}]")
+    ])
+  ]).response(status_code=404)
 
 async def serverError(request, theException) :
   print("-------------")
   print(repr(request))
   print(repr(theException))
   print("-------------")
-  return HTMXResponse(
-    request,
-    level0div([
-      menu(topLevelMenu, selected='home'),
-      level1div([
-        text("Opps! Something went wrong! We can't find that page!", type='p'),
-        text(f"Looking for: [{request.url}]", type='p'),
-        text(f"Error: {repr(theException)}", type="p"),
-      ])
-    ]),
-    status_code=500
-  )
+  return Level0div([
+    TopLevelMenu.select('home'),
+    Level1div([
+      Text("Opps! Something went wrong! We can't find that page!", type='p'),
+      Text(f"Looking for: [{request.url}]", type='p'),
+      Text(f"Error: {repr(theException)}", type="p"),
+    ])
+  ]).response(status_code=500)
 
 app = Starlette(
   debug=True,

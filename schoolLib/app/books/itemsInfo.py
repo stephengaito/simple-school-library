@@ -20,56 +20,56 @@ def editItemsInfoForm(
 ) :
   if not postUrl : return "<!-- edit itemsInfo form with NO postUrl -->"
 
-  return formTable([
-    textInput(
+  return FormTable([
+    TextInput(
       label='Title',
       name='title',
       value=title,
       placeholder='A title...'
     ),
-    textInput(
+    TextInput(
       label='Authors',
       name='authors',
       value=authors,
       placeholder='Some authors...'
     ),
-    textInput(
+    TextInput(
       label='Publisher',
       name='publisher',
       value=publisher,
       placeholder='A publisher...'
     ),
-    textInput(
+    TextInput(
       label='A book type',
       name='type',
       value=bookType,
       placeholder=' A book type...'
     ),
-    textAreaInput(
+    TextAreaInput(
       label='Keywords',
       name='keywords',
       value=keywords,
       placeholder='Some keywords...'
     ),
-    textAreaInput(
+    TextAreaInput(
       label='Summary',
       name='summary',
       value=summary,
       placeholder='A summary...'
     ),
-    textInput(
+    TextInput(
       label='Series',
       name='series',
       value=series,
       placeholder='The series...'
     ),
-    textInput(
+    TextInput(
       label='Dewey decimal classification',
       name='dewey',
       value=dewey,
       placeholder='The dewey decimal classificaton...'
     ),
-    textInput(
+    TextInput(
       label='ISBN',
       name='isbn',
       value=isbn,
@@ -129,15 +129,15 @@ def getShowItemsInfo(request, itemsInfoId=None) :
           db.execute(physicalSelectSql.sql())
         )
         physicalItemsRow = []
-        physicalItemsRow.append(tableRow([
-          tableHeader("Barcode"),
-          tableHeader("Date added"),
-          tableHeader("Date last seen"),
-          tableHeader("Status"),
-          tableHeader("Date borrowed"),
-          tableHeader("Date due"),
-          tableHeader("Borrower"),
-          tableHeader("Class")
+        physicalItemsRow.append(TableRow([
+          TableHeader("Barcode"),
+          TableHeader("Date added"),
+          TableHeader("Date last seen"),
+          TableHeader("Status"),
+          TableHeader("Date borrowed"),
+          TableHeader("Date due"),
+          TableHeader("Borrower"),
+          TableHeader("Class")
         ]))
         if physicalItems :
           classes = getClasses(db)
@@ -149,78 +149,69 @@ def getShowItemsInfo(request, itemsInfoId=None) :
             borrowerClass = ""
             if aBook['borrowers_classId'] :
               borrowerClass = classes[aBook['borrowers_classId']]['name']
-            physicalItemsRow.append(tableRow([
-              tableEntry(aBook['itemsPhysical_barCode']),
-              tableEntry(aBook['itemsPhysical_dateAdded']),
-              tableEntry(aBook['itemsPhysical_dateLastSeen']),
-              tableEntry(aBook['itemsPhysical_status']),
-              tableEntry(aBook['itemsBorrowed_dateBorrowed']),
-              tableEntry(aBook['itemsBorrowed_dateDue']),
-              tableEntry(link(
+            physicalItemsRow.append(TableRow([
+              TableEntry(aBook['itemsPhysical_barCode']),
+              TableEntry(aBook['itemsPhysical_dateAdded']),
+              TableEntry(aBook['itemsPhysical_dateLastSeen']),
+              TableEntry(aBook['itemsPhysical_status']),
+              TableEntry(aBook['itemsBorrowed_dateBorrowed']),
+              TableEntry(aBook['itemsBorrowed_dateDue']),
+              TableEntry(Link(
                 f'/borrowers/show/{aBook['borrowers_id']}',
                 borrowerName,
                 target='#level1div'
               )),
-              tableEntry(borrowerClass)
+              TableEntry(borrowerClass)
             ]))
-        return HTMXResponse(
-          request,
-          level1div([
-            table([
-              tableRow([
-                tableEntry("Title"),
-                tableEntry(itemInfo['title'])
-              ]),
-              tableRow([
-                tableEntry("Authors"),
-                tableEntry(itemInfo['authors'])
-              ]),
-              tableRow([
-                tableEntry("Publisher"),
-                tableEntry(itemInfo['publisher'])
-              ]),
-              tableRow([
-                tableEntry("Series"),
-                tableEntry(itemInfo['series'])
-              ]),
-              tableRow([
-                tableEntry("ISBN"),
-                tableEntry(itemInfo['isbn'])
-              ]),
-              tableRow([
-                tableEntry("Dewey Decimal Code"),
-                tableEntry(itemInfo['dewey'])
-              ]),
-              tableRow([
-                tableEntry("Book type"),
-                tableEntry(itemInfo['type'])
-              ]),
-              tableRow([
-                tableEntry("Keywords"),
-                tableEntry(itemInfo['keywords'])
-              ]),
-              tableRow([
-                tableEntry("Summary"),
-                tableEntry(itemInfo['summary'])
-              ])
+        return Level1div([
+          Table([
+            TableRow([
+              TableEntry("Title"),
+              TableEntry(itemInfo['title'])
             ]),
-            table(physicalItemsRow)
-          ])
-        )
-  return HTMXResponse(
-    request,
-    markdownDiv("some thing about itemsInfo")
-  )
+            TableRow([
+              TableEntry("Authors"),
+              TableEntry(itemInfo['authors'])
+            ]),
+            TableRow([
+              TableEntry("Publisher"),
+              TableEntry(itemInfo['publisher'])
+            ]),
+            TableRow([
+              TableEntry("Series"),
+              TableEntry(itemInfo['series'])
+            ]),
+            TableRow([
+              TableEntry("ISBN"),
+              TableEntry(itemInfo['isbn'])
+            ]),
+            TableRow([
+              TableEntry("Dewey Decimal Code"),
+              TableEntry(itemInfo['dewey'])
+            ]),
+            TableRow([
+              TtableEntry("Book type"),
+              TableEntry(itemInfo['type'])
+            ]),
+            TableRow([
+              TableEntry("Keywords"),
+              TableEntry(itemInfo['keywords'])
+            ]),
+            TableRow([
+              TableEntry("Summary"),
+              TableEntry(itemInfo['summary'])
+            ])
+          ]),
+          Table(physicalItemsRow)
+        ]).response()
+  return MarkdownDiv("some thing about itemsInfo").response()
 
 @get('/itemsInfo/new')
 def getNewItemsInfoForm(request) :
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()
 
 @post('/itemsInfo/new')
 async def postSaveNewItemsInfo(request) :
@@ -238,13 +229,10 @@ async def postSaveNewItemsInfo(request) :
       'isbn'      : theForm['isbn']
     }))
     db.commit()
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()
 
 @get('/itemsInfo/edit/{itemsInfoId:int}')
 def getEditAnItemsInfoForm(request, itemsInfoId=None) :
@@ -261,29 +249,23 @@ def getEditAnItemsInfoForm(request, itemsInfoId=None) :
         fetchAll=False
       )
       if itemsInfo :
-        return HTMXResponse(
-          request,
-          editItemsInfoForm(
-            title=itemsInfo[0]['title'],
-            authors=itemsInfo[0]['authors'],
-            publisher=itemsInfo[0]['publisher'],
-            bookType=itemsInfo[0]['type'],
-            keywords=itemsInfo[0]['keywords'],
-            summary=itemsInfo[0]['summary'],
-            series=itemsInfo[0]['series'],
-            dewey=itemsInfo[0]['dewey'],
-            isbn=itemsInfo[0]['isbn'],
-            submitMessage='Save changes',
-            postUrl=f'/itemsInfo/edit/{itemsInfoId}',
-          )
-        )
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+        return editItemsInfoForm(
+          title=itemsInfo[0]['title'],
+          authors=itemsInfo[0]['authors'],
+          publisher=itemsInfo[0]['publisher'],
+          bookType=itemsInfo[0]['type'],
+          keywords=itemsInfo[0]['keywords'],
+          summary=itemsInfo[0]['summary'],
+          series=itemsInfo[0]['series'],
+          dewey=itemsInfo[0]['dewey'],
+          isbn=itemsInfo[0]['isbn'],
+          submitMessage='Save changes',
+          postUrl=f'/itemsInfo/edit/{itemsInfoId}',
+        ).response()
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()
 
 @put('/itemsInfo/edit/{itemsInfoId:int}')
 async def putUpdateAnItemsInfo(request, itemsInfoId=None) :
@@ -304,10 +286,7 @@ async def putUpdateAnItemsInfo(request, itemsInfoId=None) :
       'isbn'      : theForm['isbn']
       }))
       db.commit()
-  return HTMXResponse(
-    request,
-    editItemsInfoForm(
-      submitMessage='Add new book',
-      postUrl='/itemsInfo/new',
-    )
-  )
+  return editItemsInfoForm(
+    submitMessage='Add new book',
+    postUrl='/itemsInfo/new',
+  ).response()

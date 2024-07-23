@@ -7,15 +7,15 @@ from schoolLib.app.menus import *
 # content
 
 def booksCheckedOutTableHeader() :
-  return tableRow([
-    tableHeader(text('Class Name')),
-    tableHeader(text("Pupil's Name")),
-    tableHeader(text('Title')),
-    tableHeader(text('BarCode')),
-    tableHeader(text('Date issued')),
-    tableHeader(text('Weeks out')),
-    tableHeader(text('Date due')),
-    tableHeader(text('Days overdue')),
+  return TableRow([
+    TableHeader(Text('Class Name')),
+    TableHeader(Text("Pupil's Name")),
+    TableHeader(Text('Title')),
+    TableHeader(Text('BarCode')),
+    TableHeader(Text('Date issued')),
+    TableHeader(Text('Weeks out')),
+    TableHeader(Text('Date due')),
+    TableHeader(Text('Days overdue')),
   ])
 
 def booksCheckedOut() :
@@ -48,26 +48,26 @@ def booksCheckedOut() :
       classes = getClasses(db)
       for aBook in booksCheckedOut :
         bcoRows.append(tableRow([
-          tableEntry(text(classes[aBook['borrowers_classId']]['name'])),
-          tableEntry(link(
+          TableEntry(Text(classes[aBook['borrowers_classId']]['name'])),
+          TableEntry(Link(
             f'/borrowers/show/{aBook['borrowers_id']}',
             aBook['borrowers_firstName']+' '+aBook['borrowers_familyName'],
             target='#level1div'
           )),
-          tableEntry(link(
+          TableEntry(Link(
             f'/itemsInfo/show/{aBook['itemsInfo_id']}',
             aBook['itemsInfo_title'],
             target='#level1div'
           )),
-          tableEntry(text(aBook['itemsPhysical_barcode'])),
-          tableEntry(text(aBook['itemsBorrowed_dateBorrowed'])),
-          tableEntry(text("")),
-          tableEntry(text(aBook['itemsBorrowed_dateDue'])),
-          tableEntry(text("")),
+          TableEntry(Text(aBook['itemsPhysical_barcode'])),
+          TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),
+          TableEntry(Text("")),
+          TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
+          TableEntry(Text("")),
         ]))
-  return level1div([
-    menu(secondLevelTasksMenu, selected='booksCheckedOut'),
-    table(bcoRows)
+  return Level1div([
+    SecondLevelTasksMenu.select('booksCheckedOut'),
+    Table(bcoRows)
   ])
 
 ##########################################################################
@@ -77,17 +77,11 @@ def booksCheckedOut() :
 def tasksMenu(request) :
   tasksMarkdown = "somthing about **tasks**"
 
-  return HTMXResponse(
-    request,
-    level0div([
-      menu(topLevelMenu, selected='tasks'),
-      booksCheckedOut()
-    ], theId='level0div')
-  )
+  return Level0div([
+    TopLevelMenu.select('tasks'),
+    booksCheckedOut()
+  ], theId='level0div').response()
 
 @get('/menu/tasks/booksCheckedOut')
 def getBooksCheckedOut(request) :
-  return HTMXResponse(
-    request,
-    booksCheckedOut()
-  )
+  return booksCheckedOut().response()
