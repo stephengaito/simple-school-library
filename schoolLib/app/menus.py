@@ -49,6 +49,12 @@ secondLevelBooksMenu = [
     'get'       : '/search/items',
     'target'    : '#level1div'
   },
+  { 'component' : 'button',
+    'c-name'    : 'addBook',
+    'text'      : 'Add a book',
+    'get'       : '/itemsInfo/new',
+    'target'    : '#level1div'
+  },
 ]
 
 secondLevelPeopleMenu = [

@@ -57,7 +57,7 @@ def updatePupilsInClassForm(classId, postUrl) :
     tableHeader(text('New class'))
   ]))
   with getDatabase() as db :
-    theClasses = getClasses(db)
+    theClasses = getClasses(db, selectedClass=classId)
     sortedClasses = getSortedClasses(theClasses)
     selectSql = SelectSql(
     ).fields(

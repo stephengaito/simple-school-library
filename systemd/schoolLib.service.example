@@ -1,0 +1,9 @@
+[Unit]
+Description=Run the All Saints Simple School Lirbary
+After=network.target
+
+[Service]
+ExecStart=/home/<aUser>/.local/bin/schoolLib
+
+[Install]
+WantedBy=default.target

@@ -153,7 +153,7 @@ def classesSelector(sortedClasses, label=None, inRow=False, **kwargs) :
   csHtml = [f'<select {csAttrs}>' ]
   for aClass in sortedClasses :
     csHtml.append(
-      f'<option value="{kwargs['name']}-{aClass['id']}" {aClass['selected']}>{aClass['name']}</option>'
+      f'<option value="{kwargs['name']}-{aClass['id']}" {aClass['selected']} style="color: {aClass['colour']};">{aClass['name']}</option>'
     )
   csHtml.append('</select>')
 
