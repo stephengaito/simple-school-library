@@ -44,15 +44,9 @@ class Menu(HtmxChildrenBase) :
     self,
     someChildren,
     selectedId=None,
-    target='#level0div',
-    swap='outerHTML',
     **kwargs
   ) :
     super().__init__(someChildren, **kwargs)
-    self.childKWArgs = {
-      'target' : target,
-      'swap'   : swap
-    }
     self.selectedId=selectedId
 
   def select(self, selectedId) :
@@ -65,9 +59,7 @@ class Menu(HtmxChildrenBase) :
       selected = None
       if self.selectedId and aChild.theId == self.selectedId :
         selected = "selected"
-      aChild.collectHtml(
-        htmlFragments, selected=selected, **self.childKWArgs
-      )
+      aChild.collectHtml(htmlFragments, selected=selected)
     htmlFragments.append('</div>')
 
 class Text(HtmxBase) :
@@ -107,5 +99,9 @@ class Label(Text) :
 
 class Link(Text) :
   def __init__(self, url, text, textType='a', **kwargs) :
-    # PUT url into kwargs...
+    if 'target' in kwargs :
+      kwargs['get'] = url
+    else :
+      if 'attrs' not in kwargs : kwargs['attrs'] = []
+      kwargs['attrs'].append(f'href="{url}"')
     super().__init__(text, textType=textType, **kwargs)

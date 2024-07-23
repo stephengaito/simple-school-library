@@ -184,18 +184,16 @@ class HtmxChildrenBase(HtmxBase) :
   def __init__(
     self,
     someChildren,
-    childKWArgs={},
     **kwargs
   ) :
     super().__init__(**kwargs)
     if not isinstance(someChildren, list) :
       someChildren = [ someChildren ]
     self.children = someChildren
-    self.childKWArgs = childKWArgs
 
   def appendChild(self, aChild) :
     self.children.append(aChild)
 
   def collectChildrenHtml(self, htmlFragments) :
     for aChild in self.children :
-      aChild.collectHtml(htmlFragments, **self.childKWArgs)
+      aChild.collectHtml(htmlFragments)

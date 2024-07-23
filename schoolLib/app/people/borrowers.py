@@ -163,12 +163,12 @@ def getShowBorrowerInfo(request, borrowerId=None) :
         itemsBorrowedRows = []
         itemsBorrowedRows.append(
           TableRow([
-            TableHeader('Title'),
-            TableHeader('Barcode'),
-            TableHeader('Dewey Decimal Code'),
-            TableHeader('Date Borrowed'),
-            TableHeader('Date Due'),
-            TableHeader('Date Returned'),
+            TableHeader(Text('Title')),
+            TableHeader(Text('Barcode')),
+            TableHeader(Text('Dewey Decimal Code')),
+            TableHeader(Text('Date Borrowed')),
+            TableHeader(Text('Date Due')),
+            TableHeader(Text('Date Returned'))
           ])
         )
         if itemsBorrowed :
@@ -185,29 +185,29 @@ def getShowBorrowerInfo(request, borrowerId=None) :
                   anItem['itemsPhysical_barCode'],
                   target='#level1div'
                 )),
-                TableEntry(anItem['itemsInfo_dewey']),
-                TableEntry(anItem['itemsBorrowed_dateBorrowed']),
-                TableEntry(anItem['itemsBorrowed_dateDue']),
-                TableEntry(""),
+                TableEntry(Text(anItem['itemsInfo_dewey'])),
+                TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
+                TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
+                TableEntry(Text("")),
               ])
             )
         return Level1div([
           Table([
             TableRow([
-              TableEntry(text('First Name')),
-              TableEntry(text(borrower['firstName']))
+              TableEntry(Text('First Name')),
+              TableEntry(Text(borrower['firstName']))
             ]),
             TableRow([
-              TableEntry(text('Family Name')),
-              TableEntry(text(borrower['familyName']))
+              TableEntry(Text('Family Name')),
+              TableEntry(Text(borrower['familyName']))
             ]),
             TableRow([
-              TableEntry(text('Cohort')),
-              TableEntry(text(str(borrower['cohort'])))
+              TableEntry(Text('Cohort')),
+              TableEntry(Text(str(borrower['cohort'])))
             ]),
             TableRow([
-              TableEntry(text('Class')),
-              TableEntry(text(borrower['className']))
+              TableEntry(Text('Class')),
+              TableEntry(Text(borrower['className']))
             ]),
           ]),
           Table(itemsBorrowedRows)

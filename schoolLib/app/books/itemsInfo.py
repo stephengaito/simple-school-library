@@ -130,14 +130,14 @@ def getShowItemsInfo(request, itemsInfoId=None) :
         )
         physicalItemsRow = []
         physicalItemsRow.append(TableRow([
-          TableHeader("Barcode"),
-          TableHeader("Date added"),
-          TableHeader("Date last seen"),
-          TableHeader("Status"),
-          TableHeader("Date borrowed"),
-          TableHeader("Date due"),
-          TableHeader("Borrower"),
-          TableHeader("Class")
+          TableHeader(Text("Barcode")),
+          TableHeader(Text("Date added")),
+          TableHeader(Text("Date last seen")),
+          TableHeader(Text("Status")),
+          TableHeader(Text("Date borrowed")),
+          TableHeader(Text("Date due")),
+          TableHeader(Text("Borrower")),
+          TableHeader(Text("Class"))
         ]))
         if physicalItems :
           classes = getClasses(db)
@@ -150,56 +150,56 @@ def getShowItemsInfo(request, itemsInfoId=None) :
             if aBook['borrowers_classId'] :
               borrowerClass = classes[aBook['borrowers_classId']]['name']
             physicalItemsRow.append(TableRow([
-              TableEntry(aBook['itemsPhysical_barCode']),
-              TableEntry(aBook['itemsPhysical_dateAdded']),
-              TableEntry(aBook['itemsPhysical_dateLastSeen']),
-              TableEntry(aBook['itemsPhysical_status']),
-              TableEntry(aBook['itemsBorrowed_dateBorrowed']),
-              TableEntry(aBook['itemsBorrowed_dateDue']),
+              TableEntry(Text(aBook['itemsPhysical_barCode'])),
+              TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
+              TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),
+              TableEntry(Text(aBook['itemsPhysical_status'])),
+              TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),
+              TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
               TableEntry(Link(
                 f'/borrowers/show/{aBook['borrowers_id']}',
                 borrowerName,
                 target='#level1div'
               )),
-              TableEntry(borrowerClass)
+              TableEntry(Text(borrowerClass))
             ]))
         return Level1div([
           Table([
             TableRow([
-              TableEntry("Title"),
-              TableEntry(itemInfo['title'])
+              TableEntry(Text("Title")),
+              TableEntry(Text(itemInfo['title']))
             ]),
             TableRow([
-              TableEntry("Authors"),
-              TableEntry(itemInfo['authors'])
+              TableEntry(Text("Authors")),
+              TableEntry(Text(itemInfo['authors']))
             ]),
             TableRow([
-              TableEntry("Publisher"),
-              TableEntry(itemInfo['publisher'])
+              TableEntry(Text("Publisher")),
+              TableEntry(Text(itemInfo['publisher']))
             ]),
             TableRow([
-              TableEntry("Series"),
-              TableEntry(itemInfo['series'])
+              TableEntry(Text("Series")),
+              TableEntry(Text(itemInfo['series']))
             ]),
             TableRow([
-              TableEntry("ISBN"),
-              TableEntry(itemInfo['isbn'])
+              TableEntry(Text("ISBN")),
+              TableEntry(Text(itemInfo['isbn']))
             ]),
             TableRow([
-              TableEntry("Dewey Decimal Code"),
-              TableEntry(itemInfo['dewey'])
+              TableEntry(Text("Dewey Decimal Code")),
+              TableEntry(Text(itemInfo['dewey']))
             ]),
             TableRow([
-              TtableEntry("Book type"),
-              TableEntry(itemInfo['type'])
+              TableEntry(Text("Book type")),
+              TableEntry(Text(itemInfo['type']))
             ]),
             TableRow([
-              TableEntry("Keywords"),
-              TableEntry(itemInfo['keywords'])
+              TableEntry(Text("Keywords")),
+              TableEntry(Text(itemInfo['keywords']))
             ]),
             TableRow([
-              TableEntry("Summary"),
-              TableEntry(itemInfo['summary'])
+              TableEntry(Text("Summary")),
+              TableEntry(Text(itemInfo['summary']))
             ])
           ]),
           Table(physicalItemsRow)

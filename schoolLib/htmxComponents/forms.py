@@ -198,31 +198,31 @@ class ClassesSelector(HtmxBase) :
     inRow=False,
     **kwargs
   ) :
-    raise Exception("not yet implemented!")
+    super().__init__(**kwargs)
+    self.sortedClasses = sortedClasses
+    self.name          = name
+    self.label         = label
+    self.inRow         = inRow
 
-#def classesSelector(sortedClasses, label=None, inRow=False, **kwargs) :
-#  if 'name' not in kwargs : return "<!-- classesSelector with NO name -->"
-#
-#  csAttrs = computeHtmxAttrs(
-#    'classesSelectorClasses', 'classesSelectorStyles', 'classesSelectorAttrs',
-#    kwargs
-#  )
-#  csAttrs += f' name="{kwargs['name']}"'
-#
-#  csHtml = [f'<select {csAttrs}>' ]
-#  for aClass in sortedClasses :
-#    csHtml.append(
-#      f'<option value="{kwargs['name']}-{aClass['id']}" {aClass['selected']} style="color: {aClass['colour']};">{aClass['name']}</option>'
-#    )
-#  csHtml.append('</select>')
-#
-#  if label :
-#    # add the prefixes in reverse order
-#    csHtml.insert(0, '<td>')
-#    csHtml.insert(0, f'<td><label>{label}</label></td>')
-#    csHtml.insert(0, '<tr>')
-#    # add the suffic in normal order
-#    csHtml.append('</td>')
-#    csHtml.append('</tr>')
-#
-#  return '\n'.join(csHtml)
+  def collectHtml(self, htmlFragments) :
+    csAttrs = self.computeHtmxAttrs()
+    csAttrs += f' name="{self.name}"'
+
+    if label :
+      # add the prefixes
+      htmlFragments.append('<tr>')
+      htmlFragments.append(f'<td><label>{label}</label></td>')
+      htmlFragments.append('<td>')
+
+    # add the selector
+    htmlFragments.append(f'<select {csAttrs}>')
+    for aClass in sortedClasses :
+      htmlFragments.append(
+        f'<option value="{self.name}-{aClass['id']}" {aClass['selected']} style="color: {aClass['colour']};">{aClass['name']}</option>'
+      )
+    htmlFragments.append('</select>')
+
+    if label :
+      # add the suffixes
+      htmlFragments.append('</td>')
+      htmlFragments.append('</tr>')
