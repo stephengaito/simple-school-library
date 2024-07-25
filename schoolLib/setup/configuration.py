@@ -9,6 +9,22 @@ from starlette.templating import Jinja2Templates
 
 # QUESTION: Should we move the schema loading to this module?
 
+emojiColours = {
+  'red'       : '&#x1F534;',
+  'orange'    : '&#x1F7E0;',
+  'yellow'    : '&#x1F7E1;',
+  'green'     : '&#x1F7E2;',
+  'turquoise' : '&#x1F535;',
+  'blue'      : '&#x1F535;',
+  'purple'    : '&#x1F7E3;',
+  'brown'     : '&#x1F7E4;',
+  'black'     : '&#x26AB;',
+  'white'     : '&#x26AA;'
+}
+
+def addEmojiColour(emojiColourName, text) :
+  return emojiColours[emojiColourName] + ' ' + text
+
 config = {}
 
 def sanitizeConfig(config, verbose=False) :

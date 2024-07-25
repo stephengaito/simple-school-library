@@ -48,7 +48,12 @@ def booksCheckedOut() :
       classes = getClasses(db)
       for aBook in booksCheckedOut :
         bcoRows.append(TableRow([
-          TableEntry(Text(classes[aBook['borrowers_classId']]['name'])),
+          TableEntry(Text(
+            addEmojiColour(
+              classes[aBook['borrowers_classId']]['colour'],
+              classes[aBook['borrowers_classId']]['name']
+            )
+          )),
           TableEntry(Link(
             f'/borrowers/show/{aBook['borrowers_id']}',
             aBook['borrowers_firstName']+' '+aBook['borrowers_familyName'],

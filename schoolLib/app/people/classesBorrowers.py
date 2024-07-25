@@ -27,7 +27,8 @@ def listPupilsInAClassTable(classId) :
   with getDatabase() as db :
     selectSql = SelectSql(
     ).fields(
-      "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
+      "borrowers.id", "firstName", "familyName", "cohort",
+      "classes.name", "classes.colour"
     ).tables(
       "borrowers", "classes"
     ).whereValue("classId", classId
@@ -38,7 +39,9 @@ def listPupilsInAClassTable(classId) :
         TableEntry(Text(aRow['firstName'])),
         TableEntry(Text(aRow['familyName'])),
         TableEntry(Text(str(aRow['cohort']))),
-        TableEntry(Text(aRow['classes_name'])),
+        TableEntry(Text(
+          addEmojiColour(aRow['classes_colour'], aRow['classes_name'])
+        )),
         TableEntry(Button(
           'Edit',
           get=f'/borrowers/edit/{aRow['borrowers_id']}',
@@ -61,7 +64,8 @@ def updatePupilsInClassForm(classId, postUrl) :
     sortedClasses = getSortedClasses(theClasses)
     selectSql = SelectSql(
     ).fields(
-      "borrowers.id", "firstName", "familyName", "cohort", "classes.name"
+      "borrowers.id", "firstName", "familyName", "cohort",
+      "classes.name", "classes.colour"
     ).tables(
       "borrowers", "classes"
     ).whereValue("classId", classId
@@ -72,7 +76,9 @@ def updatePupilsInClassForm(classId, postUrl) :
         TableEntry(Text(aRow['firstName'])),
         TableEntry(Text(aRow['familyName'])),
         TableEntry(Text(str(aRow['cohort']))),
-        TableEntry(Text(aRow['classes_name'])),
+        TableEntry(Text(
+          addEmojiColour(aRow['classes_colour'], aRow['classes_name'])
+        )),
         TableEntry(ClassesSelector(
           sortedClasses,
           name=f'rowClass-{aRow['borrowers_id']}'

@@ -1,6 +1,7 @@
 
 from datetime import date
 
+from schoolLib.setup.configuration import *
 from schoolLib.htmxComponents.htmx import *
 from schoolLib.htmxComponents.tables import *
 from schoolLib.htmxComponents.simpleComponents import *
@@ -195,34 +196,75 @@ class ClassesSelector(HtmxBase) :
     sortedClasses,
     name,
     label=None,
-    inRow=False,
     **kwargs
   ) :
     super().__init__(**kwargs)
     self.sortedClasses = sortedClasses
     self.name          = name
     self.label         = label
-    self.inRow         = inRow
 
   def collectHtml(self, htmlFragments) :
     csAttrs = self.computeHtmxAttrs()
     csAttrs += f' name="{self.name}"'
 
-    if label :
+    if self.label :
       # add the prefixes
       htmlFragments.append('<tr>')
-      htmlFragments.append(f'<td><label>{label}</label></td>')
+      htmlFragments.append(f'<td><label>{self.label}</label></td>')
       htmlFragments.append('<td>')
 
     # add the selector
     htmlFragments.append(f'<select {csAttrs}>')
-    for aClass in sortedClasses :
+    for aClass in self.sortedClasses :
       htmlFragments.append(
-        f'<option value="{self.name}-{aClass['id']}" {aClass['selected']} style="color: {aClass['colour']};">{aClass['name']}</option>'
+        f'<option value="{self.name}-{aClass['id']}" {aClass['selected']} >{addEmojiColour(aClass['colour'],aClass['name'])}</option>'
       )
     htmlFragments.append('</select>')
 
-    if label :
+    if self.label :
       # add the suffixes
       htmlFragments.append('</td>')
       htmlFragments.append('</tr>')
+
+class EmojiColourSelector(HtmxBase) :
+
+  def __init__(
+    self,
+    name,
+    label=None,
+    selectedColourName="",
+    **kwargs
+  ) :
+    super().__init__(**kwargs)
+    self.name               = name
+    self.label              = label
+    self.selectedColourName = selectedColourName
+
+  def collectHtml(self, htmlFragments) :
+    ecsAttrs = self.computeHtmxAttrs()
+    ecsAttrs += f' name="{self.name}"'
+
+    if self.label :
+      # add the prefixes
+      htmlFragments.append('<tr>')
+      htmlFragments.append(f'<td><label>{self.label}</label></td>')
+      htmlFragments.append('<td>')
+
+    # add the selector
+    htmlFragments.append(f'<select {ecsAttrs}>')
+    for aColourName, aCodePoint in emojiColours.items() :
+      selected = ""
+      if aColourName == self.selectedColourName :
+        selected = "selected"
+      htmlFragments.append(
+        f'<option value="{aColourName}" {selected} >{aCodePoint} {aColourName} {aCodePoint}</option>'
+      )
+    htmlFragments.append('</select>')
+
+    if self.label :
+      # add the suffixes
+      htmlFragments.append('</td>')
+      htmlFragments.append('</tr>')
+
+
+

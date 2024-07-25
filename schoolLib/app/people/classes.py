@@ -45,11 +45,10 @@ def editClassForm(
       value=classOrder,
       defaultValue=0
     ),
-    ColourInput(
+    EmojiColourSelector(
       label='Class colour',
       name='classColour',
-      value=classColour,
-      defaultValue='#000000'
+      selectedColourName=classColour,
     )
   ], submitMessage,
     theId='level2div', target='this', post=postUrl, **kwargs
@@ -60,6 +59,7 @@ def listClasses(**kwargs) :
   tableRows.append(TableRow([
     TableHeader(Text('Name')),
     TableHeader(Text('Description')),
+    TableHeader(Text('Colour')),
     TableHeader(Text('Actions'), colspan=4)
   ]))
 
@@ -70,6 +70,7 @@ def listClasses(**kwargs) :
       tableRows.append(TableRow([
         TableEntry(Text(aClass['name'])),
         TableEntry(Text(aClass['desc'])),
+        TableEntry(Text(addEmojiColour(aClass['colour'],aClass['colour']))),
         TableEntry(Button(
           'List', get=f'/classes/list/{aClass['id']}', target='#level1div'
         )),
