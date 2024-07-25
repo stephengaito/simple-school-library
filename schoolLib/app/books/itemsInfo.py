@@ -149,6 +149,10 @@ def getShowItemsInfo(request, itemsInfoId=None) :
             borrowerClass = ""
             if aBook['borrowers_classId'] :
               borrowerClass = classes[aBook['borrowers_classId']]['name']
+            if not aBook['itemsBorrowed_dateBorrowed'] :
+              aBook['itemsBorrowed_dateBorrowed'] = ""
+            if not aBook['itemsBorrowed_dateDue'] :
+              aBook['itemsBorrowed_dateDue'] = ""
             physicalItemsRow.append(TableRow([
               TableEntry(Text(aBook['itemsPhysical_barCode'])),
               TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
