@@ -19,35 +19,53 @@ import schoolLib.app.people
 import schoolLib.app.tasks.menu
 
 @get('/')
-def homepage(request):
+def homepage(request, db):
   return HtmlPage(
     StdHeaders(),
     StdBody()
-  ).response()
+  )
 
 @get('/routes/{aPath:path}')
-def listRoutes(request, aPath=None) :
+def listRoutes(request, db, aPath=None) :
   if aPath : aPath = '/'+aPath
-  routesHtml = []
+  routesStrs = []
   for aRoute in routes :
     if aPath and not aRoute.path.startswith(aPath) : continue
-    routesHtml.append(
-      Text(' '.join([
+    routesStrs.append(
+      ' '.join([
+        '<p>',
         str(aRoute.path),
         str(aRoute.methods),
-        str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
-      ])).response())
-  return HTMLResponse('\n'.join(sorted(routesHtml)))
+        str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__),
+        '</p>'
+      ]))
+  return Text('\n'.join(sorted(routesStrs)))
+
+@get('/pageParts/{aPath:path}')
+def listRoutes(request, db, aPath=None) :
+  if aPath : aPath = '/'+aPath
+  routesStrs = []
+  for aRoute in routes :
+    if aPath and not aRoute.path.startswith(aPath) : continue
+    routesStrs.append(
+      ' '.join([
+        '<p>',
+        str(aRoute.path),
+        str(aRoute.methods),
+        str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__),
+        '</p>'
+      ]))
+  return Text('\n'.join(sorted(routesStrs)))
 
 @get('/help/{aPath:path}')
-def helpPages(request, aPath=None) :
+def helpPages(request, db, aPath=None) :
   if not aPath : aPath = 'help'
   someMarkdown = loadMarkdownFromFile(aPath)
 
   return Level0div([
     TopLevelMenu.select('home'),
     Level1div(MarkdownDiv(someMarkdown))
-  ]).response()
+  ])
 
 async def notFound(request, theException) :
   print("-------------")
@@ -60,7 +78,7 @@ async def notFound(request, theException) :
       Text("Opps! Something went wrong! We can't find that page!"),
       Text(f"Looking for: [{request.url}]")
     ])
-  ]).response(status_code=404)
+  ], status_code=404)
 
 async def serverError(request, theException) :
   print("-------------")
@@ -74,7 +92,7 @@ async def serverError(request, theException) :
       Text(f"Looking for: [{request.url}]", type='p'),
       Text(f"Error: {repr(theException)}", type="p"),
     ])
-  ]).response(status_code=500)
+  ], status_code=500)
 
 app = Starlette(
   debug=True,

@@ -283,29 +283,29 @@ def getOrderedClassList(db, selectedClass=None) :
 # This allows us to connect to the database once per page load
 # but we can perform multiple selects and/or updates per page
 
-@contextmanager
-def getDatabase(path=None, asCursor=False) :
-  if not path :
-    path = ":memory:"
-    if 'database' in config :
-      path = config['database']
-  try :
-    db = sqlite3.connect(path)
-    try :
-      if asCursor :  yield db.cursor()
-      else        :  yield db
-    finally :
-      db.close()
-  except Exception as err :
-    print(f"Could not connect to the database: [{path}]")
-    print(repr(err))
-    print(traceback.format_exc())
-    raise SLException(
-      f"Could not open database [{path}]",
-      'Trying to open the database',
-      'Have you configured the database properly?',
-      repr(err)
-    )
+#@contextmanager
+#def getDatabase(path=None, asCursor=False) :
+#  if not path :
+#    path = ":memory:"
+#    if 'database' in config :
+#      path = config['database']
+#  try :
+#    db = sqlite3.connect(path)
+#    try :
+#      if asCursor :  yield db.cursor()
+#      else        :  yield db
+#    finally :
+#      db.close()
+#  except Exception as err :
+#    print(f"Could not connect to the database: [{path}]")
+#    print(repr(err))
+#    print(traceback.format_exc())
+#    raise SLException(
+#      f"Could not open database [{path}]",
+#      'Trying to open the database',
+#      'Have you configured the database properly?',
+#      repr(err)
+#    )
 
 #def selectUsing(anSQLselection) :
 #  with getDatabase(asCursor=True) as cursor:

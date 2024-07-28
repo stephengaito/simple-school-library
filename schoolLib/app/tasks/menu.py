@@ -18,7 +18,8 @@ def booksCheckedOutTableHeader() :
     TableHeader(Text('Days overdue')),
   ])
 
-def booksCheckedOut() :
+@pagePart
+def booksCheckedOut(db) :
   bcoRows = []
   bcoRows.append(booksCheckedOutTableHeader())
   with getDatabase() as db :
@@ -79,14 +80,14 @@ def booksCheckedOut() :
 # routes
 
 @get('/menu/tasks')
-def tasksMenu(request) :
+def tasksMenu(request, db) :
   tasksMarkdown = "somthing about **tasks**"
 
   return Level0div([
     TopLevelMenu.select('tasks'),
-    booksCheckedOut()
-  ], theId='level0div').response()
+    booksCheckedOut(db)
+  ], theId='level0div')
 
 @get('/menu/tasks/booksCheckedOut')
-def getBooksCheckedOut(request) :
-  return booksCheckedOut().response()
+def getBooksCheckedOut(request, db) :
+  return booksCheckedOut(db)

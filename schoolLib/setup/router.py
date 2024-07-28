@@ -26,7 +26,17 @@ def callWithParameters(request, func) :
   #print(yaml.dump(params))
   #print("-------------------------------------")
   try :
-    return func(request, **params)
+    path = ":memory:"
+    if 'database' in config :
+      path = config['database']
+    try :
+      db = sqlite3.connect(path)
+      htmxComponent = func(request, db, **params)
+      htmlFragments = []
+      htmxComponent.collectHtml(htmlFragments)
+      return HTMLResponse(' '.join(htmlFragments), **htmxComponent.kwargs)
+    finally :
+      db.close()
   except SLException as slErr :
     errorText = [
       Text("Opps! Something in the server went wrong! We can't supply that page!", type='p'),
@@ -84,3 +94,23 @@ def delete(aRoute, name=None) :
     routes.append(Route(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
     return deleteWrapper
   return deleteDecorator
+
+###############################################################
+# Capture the "external facing" page parts
+
+pageParts = []
+
+def pagePart(func) :
+  pageParts.append(func)
+  return func
+
+
+
+
+
+
+
+
+
+
+

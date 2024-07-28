@@ -83,10 +83,10 @@ class HtmxBase :
   def collectHtml(self, htmlFragments, **kwargs) :
     pass
 
-  def response(self, *args, **kwargs) :
-    htmlFragments = []
-    self.collectHtml(htmlFragments)
-    return HTMLResponse(' '.join(htmlFragments), *args, **kwargs)
+  #def response(self, *args, **kwargs) :
+  #  htmlFragments = []
+  #  self.collectHtml(htmlFragments)
+  #  return HTMLResponse(' '.join(htmlFragments), *args, **kwargs)
 
   #################################################################
   # build HTML attributes from kwargs and theme
