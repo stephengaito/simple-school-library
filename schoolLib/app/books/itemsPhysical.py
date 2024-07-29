@@ -86,97 +86,98 @@ def editItemsPhysicalForm(
 # routes
 
 @get('/itemsPhysical/{itemsInfoId:int}/new')
-def getNewItemsPhysicalForm(request, itemsInfoId=None) :
+def getNewItemsPhysicalForm(request, db, itemsInfoId=None) :
   if itemsInfoId :
     return editItemsPhysicalForm(
       postUrl=f'/itemsPhysical/{itemsInfoId}/new',
       submitMessage='Add new copy',
-    ).response()
+    )
   return editItemsInfoForm(
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
-  ).response()
+  )
 
 @post('/itemsPhysical/{itemsInfoId:int}/new')
-async def postSaveNewItemsPhysical(request, itemsInfoId=None) :
+async def postSaveNewItemsPhysical(request, db, itemsInfoId=None) :
   if itemsInfoId :
     theForm = await request.form()
-    with getDatabase() as db :
-      if 'barcode' not in theForm or not theForm['barcode'] :
-        barcode = computeNewBarcode(db)
-      else :
-        barcode = theForm['barcode']
-      db.execute(InsertSql().sql('itemsPhysical', {
-        'itemsInfoId'  : itemsInfoId,
-        'barcode'      : barcode,
-        'dateAdded'    : theForm['dateAdded'],
-        'dateBorrowed' : theForm['dateBorrowed'],
-        'dateLastSeen' : theForm['dateLastSeen'],
-        'status'       : theForm['status']
-      }))
-      db.commit()
+    if 'barcode' not in theForm or not theForm['barcode'] :
+      barcode = computeNewBarcode(db)
+    else :
+      barcode = theForm['barcode']
+    db.execute(InsertSql().sql('itemsPhysical', {
+      'itemsInfoId'  : itemsInfoId,
+      'barcode'      : barcode,
+      'dateAdded'    : theForm['dateAdded'],
+      'dateBorrowed' : theForm['dateBorrowed'],
+      'dateLastSeen' : theForm['dateLastSeen'],
+      'status'       : theForm['status']
+    }))
+    db.commit()
     return editItemsPhysicalForm(
       submitMessage='Add new copy',
       postUrl=f'/itemsPhysical/{itemsInfoId}/new',
-    ).response()
+    )
   return editItemsInfoForm(
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
-  ).response()
+  )
 
 @get('/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}')
-def getEditItemsPhysicalForm(request, itemsInfoId=None, itemsPhysicalId=None) :
+def getEditItemsPhysicalForm(request, db,
+  itemsInfoId=None, itemsPhysicalId=None
+) :
   if itemsInfoId and itemsPhysicalId :
-    with getDatabase() as db :
-      selectSql = SelectSql().fields(
-        'barcode', 'dateAdded', 'dateBorrowed', 'dateLastSeen', 'status'
-      ).tables('itemsPhysical'
-      ).whereValue('id', itemsPhysicalId
-      ).whereValue('itemsInfoId', itemsInfoId)
-      itemsPhysical = selectSql.parseResults(
-        db.execute(selectSql.sql()),
-        fetchAll=False
+    selectSql = SelectSql().fields(
+      'barcode', 'dateAdded', 'dateBorrowed', 'dateLastSeen', 'status'
+    ).tables('itemsPhysical'
+    ).whereValue('id', itemsPhysicalId
+    ).whereValue('itemsInfoId', itemsInfoId)
+    itemsPhysical = selectSql.parseResults(
+      db.execute(selectSql.sql()),
+      fetchAll=False
+    )
+    if itemsPhysical :
+      return editItemsPhysicalForm(
+        postUrl=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
+        barcode=itemsPhysical[0]['barcode'],
+        dateAdded=itemsPhysical[0]['dateAdded'],
+        dateBorrowed=itemsPhysical[0]['dateBorrowed'],
+        dateLastSeen=itemsPhysical[0]['dateLastSeen'],
+        status=itemsPhysical[0]['status'],
+        submitMessage='Save changes',
       )
-      if itemsPhysical :
-        return editItemsPhysicalForm(
-          postUrl=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
-          barcode=itemsPhysical[0]['barcode'],
-          dateAdded=itemsPhysical[0]['dateAdded'],
-          dateBorrowed=itemsPhysical[0]['dateBorrowed'],
-          dateLastSeen=itemsPhysical[0]['dateLastSeen'],
-          status=itemsPhysical[0]['status'],
-          submitMessage='Save changes',
-        ).response()
   return editItemsInfoForm(
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
-  ).response()
+  )
 
 @put('/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}')
-async def putUpdateAnItemsPhysical(request, itemsInfoId=None, itemsPhysicalId=None) :
+async def putUpdateAnItemsPhysical(request, db,
+  itemsInfoId=None, itemsPhysicalId=None
+) :
   if itemsInfoId and itemsPhysicalId :
     theForm = await request.form()
-    with getDatabase() as db :
-      if 'barcode' not in theForm or not theForm['barcode'] :
-        barcode = computeNewBarcode(db)
-      else :
-        barcode = theForm['barcode']
-      db.execute(UpdateSql(
-      ).whereValue('id', itemsPhysicalId
-      ).whereValue('itemsInfoId', itemsInfoId
-      ).sql('itemsPhysical', {
-        'barcode'      : barcode,
-        'dateAdded'    : theForm['dateAdded'],
-        'dateBorrowed' : theForm['dateBorrowed'],
-        'dateLastSeen' : theForm['dateLastSeen'],
-        'status'       : theForm['status']
-      }))
-      db.commit()
+    if 'barcode' not in theForm or not theForm['barcode'] :
+      barcode = computeNewBarcode(db)
+    else :
+      barcode = theForm['barcode']
+    db.execute(UpdateSql(
+    ).whereValue('id', itemsPhysicalId
+    ).whereValue('itemsInfoId', itemsInfoId
+    ).sql('itemsPhysical', {
+      'barcode'      : barcode,
+      'dateAdded'    : theForm['dateAdded'],
+      'dateBorrowed' : theForm['dateBorrowed'],
+      'dateLastSeen' : theForm['dateLastSeen'],
+      'status'       : theForm['status']
+    }))
+    db.commit()
     return editItemsPhysicalForm(
       submitMessage='Add new copy',
       postUrl=f'/itemsPhysical/{itemsInfoId}/new',
-    ).response()
+    )
   return editItemsInfoForm(
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
-  ).response()
+  )

@@ -11,7 +11,7 @@ from schoolLib.app.finders import *
 ##########################################################################
 # content
 
-def editBorrowerForm(
+def editBorrowerForm(db,
   borrowerId=None, submitMessage='Save changes', postUrl=None,
   **kwargs
 ) :
@@ -23,22 +23,21 @@ def editBorrowerForm(
     'cohort'     : 2020,
     'classId'    : None
   }
-  with getDatabase() as db :
-    sortedClasses = None
-    if borrowerId :
-      selectSql = SelectSql(
-      ).fields(
-        'firstName', 'familyName', 'cohort', 'classId'
-      ).tables('borrowers'
-      ).whereValue('id', borrowerId)
-      borrower = selectSql.parseResults(
-        db.execute(selectSql.sql()),
-        fetchAll=False
-      )
-      if borrower :
-        sortedClasses = getOrderedClassList(db, selectedClass=borrower[0]['classId'])
-        borrower = borrower[0]
-    if not sortedClasses : sortedClasses = getOrderedClassList(db)
+  sortedClasses = None
+  if borrowerId :
+    selectSql = SelectSql(
+    ).fields(
+      'firstName', 'familyName', 'cohort', 'classId'
+    ).tables('borrowers'
+    ).whereValue('id', borrowerId)
+    borrower = selectSql.parseResults(
+      db.execute(selectSql.sql()),
+      fetchAll=False
+    )
+    if borrower :
+      sortedClasses = getOrderedClassList(db, selectedClass=borrower[0]['classId'])
+      borrower = borrower[0]
+  if not sortedClasses : sortedClasses = getOrderedClassList(db)
 
   return FormTable([
     TextInput(
@@ -69,128 +68,125 @@ def editBorrowerForm(
 # routes
 
 @get('/menu/people/addBorrower')
-def getNewBorrowerForm(request) :
+def getNewBorrowerForm(request, db) :
   return Level1div([
     SecondLevelPeopleMenu.select('addBorrower'),
-    editBorrowerForm(
+    editBorrowerForm(db,
       submitMsg='Add a new borrower',
       postUrl='/borrowers/new'
     )
-  ]).response()
+  ])
 
 @post('/borrowers/new')
-async def postSaveNewBorrower(request) :
+async def postSaveNewBorrower(request, db) :
   theForm = await request.form()
-  with getDatabase() as db :
-    db.execute(InsertSql().sql('borrowers', {
+  db.execute(InsertSql().sql('borrowers', {
+    'firstName'  : theForm['firstName'],
+    'familyName' : theForm['familyName'],
+    'cohort'     : theForm['cohort'],
+    'classId'    : theForm['assignedClass']
+  }))
+  db.commit()
+  return editBorrowerForm(db,
+    submitMsg='Add a new borrower',
+    postUrl='/borrowers/new'
+  )
+
+@get('/borrowers/edit/{borrowerId:int}')
+def getEditABorrowerForm(request, db, borrowerId=None) :
+  if borrowerId :
+    return editBorrowerForm(db,
+      borrowerId=borrowerId,
+      submitMsg= 'Save changes',
+      postUrl=f"/borrowers/edit/{borrowerId}"
+    )
+  return editBorrowerForm(db,
+    submitMsg='Add a new borrower',
+    postUrl='/borrowers/new'
+  )
+
+@put('/borrowers/edit/{borrowerId:int}')
+async def putUpdatedBorrower(request, db, borrowerId=None) :
+  if borrowerId :
+    theForm = await request.form()
+    db.execute(UpdateSql(
+    ).whereValue('id', borrowerId
+    ).sql('borrowers', {
       'firstName'  : theForm['firstName'],
       'familyName' : theForm['familyName'],
       'cohort'     : theForm['cohort'],
       'classId'    : theForm['assignedClass']
     }))
     db.commit()
-  return editBorrowerForm(
+  return editBorrowerForm(db,
     submitMsg='Add a new borrower',
     postUrl='/borrowers/new'
-  ).response()
-
-@get('/borrowers/edit/{borrowerId:int}')
-def getEditABorrowerForm(request, borrowerId=None) :
-  if borrowerId :
-    return editBorrowerForm(
-      borrowerId=borrowerId,
-      submitMsg= 'Save changes',
-      postUrl=f"/borrowers/edit/{borrowerId}"
-    ).response()
-  return editBorrowerForm(
-    submitMsg='Add a new borrower',
-    postUrl='/borrowers/new'
-  ).response()
-
-@put('/borrowers/edit/{borrowerId:int}')
-async def putUpdatedBorrower(request, borrowerId=None) :
-  if borrowerId :
-    theForm = await request.form()
-    with getDatabase() as db :
-      db.execute(UpdateSql(
-      ).whereValue('id', borrowerId
-      ).sql('borrowers', {
-        'firstName'  : theForm['firstName'],
-        'familyName' : theForm['familyName'],
-        'cohort'     : theForm['cohort'],
-        'classId'    : theForm['assignedClass']
-      }))
-      db.commit()
-  return editBorrowerForm(
-    submitMsg='Add a new borrower',
-    postUrl='/borrowers/new'
-  ).response()
+  )
 
 @get('/borrowers/show/{borrowerId:int}')
-def getShowBorrowerInfo(request, borrowerId=None) :
+def getShowBorrowerInfo(request, db, borrowerId=None) :
   if borrowerId :
-    with getDatabase() as db :
-      bSelectSql = SelectSql(
+    bSelectSql = SelectSql(
+    ).fields(
+      'id', 'firstName', 'familyName', 'cohort', 'classId'
+    ).tables('borrowers'
+    ).whereValue('id', borrowerId)
+    borrower = bSelectSql.parseResults(
+      db.execute(bSelectSql.sql()),
+      fetchAll=False
+    )
+    if borrower :
+      borrower = borrower[0]
+      theClasses = getClasses(db)
+      borrower['className'] = theClasses[borrower['classId']]['name']
+      ibSelectSql = SelectSql(
       ).fields(
-        'id', 'firstName', 'familyName', 'cohort', 'classId'
-      ).tables('borrowers'
-      ).whereValue('id', borrowerId)
-      borrower = bSelectSql.parseResults(
-        db.execute(bSelectSql.sql()),
-        fetchAll=False
+        'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
+        'itemsPhysical.barCode',
+        'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue'
+      ).tables(
+        'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
+      ).whereValue(
+        'itemsBorrowed.borrowersId', borrowerId
+      ).whereField(
+        'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
+      ).whereField(
+        'itemsInfo.id', 'itemsPhysical.itemsInfoId'
       )
-      if borrower :
-        borrower = borrower[0]
-        theClasses = getClasses(db)
-        borrower['className'] = theClasses[borrower['classId']]['name']
-        ibSelectSql = SelectSql(
-        ).fields(
-          'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
-          'itemsPhysical.barCode',
-          'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue'
-        ).tables(
-          'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
-        ).whereValue(
-          'itemsBorrowed.borrowersId', borrowerId
-        ).whereField(
-          'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
-        ).whereField(
-          'itemsInfo.id', 'itemsPhysical.itemsInfoId'
-        )
-        itemsBorrowed = ibSelectSql.parseResults(
-          db.execute(ibSelectSql.sql())
-        )
-        itemsBorrowedRows = []
-        itemsBorrowedRows.append(
-          TableRow([
-            TableHeader(Text('Title')),
-            TableHeader(Text('Barcode')),
-            TableHeader(Text('Dewey Decimal Code')),
-            TableHeader(Text('Date Borrowed')),
-            TableHeader(Text('Date Due')),
-            TableHeader(Text('Date Returned'))
-          ])
-        )
-        if itemsBorrowed :
-          for anItem in itemsBorrowed :
-            itemsBorrowedRows.append(
-              TableRow([
-                TableEntry(Link(
-                  f'/itemsInfo/show/{anItem['itemsInfo_id']}',
-                  anItem['itemsInfo_title'],
-                  target='#level1div'
-                )),
-                TableEntry(Link(
-                  f'/itemsInfo/show/{anItem['itemsInfo_id']}',
-                  anItem['itemsPhysical_barCode'],
-                  target='#level1div'
-                )),
-                TableEntry(Text(anItem['itemsInfo_dewey'])),
-                TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
-                TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
-                TableEntry(Text("")),
-              ])
-            )
+      itemsBorrowed = ibSelectSql.parseResults(
+        db.execute(ibSelectSql.sql())
+      )
+      itemsBorrowedRows = []
+      itemsBorrowedRows.append(
+        TableRow([
+          TableHeader(Text('Title')),
+          TableHeader(Text('Barcode')),
+          TableHeader(Text('Dewey Decimal Code')),
+          TableHeader(Text('Date Borrowed')),
+          TableHeader(Text('Date Due')),
+          TableHeader(Text('Date Returned'))
+        ])
+      )
+      if itemsBorrowed :
+        for anItem in itemsBorrowed :
+          itemsBorrowedRows.append(
+            TableRow([
+              TableEntry(Link(
+                f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+                anItem['itemsInfo_title'],
+                target='#level1div'
+              )),
+              TableEntry(Link(
+                f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+                anItem['itemsPhysical_barCode'],
+                target='#level1div'
+              )),
+              TableEntry(Text(anItem['itemsInfo_dewey'])),
+              TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
+              TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
+              TableEntry(Text("")),
+            ])
+          )
         return Level1div([
           Table([
             TableRow([
@@ -211,8 +207,8 @@ def getShowBorrowerInfo(request, borrowerId=None) :
             ]),
           ]),
           Table(itemsBorrowedRows)
-        ]).response()
+        ])
   return Level1div([
     SecondLevelPeopleMenu.select('findBorrower'),
     findABorrower(None, [])
-  ]).response()
+  ])

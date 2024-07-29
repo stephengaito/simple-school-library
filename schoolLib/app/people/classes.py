@@ -54,7 +54,7 @@ def editClassForm(
     theId='level2div', target='this', post=postUrl, **kwargs
   )
 
-def listClasses(**kwargs) :
+def listClasses(db, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('Name')),
@@ -63,41 +63,39 @@ def listClasses(**kwargs) :
     TableHeader(Text('Actions'), colspan=4)
   ]))
 
-  with getDatabase() as db :
-    theClasses = getClasses(db)
-    sortedClasses = getSortedClasses(theClasses)
-    for aClass in sortedClasses :
-      tableRows.append(TableRow([
-        TableEntry(Text(aClass['name'])),
-        TableEntry(Text(aClass['desc'])),
-        TableEntry(Text(addEmojiColour(aClass['colour'],aClass['colour']))),
-        TableEntry(Button(
-          'List', get=f'/classes/list/{aClass['id']}', target='#level1div'
-        )),
-        TableEntry(Button(
-          'Update', get=f'/classes/update/{aClass['id']}', target='#level1div'
-        )),
-        TableEntry(Button(
-          'Edit', get=f'/classes/edit/{aClass['id']}', target='#level1div'
-        )),
-        TableEntry(Button(
-          'Delete', get=f'/classes/delete/{aClass['id']}', target='#level1div'
-        )),
-      ]))
+  theClasses = getClasses(db)
+  sortedClasses = getSortedClasses(theClasses)
+  for aClass in sortedClasses :
+    tableRows.append(TableRow([
+      TableEntry(Text(aClass['name'])),
+      TableEntry(Text(aClass['desc'])),
+      TableEntry(Text(addEmojiColour(aClass['colour'],aClass['colour']))),
+      TableEntry(Button(
+        'List', get=f'/classes/list/{aClass['id']}', target='#level1div'
+      )),
+      TableEntry(Button(
+        'Update', get=f'/classes/update/{aClass['id']}', target='#level1div'
+      )),
+      TableEntry(Button(
+        'Edit', get=f'/classes/edit/{aClass['id']}', target='#level1div'
+      )),
+      TableEntry(Button(
+        'Delete', get=f'/classes/delete/{aClass['id']}', target='#level1div'
+      )),
+    ]))
 
   return Level1div([
     SecondLevelPeopleMenu.select('listClasses'),
     Table(tableRows, theId='level2div')
   ])
 
-def addAClass() :
+def addAClass(db) :
   maxClassOrder = 0
-  with getDatabase() as db :
-    classes = getClasses(db)
-    for aClassId, aClass in classes.items() :
-      if maxClassOrder < aClass['classOrder'] :
-        maxClassOrder = aClass['classOrder']
-    maxClassOrder += 1
+  classes = getClasses(db)
+  for aClassId, aClass in classes.items() :
+    if maxClassOrder < aClass['classOrder'] :
+      maxClassOrder = aClass['classOrder']
+  maxClassOrder += 1
 
   return Level1div([
     SecondLevelPeopleMenu.select('addClass'),
@@ -112,75 +110,71 @@ def addAClass() :
 # routes
 
 @get('/menu/people')
-def peopleMenu(request) :
+def peopleMenu(request, db) :
   return Level0div([
     TopLevelMenu.select('people'),
-    addAClass()
-  ], theId='level0div').response()
+    addAClass(db)
+  ], theId='level0div')
 
 @get('/menu/people/addClass')
-def addAClassMenu(request) :
-  return addAClass().response()
+def addAClassMenu(request, db) :
+  return addAClass(db)
 
 @get('/menu/people/listClasses')
-def listClassesMenu(request) :
-  return listClasses().response()
+def listClassesMenu(request, db) :
+  return listClasses(db)
 
 @post('/classes/new')
-async def postSaveNewClass(request) :
+async def postSaveNewClass(request, db) :
   theForm = await request.form()
-  with getDatabase() as db :
-    db.execute(InsertSql().sql('classes', {
-      'name'       : theForm['className'],
-      'classOrder' : theForm['classOrder'],
-      'desc'       : theForm['classDesc'],
-      'colour'     : theForm['classColour']
-    }))
-    db.commit()
-  return listClasses().response()
+  db.execute(InsertSql().sql('classes', {
+    'name'       : theForm['className'],
+    'classOrder' : theForm['classOrder'],
+    'desc'       : theForm['classDesc'],
+    'colour'     : theForm['classColour']
+  }))
+  db.commit()
+  return listClasses(db)
 
 @get('/classes/edit/{classId:int}')
-def getEditAClassForm(request, classId=None) :
+def getEditAClassForm(request, db, classId=None) :
   if classId :
-    with getDatabase() as db :
-      theClasses = getClasses(db)
-      if classId in theClasses :
-        return editClassForm(
-          className=theClasses[classId]['name'],
-          classDesc=theClasses[classId]['desc'],
-          classOrder=theClasses[classId]['classOrder'],
-          classColour=theClasses[classId]['colour'],
-          submitMessage='Save changes',
-          postUrl=f'/classes/edit/{classId}'
-        ).response()
-  return listClasses().response()
+    theClasses = getClasses(db)
+    if classId in theClasses :
+      return editClassForm(
+        className=theClasses[classId]['name'],
+        classDesc=theClasses[classId]['desc'],
+        classOrder=theClasses[classId]['classOrder'],
+        classColour=theClasses[classId]['colour'],
+        submitMessage='Save changes',
+        postUrl=f'/classes/edit/{classId}'
+      )
+  return listClasses(db)
 
 @put('/classes/edit/{classId:int}')
-async def putUpdateAClass(request, classId=None) :
+async def putUpdateAClass(request, db, classId=None) :
   theForm = await request.form()
-  with getDatabase() as db :
-    db.execute(UpdateSql(
-    ).whereValue('id', classId
-    ).sql('classes', {
-      'name'       : theForm['className'],
-      'classOrder' : theForm['classOrder'],
-      'desc'       : theForm['classDesc'],
-      'colour'     : theForm['classColour']
-    }))
-    db.commit()
-  return listClasses().response()
+  db.execute(UpdateSql(
+  ).whereValue('id', classId
+  ).sql('classes', {
+    'name'       : theForm['className'],
+    'classOrder' : theForm['classOrder'],
+    'desc'       : theForm['classDesc'],
+    'colour'     : theForm['classColour']
+  }))
+  db.commit()
+  return listClasses(db)
 
 @delete('/classes/delete/{classId:int}')
-def deleteAnEmptyClass(request, classId=None) :
-  with getDatabase() as db :
-    selectSql = SelectSql(
-    ).fields('id').tables('borrowers'
-    ).whereValue('classId', classId)
-    results = selectSql.parseResults(db.execute(selectSql.sql()))
-    if not results :
-      cmd = DeleteSql().whereValue('id', classId).sql('classes')
-      db.execute(cmd)
-      db.commit()
-    else :
-      print("Can NOT delete a class which is not empty!")
-  return listClasses().response()
+def deleteAnEmptyClass(request, db, classId=None) :
+  selectSql = SelectSql(
+  ).fields('id').tables('borrowers'
+  ).whereValue('classId', classId)
+  results = selectSql.parseResults(db.execute(selectSql.sql()))
+  if not results :
+    cmd = DeleteSql().whereValue('id', classId).sql('classes')
+    db.execute(cmd)
+    db.commit()
+  else :
+    print("Can NOT delete a class which is not empty!")
+  return listClasses(db)

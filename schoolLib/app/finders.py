@@ -18,14 +18,14 @@ def findABorrower(probe, nameRows) :
   ], attrs={'hx-ext':'morph'})
 
 @get('/search/borrowers')
-def getFindBorrowerForm(request) :
+def getFindBorrowerForm(request, db) :
   return Level1div([
     SecondLevelPeopleMenu.select('findBorrower'),
     findABorrower(None, [])
-  ]).response()
+  ])
 
 @post('/search/borrowers')
-async def postSearchForBorrower(request) :
+async def postSearchForBorrower(request, db) :
   theForm = await request.form()
   nameRows =[]
   selectSql = SelectSql(
@@ -39,15 +39,14 @@ async def postSearchForBorrower(request) :
       'borrowersFTS', theForm['search']+'*', operator='MATCH'
     )
   print(selectSql.sql())
-  with getDatabase() as db :
-    results = selectSql.parseResults(db.execute(selectSql.sql()))
-    for aRow in results :
-      nameRows.append(TableRow(TableEntry(Link(
-        f'/borrowers/show/{aRow['borrowerId']}',
-        f'{aRow['firstName']} {aRow['familyName']}',
-        target='#level2div'
-      ))))
-  return findABorrower(theForm['search'], nameRows).response()
+  results = selectSql.parseResults(db.execute(selectSql.sql()))
+  for aRow in results :
+    nameRows.append(TableRow(TableEntry(Link(
+      f'/borrowers/show/{aRow['borrowerId']}',
+      f'{aRow['firstName']} {aRow['familyName']}',
+      target='#level2div'
+    ))))
+  return findABorrower(theForm['search'], nameRows)
 
 ##########################################################################
 # items (aka Books)
@@ -64,14 +63,14 @@ def findAnItem(probe, itemRows) :
   ], attrs={'hx-ext':'morph'})
 
 @get('/search/items')
-def getFindAnItemForm(request) :
+def getFindAnItemForm(request, db) :
   return Level1div([
     SecondLevelBooksMenu.select('findBook'),
     findAnItem(None, [])
-  ]).response()
+  ])
 
 @post('/search/items')
-async def postSearchForAnItem(request) :
+async def postSearchForAnItem(request, db) :
   theForm = await request.form()
   itemRows = []
   selectSql = SelectSql(
@@ -86,12 +85,11 @@ async def postSearchForAnItem(request) :
       'itemsFTS', theForm['search']+'*', operator='MATCH'
     )
   print(selectSql.sql())
-  with getDatabase() as db :
-    results = selectSql.parseResults(db.execute(selectSql.sql()))
-    for aRow in results :
-      itemRows.append(TableRow(TableEntry(Link(
-        f'/itemsInfo/show/{aRow['itemsInfoId']}',
-        aRow['title'],
-        target='#level2div'
-      ))))
-  return findAnItem(theForm['search'], itemRows).response()
+  results = selectSql.parseResults(db.execute(selectSql.sql()))
+  for aRow in results :
+    itemRows.append(TableRow(TableEntry(Link(
+      f'/itemsInfo/show/{aRow['itemsInfoId']}',
+      aRow['title'],
+      target='#level2div'
+    ))))
+  return findAnItem(theForm['search'], itemRows)

@@ -11,7 +11,7 @@ from schoolLib.app.menus import *
 # routes
 
 @get('/menu/books')
-def booksMenu(request) :
+def booksMenu(request, db) :
   someMarkdown = "somthing about **books**"
 
   return Level0div([
@@ -20,4 +20,4 @@ def booksMenu(request) :
       SecondLevelBooksMenu.select('takeOut'),
       MarkdownDiv(someMarkdown)
     ])
-  ]).response()
+  ])

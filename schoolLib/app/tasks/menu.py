@@ -22,55 +22,54 @@ def booksCheckedOutTableHeader() :
 def booksCheckedOut(db) :
   bcoRows = []
   bcoRows.append(booksCheckedOutTableHeader())
-  with getDatabase() as db :
-    selectSql = SelectSql(
-    ).fields(
-      'borrowers.classId', 'borrowers.firstName', 'borrowers.familyName',
-      'itemsInfo.title', 'itemsPhysical.barcode',
-      'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue',
-      'itemsInfo.id', 'borrowers.id'
-    ).tables(
-      'borrowers', 'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
-    ).whereField(
-      'borrowers.id', 'itemsBorrowed.borrowersId'
-    ).whereField(
-      'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
-    ).whereField(
-      'itemsInfo.id', 'itemsPhysical.itemsInfoId'
-    ).groupBy(
-      'borrowers.classId', 'itemsBorrowed.dateDue',
-      'borrowers.firstName', 'borrowers.familyName'
-    )
-    #print(selectSql.sql())
-    booksCheckedOut = selectSql.parseResults(
-      db.execute(selectSql.sql())
-    )
-    if booksCheckedOut :
-      classes = getClasses(db)
-      for aBook in booksCheckedOut :
-        bcoRows.append(TableRow([
-          TableEntry(Text(
-            addEmojiColour(
-              classes[aBook['borrowers_classId']]['colour'],
-              classes[aBook['borrowers_classId']]['name']
-            )
-          )),
-          TableEntry(Link(
-            f'/borrowers/show/{aBook['borrowers_id']}',
-            aBook['borrowers_firstName']+' '+aBook['borrowers_familyName'],
-            target='#level1div'
-          )),
-          TableEntry(Link(
-            f'/itemsInfo/show/{aBook['itemsInfo_id']}',
-            aBook['itemsInfo_title'],
-            target='#level1div'
-          )),
-          TableEntry(Text(aBook['itemsPhysical_barcode'])),
-          TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),
-          TableEntry(Text("")),
-          TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
-          TableEntry(Text("")),
-        ]))
+  selectSql = SelectSql(
+  ).fields(
+    'borrowers.classId', 'borrowers.firstName', 'borrowers.familyName',
+    'itemsInfo.title', 'itemsPhysical.barcode',
+    'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue',
+    'itemsInfo.id', 'borrowers.id'
+  ).tables(
+    'borrowers', 'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
+  ).whereField(
+    'borrowers.id', 'itemsBorrowed.borrowersId'
+  ).whereField(
+    'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
+  ).whereField(
+    'itemsInfo.id', 'itemsPhysical.itemsInfoId'
+  ).groupBy(
+    'borrowers.classId', 'itemsBorrowed.dateDue',
+    'borrowers.firstName', 'borrowers.familyName'
+  )
+  #print(selectSql.sql())
+  booksCheckedOut = selectSql.parseResults(
+    db.execute(selectSql.sql())
+  )
+  if booksCheckedOut :
+    classes = getClasses(db)
+    for aBook in booksCheckedOut :
+      bcoRows.append(TableRow([
+        TableEntry(Text(
+          addEmojiColour(
+            classes[aBook['borrowers_classId']]['colour'],
+            classes[aBook['borrowers_classId']]['name']
+          )
+        )),
+        TableEntry(Link(
+          f'/borrowers/show/{aBook['borrowers_id']}',
+          aBook['borrowers_firstName']+' '+aBook['borrowers_familyName'],
+          target='#level1div'
+        )),
+        TableEntry(Link(
+          f'/itemsInfo/show/{aBook['itemsInfo_id']}',
+          aBook['itemsInfo_title'],
+          target='#level1div'
+        )),
+        TableEntry(Text(aBook['itemsPhysical_barcode'])),
+        TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),
+        TableEntry(Text("")),
+        TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
+        TableEntry(Text("")),
+      ]))
   return Level1div([
     SecondLevelTasksMenu.select('booksCheckedOut'),
     Table(bcoRows)
