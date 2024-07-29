@@ -67,7 +67,7 @@ def editBorrowerForm(db,
 ##########################################################################
 # routes
 
-@get('/menu/people/addBorrower')
+@pagePart
 def getNewBorrowerForm(request, db) :
   return Level1div([
     SecondLevelPeopleMenu.select('addBorrower'),
@@ -77,7 +77,9 @@ def getNewBorrowerForm(request, db) :
     )
   ])
 
-@post('/borrowers/new')
+getRoute('/menu/people/addBorrower', getNewBorrowerForm)
+
+@pagePart
 async def postSaveNewBorrower(request, db) :
   theForm = await request.form()
   db.execute(InsertSql().sql('borrowers', {
@@ -92,7 +94,9 @@ async def postSaveNewBorrower(request, db) :
     postUrl='/borrowers/new'
   )
 
-@get('/borrowers/edit/{borrowerId:int}')
+postRoute('/borrowers/new', postSaveNewBorrower)
+
+@pagePart
 def getEditABorrowerForm(request, db, borrowerId=None) :
   if borrowerId :
     return editBorrowerForm(db,
@@ -105,7 +109,9 @@ def getEditABorrowerForm(request, db, borrowerId=None) :
     postUrl='/borrowers/new'
   )
 
-@put('/borrowers/edit/{borrowerId:int}')
+getRoute('/borrowers/edit/{borrowerId:int}', getEditABorrowerForm)
+
+@pagePart
 async def putUpdatedBorrower(request, db, borrowerId=None) :
   if borrowerId :
     theForm = await request.form()
@@ -123,7 +129,9 @@ async def putUpdatedBorrower(request, db, borrowerId=None) :
     postUrl='/borrowers/new'
   )
 
-@get('/borrowers/show/{borrowerId:int}')
+putRoute('/borrowers/edit/{borrowerId:int}', putUpdatedBorrower)
+
+@pagePart
 def getShowBorrowerInfo(request, db, borrowerId=None) :
   if borrowerId :
     bSelectSql = SelectSql(
@@ -212,3 +220,5 @@ def getShowBorrowerInfo(request, db, borrowerId=None) :
     SecondLevelPeopleMenu.select('findBorrower'),
     findABorrower(None, [])
   ])
+
+getRoute('/borrowers/show/{borrowerId:int}', getShowBorrowerInfo)

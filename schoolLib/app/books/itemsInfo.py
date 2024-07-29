@@ -82,7 +82,7 @@ def editItemsInfoForm(
 ##########################################################################
 # routes
 
-@get('/itemsInfo/show/{itemsInfoId:int}')
+@pagePart
 def getShowItemsInfo(request, db, itemsInfoId=None) :
   if itemsInfoId :
     infoSelectSql = SelectSql(
@@ -209,14 +209,21 @@ def getShowItemsInfo(request, db, itemsInfoId=None) :
         ])
   return MarkdownDiv("some thing about itemsInfo")
 
-@get('/itemsInfo/new')
+getRoute(
+  '/itemsInfo/show/{itemsInfoId:int}',
+  getShowItemsInfo
+)
+
+@pagePart
 def getNewItemsInfoForm(request, db) :
   return editItemsInfoForm(
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
   )
 
-@post('/itemsInfo/new')
+getRoute('/itemsInfo/new', getNewItemsInfoForm)
+
+@pagePart
 async def postSaveNewItemsInfo(request, db):
   theForm = await request.form()
   db.execute(InsertSql().sql('itemsInfo', {
@@ -236,7 +243,9 @@ async def postSaveNewItemsInfo(request, db):
     postUrl='/itemsInfo/new',
   )
 
-@get('/itemsInfo/edit/{itemsInfoId:int}')
+postRoute('/itemsInfo/new', postSaveNewItemsInfo)
+
+@pagePart
 def getEditAnItemsInfoForm(request, db, itemsInfoId=None) :
   if itemsInfoId :
     selectSql = SelectSql().fields(
@@ -268,7 +277,9 @@ def getEditAnItemsInfoForm(request, db, itemsInfoId=None) :
     postUrl='/itemsInfo/new',
   )
 
-@put('/itemsInfo/edit/{itemsInfoId:int}')
+getRoute('/itemsInfo/edit/{itemsInfoId:int}', getEditAnItemsInfoForm)
+
+@pagePart
 async def putUpdateAnItemsInfo(request, db, itemsInfoId=None) :
   if itemsInfoId :
     theForm = await request.form()
@@ -290,3 +301,5 @@ async def putUpdateAnItemsInfo(request, db, itemsInfoId=None) :
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
   )
+
+putRoute('/itemsInfo/edit/{itemsInfoId:int}', putUpdateAnItemsInfo)

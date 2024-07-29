@@ -17,14 +17,16 @@ def findABorrower(probe, nameRows) :
     Table(nameRows, theId='searchResults')
   ], attrs={'hx-ext':'morph'})
 
-@get('/search/borrowers')
+@pagePart
 def getFindBorrowerForm(request, db) :
   return Level1div([
     SecondLevelPeopleMenu.select('findBorrower'),
     findABorrower(None, [])
   ])
 
-@post('/search/borrowers')
+getRoute('/search/borrowers', getFindBorrowerForm)
+
+@pagePart
 async def postSearchForBorrower(request, db) :
   theForm = await request.form()
   nameRows =[]
@@ -48,6 +50,8 @@ async def postSearchForBorrower(request, db) :
     ))))
   return findABorrower(theForm['search'], nameRows)
 
+postRoute('/search/borrowers', postSearchForBorrower)
+
 ##########################################################################
 # items (aka Books)
 
@@ -62,14 +66,16 @@ def findAnItem(probe, itemRows) :
     Table(itemRows, theId='searchResults')
   ], attrs={'hx-ext':'morph'})
 
-@get('/search/items')
+@pagePart
 def getFindAnItemForm(request, db) :
   return Level1div([
     SecondLevelBooksMenu.select('findBook'),
     findAnItem(None, [])
   ])
 
-@post('/search/items')
+getRoute('/search/items', getFindAnItemForm)
+
+@pagePart
 async def postSearchForAnItem(request, db) :
   theForm = await request.form()
   itemRows = []
@@ -93,3 +99,5 @@ async def postSearchForAnItem(request, db) :
       target='#level2div'
     ))))
   return findAnItem(theForm['search'], itemRows)
+
+postRoute('/search/items', postSearchForAnItem)

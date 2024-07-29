@@ -39,7 +39,7 @@ def editItemsBorrowedForm(
 ##########################################################################
 # routes
 
-@get('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new')
+@pagePart
 def getNewItemsBorrowedForm(request, db,
   itemsPhysicalId=None, borrowerId=None
 ) :
@@ -52,7 +52,12 @@ def getNewItemsBorrowedForm(request, db,
       TopLevelMenu
   )
 
-@post('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new')
+getRoute(
+  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new',
+  getNewItemsBorrowedForm
+)
+
+@pagePart
 async def postSaveNewItemsBorrowed(request, db,
   itemsPhysicalId=None, borrowersId=None
 ) :
@@ -69,7 +74,12 @@ async def postSaveNewItemsBorrowed(request, db,
     TopLevelMenu
   )
 
-@get('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}')
+postRoute(
+  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new',
+  postSaveNewItemsBorrowed
+)
+
+@pagePart
 def getEditItemsBorrowedForm(request, db,
   itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None
 ) :
@@ -96,7 +106,12 @@ def getEditItemsBorrowedForm(request, db,
     TopLevelMenu
   )
 
-@put('/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}')
+getRoute(
+  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',
+  getEditItemsBorrowedForm
+)
+
+@pagePart
 async def putUpdateAnItemsBorrowed(requeset, db,
   itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None
 ) :
@@ -114,3 +129,8 @@ async def putUpdateAnItemsBorrowed(requeset, db,
   return Level0div(
     TopLevelMenu
   )
+
+putRoute(
+  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',
+  putUpdateAnItemsBorrowed
+)

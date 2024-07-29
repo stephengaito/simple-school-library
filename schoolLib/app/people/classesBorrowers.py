@@ -87,19 +87,23 @@ def updatePupilsInClassForm(db, classId, postUrl) :
 ##########################################################################
 # routes
 
-@get('/classes/list/{classId:int}')
+@pagePart
 def getListPupilsInAClass(request, db, classId=None) :
   if classId :
     return listPupilsInAClassTable(db, classId)
   return listClasses(db)
 
-@get('/classes/update/{classId:int}')
+getRoute('/classes/list/{classId:int}', getListPupilsInAClass)
+
+@pagePart
 def getUpdatePupilsInAClassForm(request, db, classId=None) :
   if classId :
     return updatePupilsInClassForm(db, classId, 'classes/update')
   return listClasses(db)
 
-@put('/classes/update')
+getRoute('/classes/update/{classId:int}', getUpdatePupilsInAClassForm)
+
+@pagePart
 async def putUpdatePupilesInAClass(request, db) :
   theForm = await request.form()
   for aKey in theForm.keys() :
@@ -112,3 +116,5 @@ async def putUpdatePupilesInAClass(request, db) :
     }))
   db.commit()
   return listClasses(db)
+
+putRoute('/classes/update', putUpdatePupilesInAClass)

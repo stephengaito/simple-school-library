@@ -18,14 +18,16 @@ import schoolLib.app.books
 import schoolLib.app.people
 import schoolLib.app.tasks.menu
 
-@get('/')
-def homepage(request, db):
+@pagePart
+def homePage(request, db):
   return HtmlPage(
     StdHeaders(),
     StdBody()
   )
 
-@get('/routes/{aPath:path}')
+getRoute('/', homePage)
+
+@pagePart
 def listRoutes(request, db, aPath=None) :
   if aPath : aPath = '/'+aPath
   routesStrs = []
@@ -41,8 +43,10 @@ def listRoutes(request, db, aPath=None) :
       ]))
   return Text('\n'.join(sorted(routesStrs)))
 
-@get('/pageParts/{aPath:path}')
-def listRoutes(request, db, aPath=None) :
+getRoute('/routes/{aPath:path}', listRoutes)
+
+@pagePart
+def listPageParts(request, db, aPath=None) :
   if aPath : aPath = '/'+aPath
   routesStrs = []
   for aRoute in routes :
@@ -57,7 +61,9 @@ def listRoutes(request, db, aPath=None) :
       ]))
   return Text('\n'.join(sorted(routesStrs)))
 
-@get('/help/{aPath:path}')
+getRoute('/pageParts/{aPath:path}', listPageParts)
+
+@pagePart
 def helpPages(request, db, aPath=None) :
   if not aPath : aPath = 'help'
   someMarkdown = loadMarkdownFromFile(aPath)
@@ -66,6 +72,8 @@ def helpPages(request, db, aPath=None) :
     TopLevelMenu.select('home'),
     Level1div(MarkdownDiv(someMarkdown))
   ])
+
+getRoute('/help/{aPath:path}', helpPages)
 
 async def notFound(request, theException) :
   print("-------------")

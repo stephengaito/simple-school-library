@@ -85,7 +85,7 @@ def editItemsPhysicalForm(
 ##########################################################################
 # routes
 
-@get('/itemsPhysical/{itemsInfoId:int}/new')
+@pagePart
 def getNewItemsPhysicalForm(request, db, itemsInfoId=None) :
   if itemsInfoId :
     return editItemsPhysicalForm(
@@ -97,7 +97,9 @@ def getNewItemsPhysicalForm(request, db, itemsInfoId=None) :
     postUrl='/itemsInfo/new',
   )
 
-@post('/itemsPhysical/{itemsInfoId:int}/new')
+getRoute('/itemsPhysical/{itemsInfoId:int}/new', getNewItemsPhysicalForm)
+
+@pagePart
 async def postSaveNewItemsPhysical(request, db, itemsInfoId=None) :
   if itemsInfoId :
     theForm = await request.form()
@@ -123,7 +125,9 @@ async def postSaveNewItemsPhysical(request, db, itemsInfoId=None) :
     postUrl='/itemsInfo/new',
   )
 
-@get('/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}')
+postRoute('/itemsPhysical/{itemsInfoId:int}/new', postSaveNewItemsPhysical)
+
+@pagePart
 def getEditItemsPhysicalForm(request, db,
   itemsInfoId=None, itemsPhysicalId=None
 ) :
@@ -152,7 +156,12 @@ def getEditItemsPhysicalForm(request, db,
     postUrl='/itemsInfo/new',
   )
 
-@put('/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}')
+getRoute(
+  '/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}',
+  getEditItemsPhysicalForm
+)
+
+@pagePart
 async def putUpdateAnItemsPhysical(request, db,
   itemsInfoId=None, itemsPhysicalId=None
 ) :
@@ -181,3 +190,8 @@ async def putUpdateAnItemsPhysical(request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
   )
+
+putRoute(
+  '/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}',
+  putUpdateAnItemsPhysical
+)

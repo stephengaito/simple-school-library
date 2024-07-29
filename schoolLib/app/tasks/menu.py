@@ -78,7 +78,7 @@ def booksCheckedOut(db) :
 ##########################################################################
 # routes
 
-@get('/menu/tasks')
+@pagePart
 def tasksMenu(request, db) :
   tasksMarkdown = "somthing about **tasks**"
 
@@ -87,6 +87,10 @@ def tasksMenu(request, db) :
     booksCheckedOut(db)
   ], theId='level0div')
 
-@get('/menu/tasks/booksCheckedOut')
+getRoute('/menu/tasks', tasksMenu)
+
+@pagePart
 def getBooksCheckedOut(request, db) :
   return booksCheckedOut(db)
+
+getRoute('/menu/tasks/booksCheckedOut', getBooksCheckedOut)

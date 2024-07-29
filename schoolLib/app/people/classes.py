@@ -109,22 +109,28 @@ def addAClass(db) :
 ##########################################################################
 # routes
 
-@get('/menu/people')
+@pagePart
 def peopleMenu(request, db) :
   return Level0div([
     TopLevelMenu.select('people'),
     addAClass(db)
   ], theId='level0div')
 
-@get('/menu/people/addClass')
+getRoute('/menu/people', peopleMenu)
+
+@pagePart
 def addAClassMenu(request, db) :
   return addAClass(db)
 
-@get('/menu/people/listClasses')
+getRoute('/menu/people/addClass',addAClassMenu)
+
+@pagePart
 def listClassesMenu(request, db) :
   return listClasses(db)
 
-@post('/classes/new')
+getRoute('/menu/people/listClasses',listClassesMenu)
+
+@pagePart
 async def postSaveNewClass(request, db) :
   theForm = await request.form()
   db.execute(InsertSql().sql('classes', {
@@ -136,7 +142,9 @@ async def postSaveNewClass(request, db) :
   db.commit()
   return listClasses(db)
 
-@get('/classes/edit/{classId:int}')
+postRoute('/classes/new', postSaveNewClass)
+
+@pagePart
 def getEditAClassForm(request, db, classId=None) :
   if classId :
     theClasses = getClasses(db)
@@ -151,7 +159,9 @@ def getEditAClassForm(request, db, classId=None) :
       )
   return listClasses(db)
 
-@put('/classes/edit/{classId:int}')
+getRoute('/classes/edit/{classId:int}', getEditAClassForm)
+
+@pagePart
 async def putUpdateAClass(request, db, classId=None) :
   theForm = await request.form()
   db.execute(UpdateSql(
@@ -165,7 +175,9 @@ async def putUpdateAClass(request, db, classId=None) :
   db.commit()
   return listClasses(db)
 
-@delete('/classes/delete/{classId:int}')
+putRoute('/classes/edit/{classId:int}', putUpdateAClass)
+
+@pagePart
 def deleteAnEmptyClass(request, db, classId=None) :
   selectSql = SelectSql(
   ).fields('id').tables('borrowers'
@@ -178,3 +190,5 @@ def deleteAnEmptyClass(request, db, classId=None) :
   else :
     print("Can NOT delete a class which is not empty!")
   return listClasses(db)
+
+deleteRoute('/classes/delete/{classId:int}', deleteAnEmptyClass)

@@ -10,7 +10,7 @@ from schoolLib.app.menus import *
 ##########################################################################
 # routes
 
-@get('/menu/books')
+@pagePart
 def booksMenu(request, db) :
   someMarkdown = "somthing about **books**"
 
@@ -21,3 +21,5 @@ def booksMenu(request, db) :
       MarkdownDiv(someMarkdown)
     ])
   ])
+
+getRoute('/menu/books', booksMenu)
