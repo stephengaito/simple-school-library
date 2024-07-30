@@ -5,95 +5,95 @@ from schoolLib.htmxComponents import *
 TopLevelMenu = Menu([
   Button(
     'Home',
-    theId = 'home',
-    get='/menu/home',
-    target='#level0div'
+    theId    = 'home',
+    hxGet    = '/menu/home',
+    hxTarget = '#level0div'
   ),
   Button(
     'Books',
-    theId = 'books',
-    get = "/menu/books",
-    target='#level0div'
+    theId    = 'books',
+    hxGet    = "/menu/books",
+    hxTarget = '#level0div'
   ),
   Button(
     'People',
-    theId = 'people',
-    get = '/menu/people',
-    target='#level0div'
+    theId    = 'people',
+    hxGet    = '/menu/people',
+    hxTarget = '#level0div'
   ),
   Button(
     'Tasks',
-    theId = 'tasks',
-    get = '/menu/tasks',
-    target='#level0div'
+    theId    = 'tasks',
+    hxGet    = '/menu/tasks',
+    hxTarget = '#level0div'
   )
 ])
 
 SecondLevelBooksMenu = Menu([
   Button(
     'Take out a book',
-    theId  = 'takeOut',
-    get    = '/menu/books/takeOut',
-    target = '#level1div'
+    theId    = 'takeOut',
+    hxGet    = '/menu/books/takeOut',
+    hxTarget = '#level1div'
   ),
   Button(
     'Return a book',
-    theId  = 'return',
-    get    = '/menu/books/return',
-    target = '#level1div'
+    theId    = 'return',
+    hxGet    = '/menu/books/return',
+    hxTarget = '#level1div'
   ),
   Button(
     'Renew a book',
-    theId  = 'renew',
-    get    = '/menu/books/renew',
-    target = '#level1div'
+    theId    = 'renew',
+    hxGet    = '/menu/books/renew',
+    hxTarget = '#level1div'
   ),
   Button(
     'Find a book',
-    theId  = 'findBook',
-    get    = '/search/items',
-    target = '#level1div'
+    theId    = 'findBook',
+    hxGet    = '/search/items',
+    hxTarget = '#level1div'
   ),
   Button(
     'Add a book',
-    theId  = 'addBook',
-    get    = '/itemsInfo/new',
-    target = '#level1div'
+    theId    = 'addBook',
+    hxGet    = '/itemsInfo/new',
+    hxTarget = '#level1div'
   )
 ])
 
 SecondLevelPeopleMenu = Menu([
   Button(
     'Add a class',
-    theId  = 'addClass',
-    get    = '/menu/people/addClass',
-    target = '#level1div'
+    theId    = 'addClass',
+    hxGet    = '/menu/people/addClass',
+    hxTarget = '#level1div'
   ),
   Button(
     'List classes',
-    theId  = 'listClasses',
-    get    = '/menu/people/listClasses',
-    target = '#level1div'
+    theId    = 'listClasses',
+    hxGet    = '/menu/people/listClasses',
+    hxTarget = '#level1div'
   ),
   Button(
     'Add a person',
-    theId  = 'addBorrower',
-    get    = '/menu/people/addBorrower',
-    target = '#level1div'
+    theId    = 'addBorrower',
+    hxGet    = '/menu/people/addBorrower',
+    hxTarget = '#level1div'
   ),
   Button(
     'Find a person',
-    theId  = 'findBorrower',
-    get    = '/search/borrowers',
-    target = '#level1div'
+    theId    = 'findBorrower',
+    hxGet    = '/search/borrowers',
+    hxTarget = '#level1div'
   )
 ])
 
 SecondLevelTasksMenu = Menu([
   Button(
     'Books checked out',
-    theId  = 'booksCheckedOut',
-    get    = '/menu/tasks/booksCheckedOut',
-    target = '#level1div'
+    theId    = 'booksCheckedOut',
+    hxGet    = '/menu/tasks/booksCheckedOut',
+    hxTarget = '#level1div'
   )
 ])

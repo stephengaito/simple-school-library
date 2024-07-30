@@ -79,7 +79,7 @@ def editItemsPhysicalForm(
       placeholder='The current status...'
     )
   ], submitMessage,
-    theId='level2div', target='this', post=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
   )
 
 ##########################################################################

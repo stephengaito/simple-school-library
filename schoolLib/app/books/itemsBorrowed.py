@@ -33,7 +33,7 @@ def editItemsBorrowedForm(
       placeholder='The date due....'
     )
   ], submitMessage,
-    theId='level2div', target='this', post=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
   )
 
 ##########################################################################

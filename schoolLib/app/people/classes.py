@@ -51,7 +51,7 @@ def editClassForm(
       selectedColourName=classColour,
     )
   ], submitMessage,
-    theId='level2div', target='this', post=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
   )
 
 def listClasses(db, **kwargs) :
@@ -71,16 +71,16 @@ def listClasses(db, **kwargs) :
       TableEntry(Text(aClass['desc'])),
       TableEntry(Text(addEmojiColour(aClass['colour'],aClass['colour']))),
       TableEntry(Button(
-        'List', get=f'/classes/list/{aClass['id']}', target='#level1div'
+        'List', hxGet=f'/classes/list/{aClass['id']}', hxTarget='#level1div'
       )),
       TableEntry(Button(
-        'Update', get=f'/classes/update/{aClass['id']}', target='#level1div'
+        'Update', hxGet=f'/classes/update/{aClass['id']}', hxTarget='#level1div'
       )),
       TableEntry(Button(
-        'Edit', get=f'/classes/edit/{aClass['id']}', target='#level1div'
+        'Edit', hxGet=f'/classes/edit/{aClass['id']}', hxTarget='#level1div'
       )),
       TableEntry(Button(
-        'Delete', get=f'/classes/delete/{aClass['id']}', target='#level1div'
+        'Delete', hxGet=f'/classes/delete/{aClass['id']}', hxTarget='#level1div'
       )),
     ]))
 

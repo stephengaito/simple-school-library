@@ -47,7 +47,7 @@ async def postSearchForBorrower(request, db, **kwargs) :
     nameRows.append(TableRow(TableEntry(Link(
       f'/borrowers/show/{aRow['borrowerId']}',
       f'{aRow['firstName']} {aRow['familyName']}',
-      target='#level2div'
+      hxTarget='#level2div'
     ))))
   return findABorrower(theForm['search'], nameRows)
 
@@ -97,7 +97,7 @@ async def postSearchForAnItem(request, db, **kwargs) :
     itemRows.append(TableRow(TableEntry(Link(
       f'/itemsInfo/show/{aRow['itemsInfoId']}',
       aRow['title'],
-      target='#level2div'
+      hxTarget='#level2div'
     ))))
   return findAnItem(theForm['search'], itemRows)
 

@@ -57,12 +57,12 @@ async def booksCheckedOut(request, db, **kwargs) :
         TableEntry(Link(
           f'/borrowers/show/{aBook['borrowers_id']}',
           aBook['borrowers_firstName']+' '+aBook['borrowers_familyName'],
-          target='#level1div'
+          hxTarget='#level1div'
         )),
         TableEntry(Link(
           f'/itemsInfo/show/{aBook['itemsInfo_id']}',
           aBook['itemsInfo_title'],
-          target='#level1div'
+          hxTarget='#level1div'
         )),
         TableEntry(Text(aBook['itemsPhysical_barcode'])),
         TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),

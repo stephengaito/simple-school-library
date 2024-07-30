@@ -43,8 +43,8 @@ def listPupilsInAClassTable(db, classId) :
       )),
       TableEntry(Button(
         'Edit',
-        get=f'/borrowers/edit/{aRow['borrowers_id']}',
-        target='#level1div'
+        hxGet=f'/borrowers/edit/{aRow['borrowers_id']}',
+        hxTarget='#level1div'
       ))
     ]))
   return Table(tableRows, theId='level1div')

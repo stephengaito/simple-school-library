@@ -57,11 +57,11 @@ class HtmxBase :
     styleName='default',
     attrs=[],
     attrsName='default',
-    get=None,
-    post=None,
-    trigger=None,
-    target=None,
-    swap=None,
+    hxGet=None,
+    hxPost=None,
+    hxTrigger=None,
+    hxTarget=None,
+    hxSwap=None,
     **kwargs
   ) :
     self.kwargs    = kwargs
@@ -72,11 +72,11 @@ class HtmxBase :
     self.styleName = styleName
     self.attrs     = attrs
     self.attrsName = attrsName
-    self.get       = get
-    self.post      = post
-    self.trigger   = trigger
-    self.target    = target
-    self.swap      = swap
+    self.hxGet     = hxGet
+    self.hxPost    = hxPost
+    self.hxTrigger = hxTrigger
+    self.hxTarget  = hxTarget
+    self.hxSwap    = hxSwap
 
   def collectHtml(self, htmlFragments, **kwargs) :
     pass
@@ -120,22 +120,22 @@ class HtmxBase :
 
   def computeAction(self) :
     actionStr = ""
-    if self.get    : actionStr = f'hx-get="{self.get}"'
-    elif self.post : actionStr = f'hx-post="{self.post}"'
+    if self.hxGet    : actionStr = f'hx-get="{self.hxGet}"'
+    elif self.hxPost : actionStr = f'hx-post="{self.hxPost}"'
     return actionStr
 
   def computeTrigger(self) :
     triggerStr = ""
-    if self.trigger :
-      triggerStr = f'hx-trigger="{self.trigger}"'
+    if self.hxTrigger :
+      triggerStr = f'hx-trigger="{self.hxTrigger}"'
     return triggerStr
 
   def computeTarget(self) :
     targetStr = ""
-    if self.target :
-      targetStr = f'hx-target="{self.target}"'
-      if not self.swap : self.swap = 'outerHTML'
-    if self.swap :
+    if self.hxTarget :
+      targetStr = f'hx-target="{self.hxTarget}"'
+      if not self.hxSap : self.hxSwap = 'outerHTML'
+    if self.hxSwap :
       targetStr += f' hx-swap="{self.swap}"'
     return targetStr
 

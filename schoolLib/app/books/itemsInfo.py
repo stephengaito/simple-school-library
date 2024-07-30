@@ -79,7 +79,7 @@ def editItemsInfoForm(
       placeholder='The ISBN...'
     )
   ], submitMessage,
-    theId='level2div', target='this', post=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
   )
 
 ##########################################################################
@@ -165,7 +165,7 @@ async def getShowItemsInfo(request, db, itemsInfoId=None, **kwargs) :
             TableEntry(Link(
               f'/borrowers/show/{aBook['borrowers_id']}',
               borrowerName,
-              target='#level1div'
+              hxTarget='#level1div'
             )),
             TableEntry(Text(borrowerClass))
           ]))

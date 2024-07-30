@@ -84,12 +84,12 @@ class PagePartMetaData :
 
 pageParts = {}
 
-targetRegExp = re.compile("target='(.*)'")
-getRegExp    = re.compile("get='(.*)'")
-postRegExp   = re.compile("post='(.*)'")
-callPPRegExp = re.compile("callPagePart\('(.*)'")
+targetRegExp = re.compile("hxTarget\\s*=\\s*'(.*)'")
+getRegExp    = re.compile("hxGet\\s*=\\s*'(.*)'")
+postRegExp   = re.compile("hxPost\\s*=\\s*'(.*)'")
+callPPRegExp = re.compile("callPagePart\\('(.*)'")
 
-metaDataRegExp = re.compile("target='(.*)'|get='(.*)'|post='(.*)'|callPagePart\('(.*)'")
+metaDataRegExp = re.compile("hxTarget\\s*=\\s*'(.*)'|hxGet\\s*=\\s*'(.*)'|hxPost\\s*=\\s*'(.*)'|callPagePart\\('(.*)'")
 
 class PagePart :
   def __init__(self, func) :
