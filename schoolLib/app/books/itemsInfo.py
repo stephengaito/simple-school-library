@@ -6,7 +6,10 @@ Work with itemsInfo
 
 """
 import yaml
+
 from schoolLib.setup import *
+from schoolLib.htmxComponents import *
+
 
 ##########################################################################
 # content
@@ -83,7 +86,7 @@ def editItemsInfoForm(
 # routes
 
 @pagePart
-def getShowItemsInfo(request, db, itemsInfoId=None) :
+async def getShowItemsInfo(request, db, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     infoSelectSql = SelectSql(
     ).fields(
@@ -215,7 +218,7 @@ getRoute(
 )
 
 @pagePart
-def getNewItemsInfoForm(request, db) :
+async def getNewItemsInfoForm(request, db, **kwargs) :
   return editItemsInfoForm(
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
@@ -224,7 +227,7 @@ def getNewItemsInfoForm(request, db) :
 getRoute('/itemsInfo/new', getNewItemsInfoForm)
 
 @pagePart
-async def postSaveNewItemsInfo(request, db):
+async def postSaveNewItemsInfo(request, db, **kwargs):
   theForm = await request.form()
   db.execute(InsertSql().sql('itemsInfo', {
     'title'     : theForm['title'],
@@ -246,7 +249,7 @@ async def postSaveNewItemsInfo(request, db):
 postRoute('/itemsInfo/new', postSaveNewItemsInfo)
 
 @pagePart
-def getEditAnItemsInfoForm(request, db, itemsInfoId=None) :
+async def getEditAnItemsInfoForm(request, db, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     selectSql = SelectSql().fields(
       'title', 'authors', 'publisher',
@@ -280,7 +283,7 @@ def getEditAnItemsInfoForm(request, db, itemsInfoId=None) :
 getRoute('/itemsInfo/edit/{itemsInfoId:int}', getEditAnItemsInfoForm)
 
 @pagePart
-async def putUpdateAnItemsInfo(request, db, itemsInfoId=None) :
+async def putUpdateAnItemsInfo(request, db, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     theForm = await request.form()
     db.execute(UpdateSql(

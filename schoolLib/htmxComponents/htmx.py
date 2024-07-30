@@ -3,10 +3,8 @@ import glob
 import os
 import yaml
 
-from starlette.responses import HTMLResponse
-from starlette.exceptions import HTTPException
-
 from schoolLib.setup.configuration import config
+from schoolLib.setup.router        import PagePartMetaData
 
 #######################################################################
 # theme
@@ -83,18 +81,8 @@ class HtmxBase :
   def collectHtml(self, htmlFragments, **kwargs) :
     pass
 
-  #def response(self, *args, **kwargs) :
-  #  htmlFragments = []
-  #  self.collectHtml(htmlFragments)
-  #  return HTMLResponse(' '.join(htmlFragments), *args, **kwargs)
-
   #################################################################
   # build HTML attributes from kwargs and theme
-
-  #def getFromKWArgs(self, aKey, aDefault) :
-  #  theValue = aDefault
-  #  if aKey in self.kwargs : theValue = self.kwargs[aKey]
-  #  return theValue
 
   def computeClass(self, classDict) :
     klass = self.klass

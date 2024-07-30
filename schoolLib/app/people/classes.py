@@ -110,7 +110,7 @@ def addAClass(db) :
 # routes
 
 @pagePart
-def peopleMenu(request, db) :
+async def peopleMenu(request, db, **kwargs) :
   return Level0div([
     TopLevelMenu.select('people'),
     addAClass(db)
@@ -119,19 +119,19 @@ def peopleMenu(request, db) :
 getRoute('/menu/people', peopleMenu)
 
 @pagePart
-def addAClassMenu(request, db) :
+async def addAClassMenu(request, db, **kwargs) :
   return addAClass(db)
 
 getRoute('/menu/people/addClass',addAClassMenu)
 
 @pagePart
-def listClassesMenu(request, db) :
+async def listClassesMenu(request, db, **kwargs) :
   return listClasses(db)
 
 getRoute('/menu/people/listClasses',listClassesMenu)
 
 @pagePart
-async def postSaveNewClass(request, db) :
+async def postSaveNewClass(request, db, **kwargs) :
   theForm = await request.form()
   db.execute(InsertSql().sql('classes', {
     'name'       : theForm['className'],
@@ -145,7 +145,7 @@ async def postSaveNewClass(request, db) :
 postRoute('/classes/new', postSaveNewClass)
 
 @pagePart
-def getEditAClassForm(request, db, classId=None) :
+async def getEditAClassForm(request, db, classId=None, **kwargs) :
   if classId :
     theClasses = getClasses(db)
     if classId in theClasses :
@@ -162,7 +162,7 @@ def getEditAClassForm(request, db, classId=None) :
 getRoute('/classes/edit/{classId:int}', getEditAClassForm)
 
 @pagePart
-async def putUpdateAClass(request, db, classId=None) :
+async def putUpdateAClass(request, db, classId=None, **kwargs) :
   theForm = await request.form()
   db.execute(UpdateSql(
   ).whereValue('id', classId
@@ -178,7 +178,7 @@ async def putUpdateAClass(request, db, classId=None) :
 putRoute('/classes/edit/{classId:int}', putUpdateAClass)
 
 @pagePart
-def deleteAnEmptyClass(request, db, classId=None) :
+async def deleteAnEmptyClass(request, db, classId=None, **kwargs) :
   selectSql = SelectSql(
   ).fields('id').tables('borrowers'
   ).whereValue('classId', classId)

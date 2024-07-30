@@ -86,7 +86,7 @@ def editItemsPhysicalForm(
 # routes
 
 @pagePart
-def getNewItemsPhysicalForm(request, db, itemsInfoId=None) :
+async def getNewItemsPhysicalForm(request, db, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     return editItemsPhysicalForm(
       postUrl=f'/itemsPhysical/{itemsInfoId}/new',
@@ -100,7 +100,7 @@ def getNewItemsPhysicalForm(request, db, itemsInfoId=None) :
 getRoute('/itemsPhysical/{itemsInfoId:int}/new', getNewItemsPhysicalForm)
 
 @pagePart
-async def postSaveNewItemsPhysical(request, db, itemsInfoId=None) :
+async def postSaveNewItemsPhysical(request, db, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     theForm = await request.form()
     if 'barcode' not in theForm or not theForm['barcode'] :
@@ -128,8 +128,9 @@ async def postSaveNewItemsPhysical(request, db, itemsInfoId=None) :
 postRoute('/itemsPhysical/{itemsInfoId:int}/new', postSaveNewItemsPhysical)
 
 @pagePart
-def getEditItemsPhysicalForm(request, db,
-  itemsInfoId=None, itemsPhysicalId=None
+async def getEditItemsPhysicalForm(request, db,
+  itemsInfoId=None, itemsPhysicalId=None,
+  **kwargs
 ) :
   if itemsInfoId and itemsPhysicalId :
     selectSql = SelectSql().fields(
@@ -163,7 +164,8 @@ getRoute(
 
 @pagePart
 async def putUpdateAnItemsPhysical(request, db,
-  itemsInfoId=None, itemsPhysicalId=None
+  itemsInfoId=None, itemsPhysicalId=None,
+  **kwargs
 ) :
   if itemsInfoId and itemsPhysicalId :
     theForm = await request.form()

@@ -1,12 +1,14 @@
 
 from functools import wraps
+from inspect import signature, getdoc, getsource
+import re
+import sqlite3
 #import yaml
 
-from starlette.routing import Route #, Mount, WebSocketRoute
+from starlette.responses import HTMLResponse
+from starlette.routing   import Route #, Mount, WebSocketRoute
 
-from schoolLib.setup.exceptions import SLException
-from schoolLib.htmxComponents import *
-from schoolLib.app.menus import *
+from schoolLib.setup.configuration import config
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -15,62 +17,57 @@ from schoolLib.app.menus import *
 
 routes = []
 
-def callWithParameters(request, func) :
+def htmlResponseFromHtmx(htmxComponent) :
+  htmlFragments = []
+
+  # alas this is an implicit cicularlity.... we know that "htmxComponent"
+  # objects do response to `collectHtml` messages
+
+  htmxComponent.collectHtml(htmlFragments)
+  return HTMLResponse(' '.join(htmlFragments), **htmxComponent.kwargs)
+
+async def callWithParameters(request, func) :
   params = {}
   if request.query_params :
     params.update(request.guery_params)
   if request.path_params :
     params.update(request.path_params)
-  #print("-------------------------------------")
-  #print(request.url)
-  #print(yaml.dump(params))
-  #print("-------------------------------------")
+  path = ":memory:"
+  if 'database' in config :
+    path = config['database']
   try :
-    path = ":memory:"
-    if 'database' in config :
-      path = config['database']
-    try :
-      db = sqlite3.connect(path)
-      htmxComponent = func(request, db, **params)
-      htmlFragments = []
-      htmxComponent.collectHtml(htmlFragments)
-      return HTMLResponse(' '.join(htmlFragments), **htmxComponent.kwargs)
-    finally :
-      db.close()
-  except SLException as slErr :
-    errorText = [
-      Text("Opps! Something in the server went wrong! We can't supply that page!", type='p'),
-      Text(slErr.slMessage, type='p'),
-      Text(slErr.slErrType, type='p'),
-    ]
-    if slErr.slHelpMsg : errorText.append(Text(slErr.slHelpMsg, type='p'))
-    if slErr.slOrigErr : errorText.append(Text(slErr.slOrigErr, type='p'))
-    return Level0div([
-      TopLevelMenu,
-      Level1div(errorText)
-    ]).response()
+    db = sqlite3.connect(path)
+    htmxComponent = await func(request, db, **params)
+    return htmlResponseFromHtmx(htmxComponent)
+  finally :
+    db.close()
 
 def getRoute(aRoute, getFunc, name=None) :
-  def getWrapper(request) :
-    return callWithParameters(request, getFunc)
+  @wraps(getFunc)
+  async def getWrapper(request) :
+    return await callWithParameters(request, getFunc)
   routes.append(Route(aRoute, getWrapper, name=name, methods=["GET"]))
 
 def putRoute(aRoute, putFunc, name=None) :
+  @wraps(putFunc)
   async def putWrapper(request) :
     return await callWithParameters(request, putFunc)
   routes.append(Route(aRoute, putWrapper, name=name, methods=["PUT", "POST"]))
 
 def postRoute(aRoute, postFunc, name=None) :
+  @wraps(postFunc)
   async def postWrapper(request) :
     return await callWithParameters(request, postFunc)
   routes.append(Route(aRoute, postWrapper, name=name, methods=["POST"]))
 
 def patchRoute(aRoute, patchFunc, name=None) :
+  @wraps(patchFunc)
   async def patchWrapper(request) :
     return await callWithParameters(request, patchFunc)
   routes.append(Route(aRoute, patchWrapper, name=name, methods=["PATCH", "POST"]))
 
 def deleteRoute(aRoute, deleteFunc, name=None) :
+  @wraps(deleteFunc)
   def deleteWrapper(request) :
     return callWithParameters(request, deleteFunc)
   routes.append(Route(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
@@ -78,8 +75,44 @@ def deleteRoute(aRoute, deleteFunc, name=None) :
 ###############################################################
 # Capture the "external facing" page parts
 
-pageParts = []
+class PagePartMetaData :
+  def __init__(self, func=None, hxUrl=None, hxMethod=None, hxTarget=None) :
+    self.func     = func
+    self.hxUrl    = hxUrl
+    self.hxMethod = hxMethod
+    self.hxTraget = hxTarget
+
+pageParts = {}
+
+targetRegExp = re.compile("target='(.*)'")
+getRegExp    = re.compile("get='(.*)'")
+postRegExp   = re.compile("post='(.*)'")
+callPPRegExp = re.compile("callPagePart\('(.*)'")
+
+metaDataRegExp = re.compile("target='(.*)'|get='(.*)'|post='(.*)'|callPagePart\('(.*)'")
+
+class PagePart :
+  def __init__(self, func) :
+    self.func = func
+    self.name = str(func.__module__)+'.'+str(func.__name__)
+    pageParts[self.name] = self
+
+  async def collectMetaData(self) :
+    self.sig  = str(signature(self.func))
+    self.doc  = getdoc(self.func)
+    if not self.doc : self.doc = "No doc string"
+    src  = getsource(self.func)
+    self.src = src
+    metaData = []
+    for aMatch in metaDataRegExp.finditer(src) :
+      metaData.append(aMatch[0])
+    self.metaData = metaData
+
+async def callPagePart(aKey, request, db, **kwargs) :
+  if aKey not in pageParts :
+    raise HTTPException(404, detail=f"Could not call the page part: {aKey} ")
+  return await pageParts[aKey](request, db, **kwargs)
 
 def pagePart(func) :
-  pageParts.append(func)
+  PagePart(func)  # register this pagePart
   return func

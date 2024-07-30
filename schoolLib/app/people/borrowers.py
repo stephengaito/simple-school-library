@@ -68,7 +68,7 @@ def editBorrowerForm(db,
 # routes
 
 @pagePart
-def getNewBorrowerForm(request, db) :
+async def getNewBorrowerForm(request, db, **kwargs) :
   return Level1div([
     SecondLevelPeopleMenu.select('addBorrower'),
     editBorrowerForm(db,
@@ -80,7 +80,7 @@ def getNewBorrowerForm(request, db) :
 getRoute('/menu/people/addBorrower', getNewBorrowerForm)
 
 @pagePart
-async def postSaveNewBorrower(request, db) :
+async def postSaveNewBorrower(request, db, **kwargs) :
   theForm = await request.form()
   db.execute(InsertSql().sql('borrowers', {
     'firstName'  : theForm['firstName'],
@@ -97,7 +97,7 @@ async def postSaveNewBorrower(request, db) :
 postRoute('/borrowers/new', postSaveNewBorrower)
 
 @pagePart
-def getEditABorrowerForm(request, db, borrowerId=None) :
+async def getEditABorrowerForm(request, db, borrowerId=None, **kwargs) :
   if borrowerId :
     return editBorrowerForm(db,
       borrowerId=borrowerId,
@@ -112,7 +112,7 @@ def getEditABorrowerForm(request, db, borrowerId=None) :
 getRoute('/borrowers/edit/{borrowerId:int}', getEditABorrowerForm)
 
 @pagePart
-async def putUpdatedBorrower(request, db, borrowerId=None) :
+async def putUpdatedBorrower(request, db, borrowerId=None, **kwargs) :
   if borrowerId :
     theForm = await request.form()
     db.execute(UpdateSql(
@@ -132,7 +132,7 @@ async def putUpdatedBorrower(request, db, borrowerId=None) :
 putRoute('/borrowers/edit/{borrowerId:int}', putUpdatedBorrower)
 
 @pagePart
-def getShowBorrowerInfo(request, db, borrowerId=None) :
+async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
   if borrowerId :
     bSelectSql = SelectSql(
     ).fields(

@@ -11,7 +11,7 @@ from schoolLib.app.menus import *
 # routes
 
 @pagePart
-def booksMenu(request, db) :
+async def booksMenu(request, db, **kwargs) :
   someMarkdown = "somthing about **books**"
 
   return Level0div([

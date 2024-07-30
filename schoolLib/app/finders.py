@@ -2,6 +2,7 @@
 import yaml
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
+from schoolLib.app.menus import *
 
 ##########################################################################
 # borrowers
@@ -18,7 +19,7 @@ def findABorrower(probe, nameRows) :
   ], attrs={'hx-ext':'morph'})
 
 @pagePart
-def getFindBorrowerForm(request, db) :
+async def getFindBorrowerForm(request, db, **kwargs) :
   return Level1div([
     SecondLevelPeopleMenu.select('findBorrower'),
     findABorrower(None, [])
@@ -27,7 +28,7 @@ def getFindBorrowerForm(request, db) :
 getRoute('/search/borrowers', getFindBorrowerForm)
 
 @pagePart
-async def postSearchForBorrower(request, db) :
+async def postSearchForBorrower(request, db, **kwargs) :
   theForm = await request.form()
   nameRows =[]
   selectSql = SelectSql(
@@ -67,7 +68,7 @@ def findAnItem(probe, itemRows) :
   ], attrs={'hx-ext':'morph'})
 
 @pagePart
-def getFindAnItemForm(request, db) :
+async def getFindAnItemForm(request, db, **kwargs) :
   return Level1div([
     SecondLevelBooksMenu.select('findBook'),
     findAnItem(None, [])
@@ -76,7 +77,7 @@ def getFindAnItemForm(request, db) :
 getRoute('/search/items', getFindAnItemForm)
 
 @pagePart
-async def postSearchForAnItem(request, db) :
+async def postSearchForAnItem(request, db, **kwargs) :
   theForm = await request.form()
   itemRows = []
   selectSql = SelectSql(

@@ -40,8 +40,9 @@ def editItemsBorrowedForm(
 # routes
 
 @pagePart
-def getNewItemsBorrowedForm(request, db,
-  itemsPhysicalId=None, borrowerId=None
+async def getNewItemsBorrowedForm(request, db,
+  itemsPhysicalId=None, borrowerId=None,
+  **kwargs
 ) :
   if itemsPhysicalId and borrowersId :
     return editItemsBorrowedForm(
@@ -59,7 +60,8 @@ getRoute(
 
 @pagePart
 async def postSaveNewItemsBorrowed(request, db,
-  itemsPhysicalId=None, borrowersId=None
+  itemsPhysicalId=None, borrowersId=None,
+  **kwargs
 ) :
   if itemsPhysicalId and borrowerId :
     theForm = await request.form()
@@ -80,8 +82,9 @@ postRoute(
 )
 
 @pagePart
-def getEditItemsBorrowedForm(request, db,
-  itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None
+async def getEditItemsBorrowedForm(request, db,
+  itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None,
+  **kwargs
 ) :
   if itemsPhysicalId and borrowersId and itemsBorrowedId :
     selectSql = SelectSql(
@@ -113,7 +116,8 @@ getRoute(
 
 @pagePart
 async def putUpdateAnItemsBorrowed(requeset, db,
-  itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None
+  itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None,
+  **kwargs
 ) :
   if itemsPhysicalId and borrowersId and itemsBorrowedId :
     theForm = await request.form()

@@ -4,7 +4,7 @@ from schoolLib.htmxComponents import *
 from schoolLib.app.menus import *
 
 @pagePart
-def homeMenu(request, db) :
+async def homeMenu(request, db, **kwargs) :
   homePageMarkdown = loadMarkdownFromFile('homePage')
 
   return Level0div([

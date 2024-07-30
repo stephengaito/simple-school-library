@@ -88,7 +88,7 @@ def updatePupilsInClassForm(db, classId, postUrl) :
 # routes
 
 @pagePart
-def getListPupilsInAClass(request, db, classId=None) :
+async def getListPupilsInAClass(request, db, classId=None, **kwargs) :
   if classId :
     return listPupilsInAClassTable(db, classId)
   return listClasses(db)
@@ -96,7 +96,7 @@ def getListPupilsInAClass(request, db, classId=None) :
 getRoute('/classes/list/{classId:int}', getListPupilsInAClass)
 
 @pagePart
-def getUpdatePupilsInAClassForm(request, db, classId=None) :
+async def getUpdatePupilsInAClassForm(request, db, classId=None, **kwargs) :
   if classId :
     return updatePupilsInClassForm(db, classId, 'classes/update')
   return listClasses(db)
@@ -104,7 +104,7 @@ def getUpdatePupilsInAClassForm(request, db, classId=None) :
 getRoute('/classes/update/{classId:int}', getUpdatePupilsInAClassForm)
 
 @pagePart
-async def putUpdatePupilesInAClass(request, db) :
+async def putUpdatePupilesInAClass(request, db, **kwargs) :
   theForm = await request.form()
   for aKey in theForm.keys() :
     rowClass = theForm[aKey].split('-')

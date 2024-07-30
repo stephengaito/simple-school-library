@@ -19,7 +19,7 @@ def booksCheckedOutTableHeader() :
   ])
 
 @pagePart
-def booksCheckedOut(db) :
+async def booksCheckedOut(request, db, **kwargs) :
   bcoRows = []
   bcoRows.append(booksCheckedOutTableHeader())
   selectSql = SelectSql(
@@ -79,7 +79,7 @@ def booksCheckedOut(db) :
 # routes
 
 @pagePart
-def tasksMenu(request, db) :
+async def tasksMenu(request, db, **kwargs) :
   tasksMarkdown = "somthing about **tasks**"
 
   return Level0div([
@@ -90,7 +90,7 @@ def tasksMenu(request, db) :
 getRoute('/menu/tasks', tasksMenu)
 
 @pagePart
-def getBooksCheckedOut(request, db) :
+async def getBooksCheckedOut(request, db, **kwargs) :
   return booksCheckedOut(db)
 
 getRoute('/menu/tasks/booksCheckedOut', getBooksCheckedOut)
