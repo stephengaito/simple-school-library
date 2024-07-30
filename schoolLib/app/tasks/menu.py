@@ -71,7 +71,9 @@ async def booksCheckedOut(request, db, **kwargs) :
         TableEntry(Text("")),
       ]))
   return Level1div([
-    SecondLevelTasksMenu.select('booksCheckedOut'),
+    await callPagePart('app.menus.secondLevelTasksMenu',
+      request, db, selectedId='booksCheckedOut'
+    ),
     Table(bcoRows)
   ])
 
@@ -83,14 +85,16 @@ async def tasksMenu(request, db, **kwargs) :
   tasksMarkdown = "somthing about **tasks**"
 
   return Level0div([
-    TopLevelMenu.select('tasks'),
-    booksCheckedOut(db)
+    await callPagePart(
+      'app.menus.topLevelMenu', request, db, selectedId='tasks'
+    ),
+    await booksCheckedOut(request, db)
   ], theId='level0div')
 
 getRoute('/menu/tasks', tasksMenu)
 
 @pagePart
 async def getBooksCheckedOut(request, db, **kwargs) :
-  return booksCheckedOut(db)
+  return await booksCheckedOut(request, db)
 
 getRoute('/menu/tasks/booksCheckedOut', getBooksCheckedOut)

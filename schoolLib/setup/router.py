@@ -94,7 +94,8 @@ metaDataRegExp = re.compile("hxTarget\\s*=\\s*'(.*)'|hxGet\\s*=\\s*'(.*)'|hxPost
 class PagePart :
   def __init__(self, func) :
     self.func = func
-    self.name = str(func.__module__)+'.'+str(func.__name__)
+    name = str(func.__module__)+'.'+str(func.__name__)
+    self.name = name.lstrip('schoolLib.')
     pageParts[self.name] = self
 
   async def collectMetaData(self) :
@@ -111,7 +112,8 @@ class PagePart :
 async def callPagePart(aKey, request, db, **kwargs) :
   if aKey not in pageParts :
     raise HTTPException(404, detail=f"Could not call the page part: {aKey} ")
-  return await pageParts[aKey](request, db, **kwargs)
+  theFunc = pageParts[aKey].func
+  return await theFunc(request, db, **kwargs)
 
 def pagePart(func) :
   PagePart(func)  # register this pagePart

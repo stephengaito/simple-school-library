@@ -134,9 +134,9 @@ class HtmxBase :
     targetStr = ""
     if self.hxTarget :
       targetStr = f'hx-target="{self.hxTarget}"'
-      if not self.hxSap : self.hxSwap = 'outerHTML'
+      if not self.hxSwap : self.hxSwap = 'outerHTML'
     if self.hxSwap :
-      targetStr += f' hx-swap="{self.swap}"'
+      targetStr += f' hx-swap="{self.hxSwap}"'
     return targetStr
 
   def computeId(self) :
