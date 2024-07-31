@@ -8,7 +8,7 @@ async def homeMenu(request, db, **kwargs) :
   homePageMarkdown = loadMarkdownFromFile('homePage')
 
   return Level0div([
-    TopLevelMenu.select('home'),
+    await callPagePart('app.menus.topLevelMenu', request, db, selectedId='home'),
     Level1div(MarkdownDiv(homePageMarkdown))
   ], theId='level0div')
 

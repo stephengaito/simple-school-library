@@ -13,6 +13,8 @@ We build a simple school library using:
 
 - [</> htmx](https://htmx.org/)
 
+- [Bootstrap Icons](https://icons.getbootstrap.com/)
+
 - [Tailwind CSS](https://tailwindcss.com/)
 
   - For development, this requires the [Standalone CLI: Use Tailwind CSS

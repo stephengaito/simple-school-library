@@ -5,6 +5,7 @@ import re
 import sqlite3
 #import yaml
 
+from starlette.exceptions import HTTPException
 from starlette.responses import HTMLResponse
 from starlette.routing   import Route #, Mount, WebSocketRoute
 
@@ -17,13 +18,22 @@ from schoolLib.setup.configuration import config
 
 routes = []
 
-def htmlResponseFromHtmx(htmxComponent) :
+def htmlResponseFromHtmx(htmxComponent, request) :
   htmlFragments = []
 
   # alas this is an implicit cicularlity.... we know that "htmxComponent"
   # objects do response to `collectHtml` messages
 
   htmxComponent.collectHtml(htmlFragments)
+  url = request.url.path
+  if url != '/' and 'develop' in config :
+    htmlFragments.insert(
+      len(htmlFragments)-1,
+      f'<a href="/routes{url}" target="_blank"><img src="/static/svg/bootstrap/code-slash.svg" width="32" height="32"></a>'
+    )
+  print("-------------------------------------------------")
+  print(htmlFragments)
+  print("-------------------------------------------------")
   return HTMLResponse(' '.join(htmlFragments), **htmxComponent.kwargs)
 
 async def callWithParameters(request, func) :
@@ -38,7 +48,7 @@ async def callWithParameters(request, func) :
   try :
     db = sqlite3.connect(path)
     htmxComponent = await func(request, db, **params)
-    return htmlResponseFromHtmx(htmxComponent)
+    return htmlResponseFromHtmx(htmxComponent, request)
   finally :
     db.close()
 

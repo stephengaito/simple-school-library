@@ -27,3 +27,6 @@ build-backend = "pdm.pep517.api"
 dev = [
     "pytest>=8.2.2",
 ]
+
+[tool.pdm.scripts]
+post_install = { call = "schoolLib.tools.postInstall:patches" }
