@@ -3,7 +3,7 @@ from functools import wraps
 from inspect import signature, getdoc, getsource
 import re
 import sqlite3
-#import yaml
+import yaml
 
 from starlette.exceptions import HTTPException
 from starlette.responses import HTMLResponse
@@ -24,9 +24,15 @@ def htmlResponseFromHtmx(htmxComponent, request) :
   # alas this is an implicit cicularlity.... we know that "htmxComponent"
   # objects do response to `collectHtml` messages
 
-  htmxComponent.collectHtml(htmlFragments)
+  kwargs = {}
+  if isinstance(htmxComponent, str) :
+    htmlFragments.append(htmxComponent)
+  else :
+    htmxComponent.collectHtml(htmlFragments)
+    kwargs = htmxComponent.kwargs
   url = request.url.path
-  if url != '/' and 'develop' in config :
+  if url != '/' and not url.startswith('/routes') \
+    and not url.startswith('/pageParts') and 'develop' in config :
     htmlFragments.insert(
       len(htmlFragments)-1,
       f'<a href="/routes{url}" target="_blank"><img src="/static/svg/bootstrap/code-slash.svg" width="32" height="32"></a>'
@@ -34,7 +40,7 @@ def htmlResponseFromHtmx(htmxComponent, request) :
   print("-------------------------------------------------")
   print(htmlFragments)
   print("-------------------------------------------------")
-  return HTMLResponse(' '.join(htmlFragments), **htmxComponent.kwargs)
+  return HTMLResponse(' '.join(htmlFragments), **kwargs)
 
 async def callWithParameters(request, func) :
   params = {}
@@ -94,12 +100,19 @@ class PagePartMetaData :
 
 pageParts = {}
 
+# regexp tester: https://pythex.org/
+
 targetRegExp = re.compile("hxTarget\\s*=\\s*'(.*)'")
 getRegExp    = re.compile("hxGet\\s*=\\s*'(.*)'")
 postRegExp   = re.compile("hxPost\\s*=\\s*'(.*)'")
-callPPRegExp = re.compile("callPagePart\\('(.*)'")
+callPPRegExp = re.compile("callPagePart\\(\\s*'(.*)'")
 
-metaDataRegExp = re.compile("hxTarget\\s*=\\s*'(.*)'|hxGet\\s*=\\s*'(.*)'|hxPost\\s*=\\s*'(.*)'|callPagePart\\('(.*)'")
+metaDataRegExp = re.compile(r"hxTarget\s*=\s*'(?P<hxTarget>[^\']*)'|hxGet\s*=\s*'(?P<hxGet>[^\']*)'|hxPost\s*=\s*'(?P<hxPost>[^\']*)'|callPagePart\(\s*\'(?P<callPagePart>[^\']*)\'")
+
+def metaDataSub(matchObj) :
+  if matchObj.group(0).startswith('callPagePart') :
+    return f'<!-- some thing -->{matchObj.group(0)}'
+  else : return matchObj.group(0)
 
 class PagePart :
   def __init__(self, func) :
@@ -113,11 +126,11 @@ class PagePart :
     self.doc  = getdoc(self.func)
     if not self.doc : self.doc = "No doc string"
     src  = getsource(self.func)
-    self.src = src
     metaData = []
     for aMatch in metaDataRegExp.finditer(src) :
-      metaData.append(aMatch[0])
+      metaData.append(aMatch.groupdict())
     self.metaData = metaData
+    self.src = src
 
 async def callPagePart(aKey, request, db, **kwargs) :
   if aKey not in pageParts :

@@ -30,6 +30,8 @@ We build a simple school library using:
 
 For testing we use:
 
+- [Pygments](https://pygments.org/docs/)
+
 - [Test Client - Starlette](https://www.starlette.io/testclient/)
 
 - [HTTPX](https://www.python-httpx.org/)

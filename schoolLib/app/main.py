@@ -18,6 +18,7 @@ import schoolLib.app.home.menu
 import schoolLib.app.books
 import schoolLib.app.people
 import schoolLib.app.tasks.menu
+import schoolLib.app.metaStructure
 
 @pagePart
 async def homePage(request, db, **kwargs):

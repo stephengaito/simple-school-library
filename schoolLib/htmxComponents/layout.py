@@ -22,6 +22,7 @@ class StdHeaders(HtmxBase) :
       <link rel="manifest" href="/static/favicon/site.webmanifest">
 
       <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
+      <link rel="stylesheet" href="/static/css/pygmentsSas.css" type="text/css" />
 
       <script src="/static/js/htmx.min.js"></script>
       <script src="/static/js/idiomorph-ext.min.js"></script>
