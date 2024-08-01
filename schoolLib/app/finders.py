@@ -21,7 +21,7 @@ def findABorrower(probe, nameRows) :
 @pagePart
 async def getFindBorrowerForm(request, db, **kwargs) :
   return Level1div([
-    SecondLevelPeopleMenu.select('findBorrower'),
+    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
     findABorrower(None, [])
   ])
 
@@ -70,7 +70,7 @@ def findAnItem(probe, itemRows) :
 @pagePart
 async def getFindAnItemForm(request, db, **kwargs) :
   return Level1div([
-    SecondLevelBooksMenu.select('findBook'),
+    await callPagePart('app.menus.secondLevelBooksMenu', request, db, selectedId='findBook'),
     findAnItem(None, [])
   ])
 

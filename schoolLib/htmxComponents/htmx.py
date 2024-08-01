@@ -4,7 +4,6 @@ import os
 import yaml
 
 from schoolLib.setup.configuration import config
-from schoolLib.setup.router        import PagePartMetaData
 
 #######################################################################
 # theme
@@ -184,4 +183,7 @@ class HtmxChildrenBase(HtmxBase) :
 
   def collectChildrenHtml(self, htmlFragments) :
     for aChild in self.children :
-      aChild.collectHtml(htmlFragments)
+      if isinstance(aChild, str) :
+        htmlFragments.append(aChild)
+      else:
+        aChild.collectHtml(htmlFragments)

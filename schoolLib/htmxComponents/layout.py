@@ -47,8 +47,9 @@ class HtmlPage(HtmxBase) :
     self.body    = body
 
   def collectHtml(self, htmlFragments) :
-    htmlFragments.append('<!DOCTYPE html><html lang="en"><head>')
+    htmlFragments.append('<!DOCTYPE html>')
+    htmlFragments.append('<html lang="en"><head>')
     self.headers.collectHtml(htmlFragments)
-    htmlFragments.append("</head><body>")
+    htmlFragments.append("</head><body><div>")
     self.body.collectHtml(htmlFragments)
-    htmlFragments.append("</body></html>")
+    htmlFragments.append("</div></body></html>")

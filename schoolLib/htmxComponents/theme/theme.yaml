@@ -22,6 +22,23 @@ DivClasses:
   default:
    - m-1
 
+ListClasses:
+  default:
+   - m-2
+   - border-2
+   - border-solid
+   - border-blue-500
+   - rounded-lg
+
+LongCodeClasses:
+  default:
+   - p-2
+   - m-2
+   - border-2
+   - border-solid
+   - border-blue-500
+   - rounded-lg
+
 MenuClasses:
   default:
    - menu
@@ -57,7 +74,6 @@ NumberInputClasses:
 ColourInputClasses:
   default:
     - max-h-4
-
 
 TableEntryClasses:
   default:

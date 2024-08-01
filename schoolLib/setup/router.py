@@ -25,11 +25,8 @@ def htmlResponseFromHtmx(htmxComponent, request) :
   # objects do response to `collectHtml` messages
 
   kwargs = {}
-  if isinstance(htmxComponent, str) :
-    htmlFragments.append(htmxComponent)
-  else :
-    htmxComponent.collectHtml(htmlFragments)
-    kwargs = htmxComponent.kwargs
+  htmxComponent.collectHtml(htmlFragments)
+  kwargs = htmxComponent.kwargs
   url = request.url.path
   if url != '/' and not url.startswith('/routes') \
     and not url.startswith('/pageParts') and 'develop' in config :
@@ -38,9 +35,9 @@ def htmlResponseFromHtmx(htmxComponent, request) :
       f'<a href="/routes{url}" target="_blank"><img src="/static/svg/bootstrap/code-slash.svg" width="32" height="32"></a>'
     )
   print("-------------------------------------------------")
-  print(htmlFragments)
+  print('\n'.join(htmlFragments))
   print("-------------------------------------------------")
-  return HTMLResponse(' '.join(htmlFragments), **kwargs)
+  return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
 async def callWithParameters(request, func) :
   params = {}
@@ -91,37 +88,31 @@ def deleteRoute(aRoute, deleteFunc, name=None) :
 ###############################################################
 # Capture the "external facing" page parts
 
-class PagePartMetaData :
-  def __init__(self, func=None, hxUrl=None, hxMethod=None, hxTarget=None) :
-    self.func     = func
-    self.hxUrl    = hxUrl
-    self.hxMethod = hxMethod
-    self.hxTraget = hxTarget
-
 pageParts = {}
 
 # regexp tester: https://pythex.org/
-
-targetRegExp = re.compile("hxTarget\\s*=\\s*'(.*)'")
-getRegExp    = re.compile("hxGet\\s*=\\s*'(.*)'")
-postRegExp   = re.compile("hxPost\\s*=\\s*'(.*)'")
-callPPRegExp = re.compile("callPagePart\\(\\s*'(.*)'")
-
-metaDataRegExp = re.compile(r"hxTarget\s*=\s*'(?P<hxTarget>[^\']*)'|hxGet\s*=\s*'(?P<hxGet>[^\']*)'|hxPost\s*=\s*'(?P<hxPost>[^\']*)'|callPagePart\(\s*\'(?P<callPagePart>[^\']*)\'")
-
-def metaDataSub(matchObj) :
-  if matchObj.group(0).startswith('callPagePart') :
-    return f'<!-- some thing -->{matchObj.group(0)}'
-  else : return matchObj.group(0)
+regExps = [
+  r"(?P<level>Level.div)",
+  r"hxTarget\s*=\s*'(?P<hxTarget>[^\']*)'",
+  r"Link\(\s*f?'(?P<link>[^\']*)'",
+  r"hxGet\s*=\s*f?'(?P<hxGet>[^\']*)'",
+  r"hxPost\s*=\s*'(?P<hxPost>[^\']*)'",
+  r"callPagePart\(\s*\'(?P<callPagePart>[^\']*)\'"
+]
+metaDataRegExp = re.compile('|'.join(regExps))
 
 class PagePart :
   def __init__(self, func) :
-    self.func = func
-    name = str(func.__module__)+'.'+str(func.__name__)
-    self.name = name.lstrip('schoolLib.')
+    self.users = set()
+    self.func  = func
+    name       = str(func.__module__)+'.'+str(func.__name__)
+    self.name  = name.lstrip('schoolLib.')
     pageParts[self.name] = self
 
-  async def collectMetaData(self) :
+  def addUser(self, aUser) :
+    self.users.add(aUser)
+
+  def collectMetaData(self) :
     self.sig  = str(signature(self.func))
     self.doc  = getdoc(self.func)
     if not self.doc : self.doc = "No doc string"
@@ -141,3 +132,22 @@ async def callPagePart(aKey, request, db, **kwargs) :
 def pagePart(func) :
   PagePart(func)  # register this pagePart
   return func
+
+def computePagePartUsers() :
+
+  # compute the users from each route
+  for aRoute in routes :
+    aPath = aRoute.path
+    anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
+    anEndpoint = anEndpoint.lstrip('schoolLib.')
+    if anEndpoint in pageParts :
+      pageParts[anEndpoint].addUser(aPath)
+
+  # ensure all of the meta data has been collected
+  # and then add the users from each pagePart
+  for pagePartName, pagePart  in pageParts.items() :
+    pagePart.collectMetaData()
+    for someMetaData in pagePart.metaData :
+      if 'callPagePart' in someMetaData and someMetaData['callPagePart'] :
+        if someMetaData['callPagePart'] in pageParts :
+          pageParts[someMetaData['callPagePart']].addUser(pagePartName)

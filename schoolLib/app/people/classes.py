@@ -54,7 +54,8 @@ def editClassForm(
     theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
   )
 
-def listClasses(db, **kwargs) :
+@pagePart
+async def listClasses(request, db, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('Name')),
@@ -85,11 +86,12 @@ def listClasses(db, **kwargs) :
     ]))
 
   return Level1div([
-    SecondLevelPeopleMenu.select('listClasses'),
+    await callPagePart('app.menus.scondLevelPeopleMenu', request, db, selectedId='listClasses'),
     Table(tableRows, theId='level2div')
   ])
 
-def addAClass(db) :
+@pagePart
+async def addAClass(request, db, **kwargs) :
   maxClassOrder = 0
   classes = getClasses(db)
   for aClassId, aClass in classes.items() :
@@ -98,7 +100,7 @@ def addAClass(db) :
   maxClassOrder += 1
 
   return Level1div([
-    SecondLevelPeopleMenu.select('addClass'),
+    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='addClass'),
     editClassForm(
       classOrder=maxClassOrder,
       submitMessage='Add new class',
@@ -112,7 +114,7 @@ def addAClass(db) :
 @pagePart
 async def peopleMenu(request, db, **kwargs) :
   return Level0div([
-    TopLevelMenu.select('people'),
+    await callPagePart('app.menus.topLevelMenu', request, db, selectedId='people'),
     addAClass(db)
   ], theId='level0div')
 

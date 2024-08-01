@@ -15,9 +15,9 @@ async def booksMenu(request, db, **kwargs) :
   someMarkdown = "somthing about **books**"
 
   return Level0div([
-    TopLevelMenu.select('books'),
+    await callPagePart('app.menus.topLevelMenu', request, db, selectedId='books'),
     Level1div([
-      SecondLevelBooksMenu.select('takeOut'),
+      await callPagePart('app.menus.secondLevelBooksMenu', request, db, selectedId='takeOut'),
       MarkdownDiv(someMarkdown)
     ])
   ])

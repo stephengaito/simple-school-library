@@ -39,6 +39,29 @@ class Level4div(Div) :
     if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
     super().__init__(someChildren, **kwargs)
 
+class List(HtmxChildrenBase) :
+  def __init__(
+    self,
+    someChildren,
+    listType='u',
+    **kwargs
+  ) :
+    super().__init__(someChildren, **kwargs)
+    if listType.startswith('u')  : listType = 'ul'
+    else                         : listType = 'ol'
+    self.listType = listType
+
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append(f'<{self.listType} {self.computeHtmxAttrs()}>')
+    for aChild in self.children :
+      htmlFragments.append('<li>')
+      if isinstance(aChild, str) :
+        htmlFragments.append(aChild)
+      else :
+        aChild.collectHtml(htmlFragments)
+      htmlFragments.append('</li>')
+    htmlFragments.append(f'</{self.listType}>')
+
 class Menu(HtmxChildrenBase) :
   def __init__(
     self,
@@ -62,17 +85,27 @@ class Menu(HtmxChildrenBase) :
       aChild.collectHtml(htmlFragments, selected=selected)
     htmlFragments.append('</div>')
 
-class Text(HtmxBase) :
-  def __init__(self, text, textType='p', **kwargs) :
-    super().__init__(**kwargs)
-    self.text     = text
+class RawHtml(HtmxBase) :
+  def __init__(self, rawHtml, **kwargs) :
+    super().__init(**kwargs)
+    self.rawHtml = rawHtml
+
+  def collectHtml(self, htmlFragments, **kwargs) :
+    htmlFragments.append(self.rawHtml)
+
+class Text(HtmxChildrenBase) :
+  def __init__(self, someText, textType='p', **kwargs) :
+    super().__init__(someText, **kwargs)
     # sanitize textType
-    if textType.startswith('p')   : textType = 'p'
-    elif textType.startswith('s') : textType = 'span'
-    elif textType.startswith('l') : textType = 'label'
-    elif textType.startswith('b') : textType = 'button'
-    elif textType.startswith('a') : textType = 'a'
-    else                          : textType = 'div'
+    if not textType                : textType = None
+    elif textType.startswith('pr') : textType = 'pre'
+    elif textType.startswith('p')  : textType = 'p'
+    elif textType.startswith('s')  : textType = 'span'
+    elif textType.startswith('l')  : textType = 'label'
+    elif textType.startswith('b')  : textType = 'button'
+    elif textType.startswith('a')  : textType = 'a'
+    elif textType.startswith('c')  : textType = 'code'
+    else                           : textType = None
     self.textType = textType
 
   def collectHtml(self, htmlFragments, selected=None, **kwargs) :
@@ -81,12 +114,26 @@ class Text(HtmxBase) :
       self.klassName += '-selected'
     tAttrs = self.computeHtmxAttrs()
     self.klassName = oldKlassName
-    htmlFragments.append(
-      f"<{self.textType} {tAttrs}>{self.text}</{self.textType}>"
-    )
+    if self.textType :
+      htmlFragments.append(f"<{self.textType} {tAttrs}>")
+    for aChild in self.children :
+      if isinstance(aChild, str) :
+        htmlFragments.append(aChild)
+      else :
+        aChild.collectHtml(htmlFragments)
+    if self.textType :
+      htmlFragments.append(f"</{self.textType}>")
 
 class Button(Text) :
   def __init__(self, text, textType='b', **kwargs) :
+    super().__init__(text, textType=textType, **kwargs)
+
+class LongCode(Text) :
+  def __init__(self, text, textType='pre', **kwargs) :
+    super().__init__(text, textType=textType, **kwargs)
+
+class ShortCode(Text) :
+  def __init__(self, text, textType='c', **kwargs) :
     super().__init__(text, textType=textType, **kwargs)
 
 class Span(Text) :
@@ -98,10 +145,12 @@ class Label(Text) :
     super().__init__(text, textType=textType, **kwargs)
 
 class Link(Text) :
-  def __init__(self, url, text, textType='a', **kwargs) :
-    if 'target' in kwargs :
-      kwargs['get'] = url
+  def __init__(self, url, text, textType='a', target=None, **kwargs) :
+    if 'attrs' not in kwargs : kwargs['attrs'] = []
+    if 'hxTarget' in kwargs :
+      kwargs['hxGet'] = url
     else :
-      if 'attrs' not in kwargs : kwargs['attrs'] = []
       kwargs['attrs'].append(f'href="{url}"')
+    if target : kwargs['attrs'].append(f'target="{target}"')
     super().__init__(text, textType=textType, **kwargs)
+

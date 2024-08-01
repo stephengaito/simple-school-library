@@ -50,7 +50,7 @@ async def getNewItemsBorrowedForm(request, db,
       postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
     )
   return Level0div(
-      TopLevelMenu
+    await callPagePart('app.menus.topLevelMenu', request, db)
   )
 
 getRoute(
@@ -73,7 +73,7 @@ async def postSaveNewItemsBorrowed(request, db,
     }))
     db.commit()
   return Level0div(
-    TopLevelMenu
+    await callPagePart('app.menus.topLevelMenu', request, db)
   )
 
 postRoute(
@@ -106,7 +106,7 @@ async def getEditItemsBorrowedForm(request, db,
         postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
       )
   return Level0div(
-    TopLevelMenu
+    await callPagePart('app.menus.topLevelMenu', request, db)
   )
 
 getRoute(
@@ -131,7 +131,7 @@ async def putUpdateAnItemsBorrowed(requeset, db,
     }))
     db.commit()
   return Level0div(
-    TopLevelMenu
+    await callPagePart('app.menus.topLevelMenu', request, db)
   )
 
 putRoute(

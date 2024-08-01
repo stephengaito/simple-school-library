@@ -70,7 +70,7 @@ def editBorrowerForm(db,
 @pagePart
 async def getNewBorrowerForm(request, db, **kwargs) :
   return Level1div([
-    SecondLevelPeopleMenu.select('addBorrower'),
+    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='addBorrower'),
     editBorrowerForm(db,
       submitMsg='Add a new borrower',
       postUrl='/borrowers/new'
@@ -217,7 +217,7 @@ async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
           Table(itemsBorrowedRows)
         ])
   return Level1div([
-    SecondLevelPeopleMenu.select('findBorrower'),
+    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
     findABorrower(None, [])
   ])
 

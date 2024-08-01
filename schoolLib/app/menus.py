@@ -15,7 +15,7 @@ async def topLevelMenu(request, db, selectedId=None, **kwargs) :
     Button(
       'Books',
       theId    = 'books',
-      hxGet    = "/menu/books",
+      hxGet    = '/menu/books',
       hxTarget = '#level0div'
     ),
     Button(
