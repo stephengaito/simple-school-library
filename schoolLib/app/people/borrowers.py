@@ -11,7 +11,8 @@ from schoolLib.app.finders import *
 ##########################################################################
 # content
 
-def editBorrowerForm(db,
+@pagePart
+async def editBorrowerForm(request, db,
   borrowerId=None, submitMessage='Save changes', postUrl=None,
   **kwargs
 ) :
@@ -71,9 +72,12 @@ def editBorrowerForm(db,
 async def getNewBorrowerForm(request, db, **kwargs) :
   return Level1div([
     await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='addBorrower'),
-    editBorrowerForm(db,
+    await callPagePart(
+      'app.people.borrowers.editBorrowerForm',
+      request, db,
       submitMsg='Add a new borrower',
-      postUrl='/borrowers/new'
+      postUrl='/borrowers/new',
+      **kwargs
     )
   ])
 
@@ -89,24 +93,25 @@ async def postSaveNewBorrower(request, db, **kwargs) :
     'classId'    : theForm['assignedClass']
   }))
   db.commit()
-  return editBorrowerForm(db,
+  return await callPagePart(
+    'app.people.borrowers.editBorrowerForm',
+    request, db,
     submitMsg='Add a new borrower',
-    postUrl='/borrowers/new'
+    postUrl='/borrowers/new',
+    **kwargs
   )
 
 postRoute('/borrowers/new', postSaveNewBorrower)
 
 @pagePart
 async def getEditABorrowerForm(request, db, borrowerId=None, **kwargs) :
-  if borrowerId :
-    return editBorrowerForm(db,
-      borrowerId=borrowerId,
-      submitMsg= 'Save changes',
-      postUrl=f"/borrowers/edit/{borrowerId}"
-    )
-  return editBorrowerForm(db,
-    submitMsg='Add a new borrower',
-    postUrl='/borrowers/new'
+  return await callPagePart(
+    'app.people.borrowers.editBorrowerForm',
+    request, db,
+    borrowerId=borrowerId,
+    submitMsg= 'Save changes',
+    postUrl=f"/borrowers/edit/{borrowerId}",
+    **kwargs
   )
 
 getRoute('/borrowers/edit/{borrowerId:int}', getEditABorrowerForm)
@@ -124,9 +129,12 @@ async def putUpdatedBorrower(request, db, borrowerId=None, **kwargs) :
       'classId'    : theForm['assignedClass']
     }))
     db.commit()
-  return editBorrowerForm(db,
+  return await callPagePart(
+    'app.people.borrowers.editBorrowerForm',
+    request, db,
     submitMsg='Add a new borrower',
-    postUrl='/borrowers/new'
+    postUrl='/borrowers/new',
+    **kwargs
   )
 
 putRoute('/borrowers/edit/{borrowerId:int}', putUpdatedBorrower)
@@ -218,7 +226,11 @@ async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
         ])
   return Level1div([
     await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
-    findABorrower(None, [])
+    await callPagePart(
+      'app.finders.findABorrower',
+      request, db,
+      **kwargs
+    )
   ])
 
 getRoute('/borrowers/show/{borrowerId:int}', getShowBorrowerInfo)

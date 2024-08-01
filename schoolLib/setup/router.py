@@ -39,9 +39,9 @@ def htmlResponseFromHtmx(htmxComponent, request) :
         </div>
       """
     )
-  print("-------------------------------------------------")
-  print('\n'.join(htmlFragments))
-  print("-------------------------------------------------")
+  #print("-------------------------------------------------")
+  #print('\n'.join(htmlFragments))
+  #print("-------------------------------------------------")
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
 async def callWithParameters(request, func) :

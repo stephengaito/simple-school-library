@@ -90,46 +90,59 @@ async def provideUIOverview(request, db, **kwargs) :
   computePagePartUsers()
 
   nodes = []
+  nodesSeen = set()
   links = []
 
   for aRoute in routes :
     aPath = aRoute.path
     if '{' in aPath : aPath = aPath.split('{')[0]
-    # add the nodes
-    nodes.append({
-      'id'       : aPath,
-      'path'     : f'/routes{aPath}',
-      'nodeType' : 'default',
-      'color'    : 'blue'
-    })
+    if aPath not in nodesSeen :
+      # add the nodes
+      nodes.append({
+        'id'       : aPath,
+        'path'     : f'/routes{aPath}',
+        'nodeType' : 'default',
+        'color'    : 'blue'
+      })
+      nodesSeen.add(aPath)
+
     # add the links
     anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
     anEndpoint = anEndpoint.lstrip('schoolLib.')
-    if anEndpoint in pageParts :
-      links.append({
-        'source'   : aPath,
-        'target'   : anEndpoint,
-        'linkType' : "uses",
-        'color'    : "black"
-      })
+    if anEndpoint not in pageParts :
+      print(f"Could not find the endpoint: {anEndpoint} for {aPath}")
+      continue
+    links.append({
+      'source'   : aPath,
+      'target'   : anEndpoint,
+      'linkType' : "uses",
+      'color'    : "green"
+    })
 
   for aPagePartName, aPagePart in pageParts.items() :
-    # add the nodes
-    nodes.append({
-      'id'       : aPagePartName,
-      'path'     : f'/pageParts/{aPagePartName}',
-      'nodeType' : 'default',
-      'color'    : 'black'
-    })
+    if aPagePartName not in nodesSeen :
+      # add the nodes
+      nodes.append({
+        'id'       : aPagePartName,
+        'path'     : f'/pageParts/{aPagePartName}',
+        'nodeType' : 'default',
+        'color'    : 'red'
+      })
+      nodesSeen.add(aPagePartName)
+
     # add the links
     for aUser in sorted(aPagePart.users) :
-      if aUser in pageParts :
-        links.append({
-        'source'   : aUser,
-        'target'   : aPagePartName,
-        'linkType' : "uses",
-        'color'    : "black"
-        })
+      if aUser not in pageParts :
+        if '/' not in aUser :
+          print(f"Could not find page part {aUser} for {aPagePartName}")
+        continue
+
+      links.append({
+      'source'   : aUser,
+      'target'   : aPagePartName,
+      'linkType' : "uses",
+      'color'    : "purple"
+    })
 
   jsonData = { "nodes": nodes, "links": links }
 

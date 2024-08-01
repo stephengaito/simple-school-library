@@ -19,7 +19,8 @@ from schoolLib.app.menus import *
 ##########################################################################
 # content
 
-def editClassForm(
+@pagePart
+def editClassForm(request, db,
   className=None, classDesc=None, classOrder=None, classColour=None,
   submitMessage="Save changes", postUrl=None,
   **kwargs
@@ -115,22 +116,14 @@ async def addAClass(request, db, **kwargs) :
 async def peopleMenu(request, db, **kwargs) :
   return Level0div([
     await callPagePart('app.menus.topLevelMenu', request, db, selectedId='people'),
-    addAClass(db)
+    await callPagePart('app.people.classes.addAClass', request, db, **kwargs)
   ], theId='level0div')
 
 getRoute('/menu/people', peopleMenu)
 
-@pagePart
-async def addAClassMenu(request, db, **kwargs) :
-  return addAClass(db)
+getRoute('/menu/people/addClass',addAClass)
 
-getRoute('/menu/people/addClass',addAClassMenu)
-
-@pagePart
-async def listClassesMenu(request, db, **kwargs) :
-  return listClasses(db)
-
-getRoute('/menu/people/listClasses',listClassesMenu)
+getRoute('/menu/people/listClasses',listClasses)
 
 @pagePart
 async def postSaveNewClass(request, db, **kwargs) :
@@ -142,7 +135,9 @@ async def postSaveNewClass(request, db, **kwargs) :
     'colour'     : theForm['classColour']
   }))
   db.commit()
-  return listClasses(db)
+  return await callPagePart(
+    'app.people.classes.listClasses', request, db, **kwargs
+  )
 
 postRoute('/classes/new', postSaveNewClass)
 
@@ -159,7 +154,9 @@ async def getEditAClassForm(request, db, classId=None, **kwargs) :
         submitMessage='Save changes',
         postUrl=f'/classes/edit/{classId}'
       )
-  return listClasses(db)
+  return await callPagePart(
+    'app.people.classes.listClasses', request, db, **kwargs
+  )
 
 getRoute('/classes/edit/{classId:int}', getEditAClassForm)
 
@@ -175,7 +172,9 @@ async def putUpdateAClass(request, db, classId=None, **kwargs) :
     'colour'     : theForm['classColour']
   }))
   db.commit()
-  return listClasses(db)
+  return await callPagePart(
+    'app.people.classes.listClasses', request, db, **kwargs
+  )
 
 putRoute('/classes/edit/{classId:int}', putUpdateAClass)
 
@@ -191,6 +190,8 @@ async def deleteAnEmptyClass(request, db, classId=None, **kwargs) :
     db.commit()
   else :
     print("Can NOT delete a class which is not empty!")
-  return listClasses(db)
+  return await callPagePart(
+    'app.people.classes.listClasses', request, db, **kwargs
+  )
 
 deleteRoute('/classes/delete/{classId:int}', deleteAnEmptyClass)

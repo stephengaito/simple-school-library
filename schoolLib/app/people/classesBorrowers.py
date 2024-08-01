@@ -15,7 +15,8 @@ from schoolLib.setup import *
 ##########################################################################
 # content
 
-def listPupilsInAClassTable(db, classId) :
+@pagePart
+async def listPupilsInAClassTable(request, db, classId=None, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('First name')),
@@ -24,32 +25,34 @@ def listPupilsInAClassTable(db, classId) :
     TableHeader(Text('Class')),
     TableHeader(Text('Actions'))
   ]))
-  selectSql = SelectSql(
-  ).fields(
-    "borrowers.id", "firstName", "familyName", "cohort",
-    "classes.name", "classes.colour"
-  ).tables(
-    "borrowers", "classes"
-  ).whereValue("classId", classId
-  ).whereField("classId", "classes.id")
-  results = selectSql.parseResults(db.execute(selectSql.sql()))
-  for aRow in results :
-    tableRows.append(TableRow([
-      TableEntry(Text(aRow['firstName'])),
-      TableEntry(Text(aRow['familyName'])),
-      TableEntry(Text(str(aRow['cohort']))),
-      TableEntry(Text(
-        addEmojiColour(aRow['classes_colour'], aRow['classes_name'])
-      )),
-      TableEntry(Button(
-        'Edit',
-        hxGet=f'/borrowers/edit/{aRow['borrowers_id']}',
-        hxTarget='#level1div'
-      ))
-    ]))
+  if classId :
+    selectSql = SelectSql(
+    ).fields(
+      "borrowers.id", "firstName", "familyName", "cohort",
+      "classes.name", "classes.colour"
+    ).tables(
+      "borrowers", "classes"
+    ).whereValue("classId", classId
+    ).whereField("classId", "classes.id")
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    for aRow in results :
+      tableRows.append(TableRow([
+        TableEntry(Text(aRow['firstName'])),
+        TableEntry(Text(aRow['familyName'])),
+        TableEntry(Text(str(aRow['cohort']))),
+        TableEntry(Text(
+          addEmojiColour(aRow['classes_colour'], aRow['classes_name'])
+        )),
+        TableEntry(Button(
+          'Edit',
+          hxGet=f'/borrowers/edit/{aRow['borrowers_id']}',
+          hxTarget='#level1div'
+        ))
+      ]))
   return Table(tableRows, theId='level1div')
 
-def updatePupilsInClassForm(db, classId, postUrl) :
+@pagePart
+async def updatePupilsInClassForm(request, db, classId=None, postUrl=None, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('First name')),
@@ -58,48 +61,45 @@ def updatePupilsInClassForm(db, classId, postUrl) :
     TableHeader(Text('Old class')),
     TableHeader(Text('New class'))
   ]))
-  theClasses = getClasses(db, selectedClass=classId)
-  sortedClasses = getSortedClasses(theClasses)
-  selectSql = SelectSql(
-  ).fields(
-    "borrowers.id", "firstName", "familyName", "cohort",
-    "classes.name", "classes.colour"
-  ).tables(
-    "borrowers", "classes"
-  ).whereValue("classId", classId
-  ).whereField("classId", "classes.id")
-  results = selectSql.parseResults(db.execute(selectSql.sql()))
-  for aRow in results :
-    tableRows.append(TableRow([
-      TableEntry(Text(aRow['firstName'])),
-      TableEntry(Text(aRow['familyName'])),
-      TableEntry(Text(str(aRow['cohort']))),
-      TableEntry(Text(
-        addEmojiColour(aRow['classes_colour'], aRow['classes_name'])
-      )),
-      TableEntry(ClassesSelector(
-        sortedClasses,
-        name=f'rowClass-{aRow['borrowers_id']}'
-      ))
-    ]))
+  if classId and postUrl :
+    theClasses = getClasses(db, selectedClass=classId)
+    sortedClasses = getSortedClasses(theClasses)
+    selectSql = SelectSql(
+    ).fields(
+      "borrowers.id", "firstName", "familyName", "cohort",
+      "classes.name", "classes.colour"
+    ).tables(
+      "borrowers", "classes"
+    ).whereValue("classId", classId
+    ).whereField("classId", "classes.id")
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    for aRow in results :
+      tableRows.append(TableRow([
+        TableEntry(Text(aRow['firstName'])),
+        TableEntry(Text(aRow['familyName'])),
+        TableEntry(Text(str(aRow['cohort']))),
+        TableEntry(Text(
+          addEmojiColour(aRow['classes_colour'], aRow['classes_name'])
+        )),
+        TableEntry(ClassesSelector(
+          sortedClasses,
+          name=f'rowClass-{aRow['borrowers_id']}'
+        ))
+      ]))
   return FormTable(tableRows, 'Save changes', post=postUrl)
 
 ##########################################################################
 # routes
 
-@pagePart
-async def getListPupilsInAClass(request, db, classId=None, **kwargs) :
-  if classId :
-    return listPupilsInAClassTable(db, classId)
-  return listClasses(db)
-
-getRoute('/classes/list/{classId:int}', getListPupilsInAClass)
+getRoute('/classes/list/{classId:int}', listPupilsInAClassTable)
 
 @pagePart
 async def getUpdatePupilsInAClassForm(request, db, classId=None, **kwargs) :
-  if classId :
-    return updatePupilsInClassForm(db, classId, 'classes/update')
-  return listClasses(db)
+  return await callPagePart(
+    'app.people.classesBorrower.updatePupilsInClassForm',
+    request, db, classId=classId, postUrl='classes/update',
+    *kwargs
+  )
 
 getRoute('/classes/update/{classId:int}', getUpdatePupilsInAClassForm)
 
@@ -115,6 +115,8 @@ async def putUpdatePupilesInAClass(request, db, **kwargs) :
       'classId' : rowClass[2]
     }))
   db.commit()
-  return listClasses(db)
+  return await callPagePart(
+    'app.people.classes.listClasses', request, db, **kwargs
+  )
 
 putRoute('/classes/update', putUpdatePupilesInAClass)

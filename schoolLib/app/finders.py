@@ -7,7 +7,8 @@ from schoolLib.app.menus import *
 ##########################################################################
 # borrowers
 
-def findABorrower(probe, nameRows) :
+@pagePart
+def findABorrower(request, db, probe=None, nameRows=[], **kwargs) :
   return Level2div([
     SearchBox(
       post='/search/borrowers',
