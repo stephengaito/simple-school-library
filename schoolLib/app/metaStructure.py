@@ -75,6 +75,84 @@ async def listPageParts(request, db, aPath=None, **kwargs) :
       Text(['Source:', LongCode(pygmentedSrc)], textType=None)
     )
     partsList.appendChild(aPartList)
-  return HtmlPage( StdHeaders(), partsList)
+  return HtmlPage(
+    StdHeaders([
+     '<link rel="stylesheet" href="/static/css/pygmentsSas.css" type="text/css" />'
+    ]),
+     partsList
+  )
 
 getRoute('/pageParts/{aPath:path}', listPageParts)
+
+@pagePart
+async def provideUIOverview(request, db, **kwargs) :
+
+  computePagePartUsers()
+
+  nodes = []
+  links = []
+
+  for aRoute in routes :
+    aPath = aRoute.path
+    if '{' in aPath : aPath = aPath.split('{')[0]
+    # add the nodes
+    nodes.append({
+      'id'       : aPath,
+      'path'     : f'/routes{aPath}',
+      'nodeType' : 'default',
+      'color'    : 'blue'
+    })
+    # add the links
+    anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
+    anEndpoint = anEndpoint.lstrip('schoolLib.')
+    if anEndpoint in pageParts :
+      links.append({
+        'source'   : aPath,
+        'target'   : anEndpoint,
+        'linkType' : "uses",
+        'color'    : "black"
+      })
+
+  for aPagePartName, aPagePart in pageParts.items() :
+    # add the nodes
+    nodes.append({
+      'id'       : aPagePartName,
+      'path'     : f'/pageParts/{aPagePartName}',
+      'nodeType' : 'default',
+      'color'    : 'black'
+    })
+    # add the links
+    for aUser in sorted(aPagePart.users) :
+      if aUser in pageParts :
+        links.append({
+        'source'   : aUser,
+        'target'   : aPagePartName,
+        'linkType' : "uses",
+        'color'    : "black"
+        })
+
+  jsonData = { "nodes": nodes, "links": links }
+
+  return HtmlPage(
+    StdHeaders([
+      '<script src="/static/js/d3.v7.min.js"></script>',
+    ]),
+    RawHtml(
+      f"""
+      <style>
+      .nodes circle {{
+        pointer-events: all;
+        stroke: none;
+        stroke-width: 40px;
+      }}
+      </style>
+      <svg width = "800" height="600" ></svg>
+      <script>
+      var graph = {jsonData};
+      </script>
+      <script src="/static/js/conceptmapper.js"></script>
+      """
+    )
+  )
+
+getRoute('/uiOverview', provideUIOverview)

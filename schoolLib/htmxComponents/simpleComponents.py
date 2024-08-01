@@ -87,7 +87,7 @@ class Menu(HtmxChildrenBase) :
 
 class RawHtml(HtmxBase) :
   def __init__(self, rawHtml, **kwargs) :
-    super().__init(**kwargs)
+    super().__init__(**kwargs)
     self.rawHtml = rawHtml
 
   def collectHtml(self, htmlFragments, **kwargs) :

@@ -32,7 +32,12 @@ def htmlResponseFromHtmx(htmxComponent, request) :
     and not url.startswith('/pageParts') and 'develop' in config :
     htmlFragments.insert(
       len(htmlFragments)-1,
-      f'<a href="/routes{url}" target="_blank"><img src="/static/svg/bootstrap/code-slash.svg" width="32" height="32"></a>'
+      f"""
+        <div class="m-5 grid grid-cols-10 gap-4 content-start">
+        <a href="/routes{url}" target="_blank"><img src="/static/svg/bootstrap/filetype-py.svg" width="24" height="24"></a>
+        <a href="/uiOverview" target="_blank"><img src="/static/svg/bootstrap/braces-asterisk.svg" width="24" height="24"></a>
+        </div>
+      """
     )
   print("-------------------------------------------------")
   print('\n'.join(htmlFragments))

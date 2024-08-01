@@ -6,6 +6,12 @@ from schoolLib.setup.configuration import config
 from schoolLib.htmxComponents.htmx import *
 
 class StdHeaders(HtmxBase) :
+  def __init__(self, additionalHeaders=[], **kwargs) :
+    super().__init__(**kwargs)
+    if not isinstance(additionalHeaders, list) :
+      additionalHeaders = [ additionalHeaders ]
+    self.additionalHeaders = additionalHeaders
+
   def collectHtml(self, htmlFragments) :
 
     title = "Simple School Library"
@@ -22,11 +28,11 @@ class StdHeaders(HtmxBase) :
       <link rel="manifest" href="/static/favicon/site.webmanifest">
 
       <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
-      <link rel="stylesheet" href="/static/css/pygmentsSas.css" type="text/css" />
 
       <script src="/static/js/htmx.min.js"></script>
       <script src="/static/js/idiomorph-ext.min.js"></script>
     """)
+    htmlFragments.extend(self.additionalHeaders)
 
 class StdBody(HtmxBase) :
   def collectHtml(self, htmlFragments) :

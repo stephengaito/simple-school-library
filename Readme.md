@@ -15,7 +15,7 @@ We build a simple school library using:
 
 - [Bootstrap Icons](https://icons.getbootstrap.com/)
 
-- [Tailwind CSS](https://tailwindcss.com/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
 
   - For development, this requires the [Standalone CLI: Use Tailwind CSS
     without Node.js - Tailwind
@@ -29,6 +29,8 @@ We build a simple school library using:
 - [Uvicorn](http://www.uvicorn.org/)
 
 For testing we use:
+
+- [D3](https://d3js.org/getting-started)
 
 - [Pygments](https://pygments.org/docs/)
 
