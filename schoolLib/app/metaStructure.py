@@ -54,7 +54,7 @@ async def listPageParts(request, db, aPath=None, **kwargs) :
     for aMetaData in aPagePart.metaData :
       for aKey, aValue in aMetaData.items() :
         if aValue :
-          if '{' in aValue : aValue = aValue.split('{')[0]
+          if '{' in aValue : aValue = aValue.split('{')[0].rstrip('/')
           if aKey in ['callPagePart'] :
             metaDataList.appendChild(Text([
               Text(aKey+':', textType='none'),
@@ -96,7 +96,7 @@ async def provideUIOverview(request, db, aPath=None, **kwargs) :
 
   for aRoute in routes :
     aPath = aRoute.path
-    if '{' in aPath : aPath = aPath.split('{')[0]
+    if '{' in aPath : aPath = aPath.split('{')[0].rstrip('/')
     if aPath not in nodesSeen :
       # add the nodes
       nodes.append({
@@ -149,7 +149,7 @@ async def provideUIOverview(request, db, aPath=None, **kwargs) :
       for aKey, aValue in someMetaData.items() :
         if not aValue : continue
         if aKey in ['hxGet', 'hxPost', 'link'] :
-          if '{' in aValue : aValue = aValue.split('{')[0]
+          if '{' in aValue : aValue = aValue.split('{')[0].rstrip('/')
           if not aValue in nodesSeen :
             print(f"Could not find the url {aValue} in {aPagePartName}")
             continue
