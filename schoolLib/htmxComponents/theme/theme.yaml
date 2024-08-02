@@ -22,6 +22,11 @@ DivClasses:
   default:
    - m-1
 
+Level1divClasses:
+  default:
+    - grid
+    - "grid-cols-[10%_90%]"
+
 ListClasses:
   default:
    - m-2
@@ -41,8 +46,12 @@ LongCodeClasses:
 
 MenuClasses:
   default:
-   - menu
-   - m-1
+    - menu
+    - m-1
+  vertical:
+    - float-left
+    - flex
+    - flex-col
 
 FormClasses:
   default:

@@ -65,7 +65,7 @@ async def secondLevelBooksMenu(request, db, selectedId=None, **kwargs) :
       hxGet    = '/itemsInfo/new',
       hxTarget = '#level1div'
     )
-  ], selectedId=selectedId)
+  ], selectedId=selectedId, klassName='vertical')
 
 @pagePart
 async def secondLevelPeopleMenu(request, db, selectedId=None, **kwargs) :
@@ -94,7 +94,7 @@ async def secondLevelPeopleMenu(request, db, selectedId=None, **kwargs) :
       hxGet    = '/search/borrowers',
       hxTarget = '#level1div'
     )
-  ], selectedId=selectedId)
+  ], selectedId=selectedId, klassName='vertical')
 
 @pagePart
 async def secondLevelTasksMenu(request, db, selectedId=None, **kwargs) :
@@ -105,4 +105,4 @@ async def secondLevelTasksMenu(request, db, selectedId=None, **kwargs) :
       hxGet    = '/menu/tasks/booksCheckedOut',
       hxTarget = '#level1div'
     )
-  ], selectedId=selectedId)
+  ], selectedId=selectedId, klassName='vertical')
