@@ -12,7 +12,11 @@ createWebServer() {
   cat << BIN_SCRIPT > $cmdScript
 #!/bin/sh
 
-exec $uvicornBin --reload-include '*.yaml' --reload schoolLib.app.main:app
+exec $uvicornBin \
+  --reload-dir schoolLib \
+  --reload-include '*.yaml' \
+  --reload schoolLib.app.main:app
+
 BIN_SCRIPT
 
   chmod a+x $cmdScript

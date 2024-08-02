@@ -8,7 +8,7 @@ from schoolLib.app.menus import *
 # borrowers
 
 @pagePart
-def findABorrower(request, db, probe=None, nameRows=[], **kwargs) :
+async def findABorrower(request, db, probe=None, nameRows=[], **kwargs) :
   return Level2div([
     SearchBox(
       post='/search/borrowers',
@@ -23,7 +23,10 @@ def findABorrower(request, db, probe=None, nameRows=[], **kwargs) :
 async def getFindBorrowerForm(request, db, **kwargs) :
   return Level1div([
     await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
-    findABorrower(None, [])
+    await callPagePart(
+      'app.finders.findABorrower',
+      request, db, **kwargs
+    )
   ])
 
 getRoute('/search/borrowers', getFindBorrowerForm)
@@ -50,14 +53,20 @@ async def postSearchForBorrower(request, db, **kwargs) :
       f'{aRow['firstName']} {aRow['familyName']}',
       hxTarget='#level2div'
     ))))
-  return findABorrower(theForm['search'], nameRows)
+  return await callPagePart(
+    'app.finders.findABorrower',
+    request, db,
+    probe=theForm['search'], nameRows=nameRows,
+    **kwargs
+  )
 
 postRoute('/search/borrowers', postSearchForBorrower)
 
 ##########################################################################
 # items (aka Books)
 
-def findAnItem(probe, itemRows) :
+@pagePart
+async def findAnItem(request, db, probe=None, itemRows=[], **kwargs) :
   return Level2div([
     SearchBox(
       post='/search/items',
@@ -72,7 +81,10 @@ def findAnItem(probe, itemRows) :
 async def getFindAnItemForm(request, db, **kwargs) :
   return Level1div([
     await callPagePart('app.menus.secondLevelBooksMenu', request, db, selectedId='findBook'),
-    findAnItem(None, [])
+    await callPagePart(
+      'app.finders.findAnItem',
+      request, db, **kwargs
+    )
   ])
 
 getRoute('/search/items', getFindAnItemForm)
@@ -100,6 +112,11 @@ async def postSearchForAnItem(request, db, **kwargs) :
       aRow['title'],
       hxTarget='#level2div'
     ))))
-  return findAnItem(theForm['search'], itemRows)
+  return await callPagePart(
+    'app.finders.findAnItem',
+    request, db,
+    probe=theForm['search'], itemRows=itemRows,
+    **kwargs
+  )
 
 postRoute('/search/items', postSearchForAnItem)

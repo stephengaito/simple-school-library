@@ -145,8 +145,10 @@ def computePagePartUsers() :
     aPath = aRoute.path
     anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
     anEndpoint = anEndpoint.lstrip('schoolLib.')
-    if anEndpoint in pageParts :
-      pageParts[anEndpoint].addUser(aPath)
+    if anEndpoint not in pageParts :
+      print(f"Could not find the endpoint {anEndpoint} in {aRoute}")
+      continue
+    pageParts[anEndpoint].addUser(aPath)
 
   # ensure all of the meta data has been collected
   # and then add the users from each pagePart
@@ -154,5 +156,7 @@ def computePagePartUsers() :
     pagePart.collectMetaData()
     for someMetaData in pagePart.metaData :
       if 'callPagePart' in someMetaData and someMetaData['callPagePart'] :
-        if someMetaData['callPagePart'] in pageParts :
-          pageParts[someMetaData['callPagePart']].addUser(pagePartName)
+        if someMetaData['callPagePart'] not in pageParts :
+          print(f"Could not find page part {someMetaData['callPagePart']} in {pagePartName}")
+          continue
+        pageParts[someMetaData['callPagePart']].addUser(pagePartName)

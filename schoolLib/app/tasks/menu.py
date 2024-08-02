@@ -88,13 +88,12 @@ async def tasksMenu(request, db, **kwargs) :
     await callPagePart(
       'app.menus.topLevelMenu', request, db, selectedId='tasks'
     ),
-    await booksCheckedOut(request, db)
+    await callPagePart(
+      'app.tasks.menu.booksCheckedOut',
+      request, db, **kwargs
+    )
   ], theId='level0div')
 
 getRoute('/menu/tasks', tasksMenu)
 
-@pagePart
-async def getBooksCheckedOut(request, db, **kwargs) :
-  return await booksCheckedOut(request, db)
-
-getRoute('/menu/tasks/booksCheckedOut', getBooksCheckedOut)
+getRoute('/menu/tasks/booksCheckedOut', booksCheckedOut)

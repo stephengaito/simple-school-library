@@ -12,7 +12,9 @@ from schoolLib.app.menus import *
 ##########################################################################
 # content
 
-def editItemsBorrowedForm(
+@pagePart
+async def editItemsBorrowedForm(
+  request, db,
   dateBorrowed=None, dateDue=None,
   submitMessage="Save changes", postUrl=None,
   **kwargs
@@ -45,9 +47,12 @@ async def getNewItemsBorrowedForm(request, db,
   **kwargs
 ) :
   if itemsPhysicalId and borrowersId :
-    return editItemsBorrowedForm(
+    return await callPagePart(
+      'app.books.itemsBorrowed.editItemsBorrowedForm',
+      request, db,
       submitMessage='Take out a new book',
       postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
+      **kwargs
     )
   return Level0div(
     await callPagePart('app.menus.topLevelMenu', request, db)
@@ -99,11 +104,14 @@ async def getEditItemsBorrowedForm(request, db,
       fetchAll=False
     )
     if itemsBorrowed :
-      return editItemsBorrowedForm(
+      return await callPagePart(
+        'app.books.itemsBorrowed.editItemsBorrowedForm',
+        request, db,
         dateBorrowed=itemsBorrowed[0]['dateBorrowed'],
         dateDue=itemsBorrowed[0]['dateDue'],
         submitMessage='Save changes',
         postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
+        **kwargs
       )
   return Level0div(
     await callPagePart('app.menus.topLevelMenu', request, db)

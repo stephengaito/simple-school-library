@@ -14,7 +14,9 @@ from schoolLib.htmxComponents import *
 ##########################################################################
 # content
 
-def editItemsInfoForm(
+@pagePart
+async def editItemsInfoForm(
+  request, db,
   title=None, authors=None, publisher=None, series=None,
   bookType=None, keywords=None, summary=None,
   dewey=None, isbn=None,
@@ -219,9 +221,12 @@ getRoute(
 
 @pagePart
 async def getNewItemsInfoForm(request, db, **kwargs) :
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 getRoute('/itemsInfo/new', getNewItemsInfoForm)
@@ -241,9 +246,12 @@ async def postSaveNewItemsInfo(request, db, **kwargs):
     'isbn'      : theForm['isbn']
   }))
   db.commit()
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 postRoute('/itemsInfo/new', postSaveNewItemsInfo)
@@ -275,9 +283,12 @@ async def getEditAnItemsInfoForm(request, db, itemsInfoId=None, **kwargs) :
         submitMessage='Save changes',
         postUrl=f'/itemsInfo/edit/{itemsInfoId}',
       )
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 getRoute('/itemsInfo/edit/{itemsInfoId:int}', getEditAnItemsInfoForm)
@@ -300,9 +311,12 @@ async def putUpdateAnItemsInfo(request, db, itemsInfoId=None, **kwargs) :
       'isbn'      : theForm['isbn']
     }))
     db.commit()
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 putRoute('/itemsInfo/edit/{itemsInfoId:int}', putUpdateAnItemsInfo)

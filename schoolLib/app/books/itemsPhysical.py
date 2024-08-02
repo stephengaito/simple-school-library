@@ -39,7 +39,8 @@ def computeNewBarcode(db) :
   # This WILL fail if it gets hit more than once per second :$
   return datetime.strftime("%Y-%m%d%H%M%S")
 
-def editItemsPhysicalForm(
+@pagePart
+async def editItemsPhysicalForm(
   barcode=None, status=None,
   dateAdded=None, dateBorrowed=None, dateLastSeen=None,
   submitMessage="Save changes", postUrl=None,
@@ -88,13 +89,19 @@ def editItemsPhysicalForm(
 @pagePart
 async def getNewItemsPhysicalForm(request, db, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
-    return editItemsPhysicalForm(
+    return await callPagePart(
+      'app.books.itemsPhysical.editItemsPhysicalForm',
+      request, db,
       postUrl=f'/itemsPhysical/{itemsInfoId}/new',
       submitMessage='Add new copy',
+      **kwargs
     )
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 getRoute('/itemsPhysical/{itemsInfoId:int}/new', getNewItemsPhysicalForm)
@@ -116,13 +123,19 @@ async def postSaveNewItemsPhysical(request, db, itemsInfoId=None, **kwargs) :
       'status'       : theForm['status']
     }))
     db.commit()
-    return editItemsPhysicalForm(
+    return await callPagePart(
+      'app.books.itemsPhysical.editItemsPhysicalForm',
+      request, db,
       submitMessage='Add new copy',
       postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+      **kwargs
     )
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 postRoute('/itemsPhysical/{itemsInfoId:int}/new', postSaveNewItemsPhysical)
@@ -143,7 +156,9 @@ async def getEditItemsPhysicalForm(request, db,
       fetchAll=False
     )
     if itemsPhysical :
-      return editItemsPhysicalForm(
+      return await callPagePart(
+        'app.books.itemsPhysical.editItemsPhysicalForm',
+        request, db,
         postUrl=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
         barcode=itemsPhysical[0]['barcode'],
         dateAdded=itemsPhysical[0]['dateAdded'],
@@ -151,10 +166,14 @@ async def getEditItemsPhysicalForm(request, db,
         dateLastSeen=itemsPhysical[0]['dateLastSeen'],
         status=itemsPhysical[0]['status'],
         submitMessage='Save changes',
+        **kwargs
       )
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 getRoute(
@@ -184,13 +203,19 @@ async def putUpdateAnItemsPhysical(request, db,
       'status'       : theForm['status']
     }))
     db.commit()
-    return editItemsPhysicalForm(
+    return await callPagePart(
+      'app.books.itemsPhysical.editItemsPhysicalForm',
+      request, db,
       submitMessage='Add new copy',
       postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+      **kwargs
     )
-  return editItemsInfoForm(
+  return await callPagePart(
+    'app.books.itemsInfo.editItemsInfoForm',
+    request, db,
     submitMessage='Add new book',
     postUrl='/itemsInfo/new',
+    **kwargs
   )
 
 putRoute(

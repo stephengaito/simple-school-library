@@ -85,7 +85,8 @@ async def listPageParts(request, db, aPath=None, **kwargs) :
 getRoute('/pageParts/{aPath:path}', listPageParts)
 
 @pagePart
-async def provideUIOverview(request, db, **kwargs) :
+async def provideUIOverview(request, db, aPath=None, **kwargs) :
+  savePath = aPath
 
   computePagePartUsers()
 
@@ -138,13 +139,41 @@ async def provideUIOverview(request, db, **kwargs) :
         continue
 
       links.append({
-      'source'   : aUser,
-      'target'   : aPagePartName,
-      'linkType' : "uses",
-      'color'    : "purple"
-    })
+        'source'   : aUser,
+        'target'   : aPagePartName,
+        'linkType' : "uses",
+        'color'    : "purple"
+      })
+
+    for someMetaData in aPagePart.metaData :
+      for aKey, aValue in someMetaData.items() :
+        if not aValue : continue
+        if aKey in ['hxGet', 'hxPost', 'link'] :
+          if '{' in aValue : aValue = aValue.split('{')[0]
+          if not aValue in nodesSeen :
+            print(f"Could not find the url {aValue} in {aPagePartName}")
+            continue
+
+          links.append({
+            'source'   : aPagePartName,
+            'target'   : aValue,
+            'linkType' : aKey,
+            'color'    : "blue"
+          })
 
   jsonData = { "nodes": nodes, "links": links }
+
+  if savePath and savePath.startswith('save/') :
+    savePath = savePath.removeprefix('save/')
+    savePath = os.path.abspath(os.path.expanduser(savePath))
+    try :
+      os.makedirs(os.path.dirname(savePath), exist_ok=True)
+      with open(savePath, 'w') as dataFile :
+        dataFile.write(yaml.dump(jsonData))
+      print(f"Saved ui overview data in {savePath}")
+    except Exception as err :
+      print(f"Could not save ui overview data in {savePath}")
+      print(repr(err))
 
   return HtmlPage(
     StdHeaders([
@@ -168,4 +197,4 @@ async def provideUIOverview(request, db, **kwargs) :
     )
   )
 
-getRoute('/uiOverview', provideUIOverview)
+getRoute('/uiOverview/{aPath:path}', provideUIOverview)

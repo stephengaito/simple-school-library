@@ -36,7 +36,9 @@ async def helpPages(request, db, aPath=None, **kwargs) :
   someMarkdown = loadMarkdownFromFile(aPath)
 
   return Level0div([
-    callPagePart(topLevelMenu, selectedId='home'),
+    await callPagePart(
+      'app.menus.topLevelMenu', request, db, selectedId='home', **kwargs
+    ),
     Level1div(MarkdownDiv(someMarkdown))
   ])
 

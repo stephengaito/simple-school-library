@@ -20,7 +20,7 @@ from schoolLib.app.menus import *
 # content
 
 @pagePart
-def editClassForm(request, db,
+async def editClassForm(request, db,
   className=None, classDesc=None, classOrder=None, classColour=None,
   submitMessage="Save changes", postUrl=None,
   **kwargs
@@ -87,7 +87,7 @@ async def listClasses(request, db, **kwargs) :
     ]))
 
   return Level1div([
-    await callPagePart('app.menus.scondLevelPeopleMenu', request, db, selectedId='listClasses'),
+    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='listClasses'),
     Table(tableRows, theId='level2div')
   ])
 

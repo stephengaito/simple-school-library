@@ -4,7 +4,9 @@ from schoolLib.setup import *
 loadedConfig('config.yaml', verbose=True)
 
 def cli() :
-  with getDatabase() as db :
+  try :
+    dbPath = config['database']
+    db = sqlite3.connect(dbPath)
 
     db.execute("DROP INDEX IF EXISTS isbn")
     db.execute("CREATE INDEX IF NOT EXISTS isbn ON itemsInfo ( isbn )")
@@ -58,3 +60,9 @@ def cli() :
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       """, aRow)
     db.commit()
+
+  except Exception as err :
+    print(f"Could not reindex the database {dbPath}")
+    print(repr(err))
+  finally :
+    db.close()

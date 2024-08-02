@@ -96,7 +96,7 @@ getRoute('/classes/list/{classId:int}', listPupilsInAClassTable)
 @pagePart
 async def getUpdatePupilsInAClassForm(request, db, classId=None, **kwargs) :
   return await callPagePart(
-    'app.people.classesBorrower.updatePupilsInClassForm',
+    'app.people.classesBorrowers.updatePupilsInClassForm',
     request, db, classId=classId, postUrl='classes/update',
     *kwargs
   )
