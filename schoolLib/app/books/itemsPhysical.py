@@ -43,10 +43,10 @@ def computeNewBarcode(db) :
 async def editItemsPhysicalForm(
   barcode=None, status=None,
   dateAdded=None, dateBorrowed=None, dateLastSeen=None,
-  submitMessage="Save changes", postUrl=None,
+  submitMessage="Save changes", hxPost=None,
   **kwargs
 ) :
-  if not postUrl : return "<!-- edit itemsPhysical form with NO postUrl -->"
+  if not hxPost : return "<!-- edit itemsPhysical form with NO hxPost -->"
 
   return FormTable([
     TextInput(
@@ -80,7 +80,7 @@ async def editItemsPhysicalForm(
       placeholder='The current status...'
     )
   ], submitMessage,
-    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
   )
 
 ##########################################################################
@@ -92,7 +92,7 @@ async def getNewItemsPhysicalForm(request, db, itemsInfoId=None, **kwargs) :
     return await callPagePart(
       'app.books.itemsPhysical.editItemsPhysicalForm',
       request, db,
-      postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+      hxPost=f'/itemsPhysical/{itemsInfoId}/new',
       submitMessage='Add new copy',
       **kwargs
     )
@@ -100,7 +100,7 @@ async def getNewItemsPhysicalForm(request, db, itemsInfoId=None, **kwargs) :
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 
@@ -127,14 +127,14 @@ async def postSaveNewItemsPhysical(request, db, itemsInfoId=None, **kwargs) :
       'app.books.itemsPhysical.editItemsPhysicalForm',
       request, db,
       submitMessage='Add new copy',
-      postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+      hxPost=f'/itemsPhysical/{itemsInfoId}/new',
       **kwargs
     )
   return await callPagePart(
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 
@@ -159,7 +159,7 @@ async def getEditItemsPhysicalForm(request, db,
       return await callPagePart(
         'app.books.itemsPhysical.editItemsPhysicalForm',
         request, db,
-        postUrl=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
+        hxPost=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
         barcode=itemsPhysical[0]['barcode'],
         dateAdded=itemsPhysical[0]['dateAdded'],
         dateBorrowed=itemsPhysical[0]['dateBorrowed'],
@@ -172,7 +172,7 @@ async def getEditItemsPhysicalForm(request, db,
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 
@@ -207,14 +207,14 @@ async def putUpdateAnItemsPhysical(request, db,
       'app.books.itemsPhysical.editItemsPhysicalForm',
       request, db,
       submitMessage='Add new copy',
-      postUrl=f'/itemsPhysical/{itemsInfoId}/new',
+      hxPost=f'/itemsPhysical/{itemsInfoId}/new',
       **kwargs
     )
   return await callPagePart(
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 

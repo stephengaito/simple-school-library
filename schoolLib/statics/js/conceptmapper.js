@@ -57,7 +57,7 @@ function nodeClicked(event, d, i) {
     thisNode.transition()
       .attr("fill", "red")
       .attr("r",  5);
-  } else {
+  } else if (+thisNode.attr("r") < 6){
     thisNode.transition()
       .attr("fill", "black")
       .attr("r",  2.5);
@@ -119,7 +119,7 @@ var node = outerSvg.append("g")
     .data(graph.nodes)
     .enter().append("circle")
       .attr("fill", function(d) { return d.color; })
-      .attr("r", 2.5)
+      .attr("r", function(d) { return d.radius; })
       .call(drag())
       .on("click", nodeClicked)
       .on("dblclick", nodeDblClicked);

@@ -13,10 +13,10 @@ from schoolLib.app.finders import *
 
 @pagePart
 async def editBorrowerForm(request, db,
-  borrowerId=None, submitMessage='Save changes', postUrl=None,
+  borrowerId=None, submitMessage='Save changes', hxPost=None,
   **kwargs
 ) :
-  if not postUrl : return "<!-- edit borrower form with NO postUrl -->"
+  if not hxPost : return "<!-- edit borrower form with NO hxPost -->"
 
   borrower = {
     'firstName'  : None,
@@ -76,7 +76,7 @@ async def getNewBorrowerForm(request, db, **kwargs) :
       'app.people.borrowers.editBorrowerForm',
       request, db,
       submitMsg='Add a new borrower',
-      postUrl='/borrowers/new',
+      hxPost='/borrowers/new',
       **kwargs
     )
   ])
@@ -97,7 +97,7 @@ async def postSaveNewBorrower(request, db, **kwargs) :
     'app.people.borrowers.editBorrowerForm',
     request, db,
     submitMsg='Add a new borrower',
-    postUrl='/borrowers/new',
+    hxPost='/borrowers/new',
     **kwargs
   )
 
@@ -110,7 +110,7 @@ async def getEditABorrowerForm(request, db, borrowerId=None, **kwargs) :
     request, db,
     borrowerId=borrowerId,
     submitMsg= 'Save changes',
-    postUrl=f"/borrowers/edit/{borrowerId}",
+    hxPost=f"/borrowers/edit/{borrowerId}",
     **kwargs
   )
 
@@ -133,7 +133,7 @@ async def putUpdatedBorrower(request, db, borrowerId=None, **kwargs) :
     'app.people.borrowers.editBorrowerForm',
     request, db,
     submitMsg='Add a new borrower',
-    postUrl='/borrowers/new',
+    hxPost='/borrowers/new',
     **kwargs
   )
 
@@ -203,29 +203,29 @@ async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
               TableEntry(Text("")),
             ])
           )
-        return Level1div([
-          Table([
-            TableRow([
-              TableEntry(Text('First Name')),
-              TableEntry(Text(borrower['firstName']))
-            ]),
-            TableRow([
-              TableEntry(Text('Family Name')),
-              TableEntry(Text(borrower['familyName']))
-            ]),
-            TableRow([
-              TableEntry(Text('Cohort')),
-              TableEntry(Text(str(borrower['cohort'])))
-            ]),
-            TableRow([
-              TableEntry(Text('Class')),
-              TableEntry(Text(borrower['className']))
-            ]),
+      return Level1div([
+        Table([
+          TableRow([
+            TableEntry(Text('First Name')),
+            TableEntry(Text(borrower['firstName']))
           ]),
-          Table(itemsBorrowedRows)
-        ])
+          TableRow([
+            TableEntry(Text('Family Name')),
+            TableEntry(Text(borrower['familyName']))
+          ]),
+          TableRow([
+            TableEntry(Text('Cohort')),
+            TableEntry(Text(str(borrower['cohort'])))
+          ]),
+          TableRow([
+            TableEntry(Text('Class')),
+            TableEntry(Text(borrower['className']))
+          ]),
+        ]),
+        Table(itemsBorrowedRows)
+      ])
   return Level1div([
-    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
+    #await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
     await callPagePart(
       'app.finders.findABorrower',
       request, db,

@@ -11,7 +11,7 @@ from schoolLib.app.menus import *
 async def findABorrower(request, db, probe=None, nameRows=[], **kwargs) :
   return Level2div([
     SearchBox(
-      post='/search/borrowers',
+      hxPost='/search/borrowers',
       name='search',
       value=probe,
       placeholder="Type a person's name"
@@ -69,7 +69,7 @@ postRoute('/search/borrowers', postSearchForBorrower)
 async def findAnItem(request, db, probe=None, itemRows=[], **kwargs) :
   return Level2div([
     SearchBox(
-      post='/search/items',
+      hxPost='/search/items',
       name='search',
       value=probe,
       placeholder='Type a book title...'

@@ -86,7 +86,13 @@ getRoute('/pageParts/{aPath:path}', listPageParts)
 
 @pagePart
 async def provideUIOverview(request, db, aPath=None, **kwargs) :
-  savePath = aPath
+  savePath = None
+  showPath = ""
+  if aPath :
+    if aPath.startswith('save/') :
+      savePath = aPath.removeprefix('save/')
+    elif aPath.startswith('show/') :
+      showPath = aPath.removeprefix('show/')
 
   computePagePartUsers()
 
@@ -99,11 +105,16 @@ async def provideUIOverview(request, db, aPath=None, **kwargs) :
     if '{' in aPath : aPath = aPath.split('{')[0].rstrip('/')
     if aPath not in nodesSeen :
       # add the nodes
+      radius = 2.5
+      if aPath == showPath :
+        print(f"Showing the route {aPath}")
+        radius = 10
       nodes.append({
         'id'       : aPath,
         'path'     : f'/routes{aPath}',
         'nodeType' : 'default',
-        'color'    : 'blue'
+        'color'    : 'blue',
+        'radius'   : radius
       })
       nodesSeen.add(aPath)
 
@@ -123,11 +134,16 @@ async def provideUIOverview(request, db, aPath=None, **kwargs) :
   for aPagePartName, aPagePart in pageParts.items() :
     if aPagePartName not in nodesSeen :
       # add the nodes
+      radius = 2.5
+      if aPagePartName == showPath :
+        print(f"Showing the aPagePart {aPagePartName}")
+        radius = 10
       nodes.append({
         'id'       : aPagePartName,
         'path'     : f'/pageParts/{aPagePartName}',
         'nodeType' : 'default',
-        'color'    : 'red'
+        'color'    : 'red',
+        'radius'   : radius
       })
       nodesSeen.add(aPagePartName)
 
@@ -163,17 +179,24 @@ async def provideUIOverview(request, db, aPath=None, **kwargs) :
 
   jsonData = { "nodes": nodes, "links": links }
 
-  if savePath and savePath.startswith('save/') :
-    savePath = savePath.removeprefix('save/')
-    savePath = os.path.abspath(os.path.expanduser(savePath))
-    try :
-      os.makedirs(os.path.dirname(savePath), exist_ok=True)
-      with open(savePath, 'w') as dataFile :
-        dataFile.write(yaml.dump(jsonData))
-      print(f"Saved ui overview data in {savePath}")
-    except Exception as err :
-      print(f"Could not save ui overview data in {savePath}")
-      print(repr(err))
+  if savePath :
+      savePath = os.path.abspath(os.path.expanduser(savePath))
+      try :
+        os.makedirs(os.path.dirname(savePath), exist_ok=True)
+        with open(savePath, 'w') as dataFile :
+          dataFile.write(yaml.dump(jsonData))
+        print(f"Saved ui overview data in {savePath}")
+      except Exception as err :
+        print(f"Could not save ui overview data in {savePath}")
+        print(repr(err))
+
+  svgHeight=800
+  if 'develop' in config and 'svgHeight' in config['develop'] :
+    svgHeight=config['develop']['svgHeight']
+
+  svgWidth=800
+  if 'develop' in config and 'svgWidth' in config['develop'] :
+    svgWidth=config['develop']['svgWidth']
 
   return HtmlPage(
     StdHeaders([
@@ -188,7 +211,7 @@ async def provideUIOverview(request, db, aPath=None, **kwargs) :
         stroke-width: 40px;
       }}
       </style>
-      <svg width = "800" height="600" ></svg>
+      <svg width="{svgWidth}" height="{svgHeight}" ></svg>
       <script>
       var graph = {jsonData};
       </script>

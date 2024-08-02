@@ -23,6 +23,8 @@ emojiColours = {
 }
 
 def addEmojiColour(emojiColourName, text) :
+  if emojiColourName not in emojiColours :
+    emojiColourName = 'black'
   return emojiColours[emojiColourName] + ' ' + text
 
 config = {}

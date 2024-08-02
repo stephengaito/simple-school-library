@@ -55,6 +55,7 @@ async def callWithParameters(request, func) :
     path = config['database']
   try :
     db = sqlite3.connect(path)
+    #print(yaml.dump(params))
     htmxComponent = await func(request, db, **params)
     return htmlResponseFromHtmx(htmxComponent, request)
   finally :
@@ -86,8 +87,8 @@ def patchRoute(aRoute, patchFunc, name=None) :
 
 def deleteRoute(aRoute, deleteFunc, name=None) :
   @wraps(deleteFunc)
-  def deleteWrapper(request) :
-    return callWithParameters(request, deleteFunc)
+  async def deleteWrapper(request) :
+    return await callWithParameters(request, deleteFunc)
   routes.append(Route(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
 
 ###############################################################

@@ -16,10 +16,10 @@ from schoolLib.app.menus import *
 async def editItemsBorrowedForm(
   request, db,
   dateBorrowed=None, dateDue=None,
-  submitMessage="Save changes", postUrl=None,
+  submitMessage="Save changes", hxPost=None,
   **kwargs
 ) :
-  if not postUrl : return "<!-- edit itemsBorrowed form with NO postUrl -->"
+  if not hxPost : return "<!-- edit itemsBorrowed form with NO hxPost -->"
 
   return FormTable([
     DateInput(
@@ -35,7 +35,7 @@ async def editItemsBorrowedForm(
       placeholder='The date due....'
     )
   ], submitMessage,
-    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
   )
 
 ##########################################################################
@@ -51,7 +51,7 @@ async def getNewItemsBorrowedForm(request, db,
       'app.books.itemsBorrowed.editItemsBorrowedForm',
       request, db,
       submitMessage='Take out a new book',
-      postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
+      hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
       **kwargs
     )
   return Level0div(
@@ -110,7 +110,7 @@ async def getEditItemsBorrowedForm(request, db,
         dateBorrowed=itemsBorrowed[0]['dateBorrowed'],
         dateDue=itemsBorrowed[0]['dateDue'],
         submitMessage='Save changes',
-        postUrl=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
+        hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
         **kwargs
       )
   return Level0div(

@@ -20,10 +20,10 @@ async def editItemsInfoForm(
   title=None, authors=None, publisher=None, series=None,
   bookType=None, keywords=None, summary=None,
   dewey=None, isbn=None,
-  submitMessage="Save changes", postUrl=None,
+  submitMessage="Save changes", hxPost=None,
   **kwargs
 ) :
-  if not postUrl : return "<!-- edit itemsInfo form with NO postUrl -->"
+  if not hxPost : return "<!-- edit itemsInfo form with NO hxPost -->"
 
   return FormTable([
     TextInput(
@@ -81,7 +81,7 @@ async def editItemsInfoForm(
       placeholder='The ISBN...'
     )
   ], submitMessage,
-    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
   )
 
 ##########################################################################
@@ -225,7 +225,7 @@ async def getNewItemsInfoForm(request, db, **kwargs) :
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 
@@ -250,7 +250,7 @@ async def postSaveNewItemsInfo(request, db, **kwargs):
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 
@@ -281,13 +281,13 @@ async def getEditAnItemsInfoForm(request, db, itemsInfoId=None, **kwargs) :
         dewey=itemsInfo[0]['dewey'],
         isbn=itemsInfo[0]['isbn'],
         submitMessage='Save changes',
-        postUrl=f'/itemsInfo/edit/{itemsInfoId}',
+        hxPost=f'/itemsInfo/edit/{itemsInfoId}',
       )
   return await callPagePart(
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 
@@ -315,7 +315,7 @@ async def putUpdateAnItemsInfo(request, db, itemsInfoId=None, **kwargs) :
     'app.books.itemsInfo.editItemsInfoForm',
     request, db,
     submitMessage='Add new book',
-    postUrl='/itemsInfo/new',
+    hxPost='/itemsInfo/new',
     **kwargs
   )
 

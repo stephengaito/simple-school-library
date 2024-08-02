@@ -22,10 +22,10 @@ from schoolLib.app.menus import *
 @pagePart
 async def editClassForm(request, db,
   className=None, classDesc=None, classOrder=None, classColour=None,
-  submitMessage="Save changes", postUrl=None,
+  submitMessage="Save changes", hxPost=None,
   **kwargs
 ) :
-  if not postUrl : return "<!-- htmx form with NO postUrl -->"
+  if not hxPost : return "<!-- htmx form with NO hxPost -->"
 
   return FormTable([
     TextInput(
@@ -52,7 +52,7 @@ async def editClassForm(request, db,
       selectedColourName=classColour,
     )
   ], submitMessage,
-    theId='level2div', hxTarget='this', hxPost=postUrl, **kwargs
+    theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
   )
 
 @pagePart
@@ -102,10 +102,13 @@ async def addAClass(request, db, **kwargs) :
 
   return Level1div([
     await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='addClass'),
-    editClassForm(
+    await callPagePart(
+      'app.people.classes.editClassForm',
+      request, db,
       classOrder=maxClassOrder,
       submitMessage='Add new class',
-      postUrl='/classes/new'
+      hxPost='/classes/new',
+      **kwargs
     )
   ])
 
@@ -146,13 +149,16 @@ async def getEditAClassForm(request, db, classId=None, **kwargs) :
   if classId :
     theClasses = getClasses(db)
     if classId in theClasses :
-      return editClassForm(
+      return await callPagePart(
+        'app.people.classes.editClassForm',
+        request, db,
         className=theClasses[classId]['name'],
         classDesc=theClasses[classId]['desc'],
         classOrder=theClasses[classId]['classOrder'],
         classColour=theClasses[classId]['colour'],
         submitMessage='Save changes',
-        postUrl=f'/classes/edit/{classId}'
+        hxPost=f'/classes/edit/{classId}',
+        **kwargs
       )
   return await callPagePart(
     'app.people.classes.listClasses', request, db, **kwargs
@@ -180,16 +186,17 @@ putRoute('/classes/edit/{classId:int}', putUpdateAClass)
 
 @pagePart
 async def deleteAnEmptyClass(request, db, classId=None, **kwargs) :
-  selectSql = SelectSql(
-  ).fields('id').tables('borrowers'
-  ).whereValue('classId', classId)
-  results = selectSql.parseResults(db.execute(selectSql.sql()))
-  if not results :
-    cmd = DeleteSql().whereValue('id', classId).sql('classes')
-    db.execute(cmd)
-    db.commit()
-  else :
-    print("Can NOT delete a class which is not empty!")
+  if classId :
+    selectSql = SelectSql(
+    ).fields('id').tables('borrowers'
+    ).whereValue('classId', classId)
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    if not results :
+      cmd = DeleteSql().whereValue('id', classId).sql('classes')
+      db.execute(cmd)
+      db.commit()
+    else :
+      print("Can NOT delete a class which is not empty!")
   return await callPagePart(
     'app.people.classes.listClasses', request, db, **kwargs
   )

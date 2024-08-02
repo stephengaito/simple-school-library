@@ -10,7 +10,8 @@ Provide a listing of Borrowers in each class.
 
 """
 
-from schoolLib.setup import *
+from schoolLib.setup          import *
+from schoolLib.htmxComponents import *
 
 ##########################################################################
 # content
@@ -52,7 +53,7 @@ async def listPupilsInAClassTable(request, db, classId=None, **kwargs) :
   return Table(tableRows, theId='level1div')
 
 @pagePart
-async def updatePupilsInClassForm(request, db, classId=None, postUrl=None, **kwargs) :
+async def updatePupilsInClassForm(request, db, classId=None, hxPost=None, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('First name')),
@@ -61,7 +62,7 @@ async def updatePupilsInClassForm(request, db, classId=None, postUrl=None, **kwa
     TableHeader(Text('Old class')),
     TableHeader(Text('New class'))
   ]))
-  if classId and postUrl :
+  if classId and hxPost :
     theClasses = getClasses(db, selectedClass=classId)
     sortedClasses = getSortedClasses(theClasses)
     selectSql = SelectSql(
@@ -86,7 +87,7 @@ async def updatePupilsInClassForm(request, db, classId=None, postUrl=None, **kwa
           name=f'rowClass-{aRow['borrowers_id']}'
         ))
       ]))
-  return FormTable(tableRows, 'Save changes', post=postUrl)
+  return FormTable(tableRows, 'Save changes', hxPost=hxPost)
 
 ##########################################################################
 # routes
@@ -97,7 +98,7 @@ getRoute('/classes/list/{classId:int}', listPupilsInAClassTable)
 async def getUpdatePupilsInAClassForm(request, db, classId=None, **kwargs) :
   return await callPagePart(
     'app.people.classesBorrowers.updatePupilsInClassForm',
-    request, db, classId=classId, postUrl='classes/update',
+    request, db, classId=classId, hxPost='/classes/update',
     *kwargs
   )
 
