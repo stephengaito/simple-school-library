@@ -43,9 +43,9 @@ CMD_SCRIPT
 createWebServer schoolLib
 installScript schoolLib
 
-installScript slTemplateBuilder
-
 installScript slReindex
+
+installScript slPassword
 
 echo ""
 echo "The editable school library command have been created"
