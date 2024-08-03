@@ -9,7 +9,7 @@ async def homeMenu(request, db, **kwargs) :
 
   return Level0div([
     await callPagePart('app.menus.topLevelMenu', request, db, selectedId='home'),
-    Level1div(MarkdownDiv(homePageMarkdown))
+    Level1div(MarkdownDiv(homePageMarkdown), klassName='gridless')
   ], theId='level0div')
 
 getRoute('/menu/home', homeMenu)

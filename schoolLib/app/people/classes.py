@@ -118,8 +118,12 @@ async def addAClass(request, db, **kwargs) :
 @pagePart
 async def peopleMenu(request, db, **kwargs) :
   return Level0div([
-    await callPagePart('app.menus.topLevelMenu', request, db, selectedId='people'),
-    await callPagePart('app.people.classes.addAClass', request, db, **kwargs)
+    await callPagePart(
+      'app.menus.topLevelMenu', request, db, selectedId='people'
+    ),
+    await callPagePart(
+      'app.people.classes.addAClass', request, db, **kwargs
+    )
   ], theId='level0div')
 
 getRoute('/menu/people', peopleMenu)

@@ -26,6 +26,8 @@ Level1divClasses:
   default:
     - grid
     - "grid-cols-[10%_90%]"
+  gridless:
+    - m-1
 
 ListClasses:
   default:

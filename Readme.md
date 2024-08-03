@@ -26,6 +26,8 @@ We build a simple school library using:
 
 - [Starlette](https://www.starlette.io/)
 
+  - [Starlette-Login](https://starlette-login.readthedocs.io/en/stable/)
+
 - [Uvicorn](http://www.uvicorn.org/)
 
 For testing we use:
