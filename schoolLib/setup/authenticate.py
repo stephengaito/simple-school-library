@@ -6,7 +6,43 @@ import os
 import sqlite3
 import sys
 
+from starlette_login.mixins import UserMixin
+
 from schoolLib.setup.configuration import config, loadedConfig
+
+# see: https://starlette-login.readthedocs.io/en/stable/
+
+class SLibUser(UserMixin) :
+  @property
+  def is_authenticated(self) :
+    return True
+
+  @property
+  def display_name(self) :
+    return 'slib'
+
+  @property
+  def identity(self) :
+    return 'slib'
+
+class OtherUser(UserMixin) :
+  @property
+  def is_authenticated(self) :
+    return False
+
+  @property
+  def display_name(self) :
+    return 'other'
+
+  @property
+  def identity(self) :
+    return 'other'
+
+def loadUsers(request, userId) :
+  theUser = OtherUser()
+  if userId == 'slib' : theUser = SLibUser()
+  print(f"Loaded user: {theUser.display_name}")
+  return theUser
 
 # see: https://www.geeksforgeeks.org/encoding-and-decoding-base64-strings-in-python/
 # See: https://www.askpython.com/python/examples/storing-retrieving-passwords-securely
@@ -31,7 +67,7 @@ def authenticateSlibUser(password, db) :
     pass
   return False
 
-def cli() :
+def passwordCli() :
 
   # load the School Library configuration (to get location of database)
   loadedConfig('config.yaml')

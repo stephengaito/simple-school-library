@@ -39,6 +39,7 @@ class FormInputsBase(HtmxBase) :
     elif inputType.startswith('n') : inputType = 'number'
     elif inputType.startswith('d') : inputType = 'date'
     elif inputType.startswith('s') : inputType = 'search'
+    elif inputType.startswith('p') : inputType = 'password'
     else : inputType  = 'text'
     self.inputType    = inputType
     self.name         = name
@@ -80,6 +81,26 @@ class TextInput(FormInputs) :
     super().__init__(
       name,
       inputType='text',
+      label=label,
+      value=value,
+      defaultValue=defaultValue,
+      placeholder=placeholder,
+      **kwargs
+    )
+
+class PasswordInput(FormInputs) :
+  def __init__(
+    self,
+    name,
+    label=None,
+    value=None,
+    defaultValue=None,
+    placeholder=None,
+    **kwargs
+  ) :
+    super().__init__(
+      name,
+      inputType='password',
       label=label,
       value=value,
       defaultValue=defaultValue,

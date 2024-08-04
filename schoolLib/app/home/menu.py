@@ -12,4 +12,4 @@ async def homeMenu(request, db, **kwargs) :
     Level1div(MarkdownDiv(homePageMarkdown), klassName='gridless')
   ], theId='level0div')
 
-getRoute('/menu/home', homeMenu)
+getRoute('/menu/home', homeMenu, anyUser=True)

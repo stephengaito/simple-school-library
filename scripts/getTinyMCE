@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# This bash script installs the TinyMCE JavaScript editor for the use of
+# the Simple School Library
+
+
+# see: https://www.tiny.cloud/get-tiny/
+
+tinyMCEVersion=7.2.1
+
+zipFileUrl=https://download.tiny.cloud/tinymce/community/tinymce_$tinyMCEVersion.zip
+
+wget $zipFileUrl -O /tmp/tinyMCE.zip
+
+unzip /tmp/tinyMCE.zip -d schoolLib/statics

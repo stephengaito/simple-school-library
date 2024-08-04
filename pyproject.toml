@@ -18,7 +18,7 @@ license = {text = "MIT"}
 
 [project.scripts]
 slReindex         = "schoolLib.tools.reindexer:cli"
-slPassword        = "schoolLib.setup.authenticate:cli"
+slPassword        = "schoolLib.setup.authenticate:passwordCli"
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"

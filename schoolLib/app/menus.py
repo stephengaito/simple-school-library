@@ -29,12 +29,18 @@ async def topLevelMenu(request, db, selectedId=None, **kwargs) :
       theId    = 'tasks',
       hxGet    = '/menu/tasks',
       hxTarget = '#level0div'
+    ),
+    Button(
+      'Admin',
+      theId    = 'admin',
+      hxGet    = '/menu/admin',
+      hxTarget = '#level0div'
     )
   ], selectedId=selectedId)
 
 @pagePart
 async def secondLevelBooksMenu(request, db, selectedId=None, **kwargs) :
-  return Menu([
+  theMenu = Menu([
     Button(
       'Take out a book',
       theId    = 'takeOut',
@@ -58,34 +64,27 @@ async def secondLevelBooksMenu(request, db, selectedId=None, **kwargs) :
       theId    = 'findBook',
       hxGet    = '/search/items',
       hxTarget = '#level1div'
-    ),
-    Button(
-      'Add a book',
-      theId    = 'addBook',
-      hxGet    = '/itemsInfo/new',
-      hxTarget = '#level1div'
     )
   ], selectedId=selectedId, klassName='vertical')
 
+  if request.user.is_authenticated :
+    theMenu.appendChild(
+      Button(
+        'Add a book',
+        theId    = 'addBook',
+        hxGet    = '/itemsInfo/new',
+        hxTarget = '#level1div'
+      )
+    )
+  return theMenu
+
 @pagePart
 async def secondLevelPeopleMenu(request, db, selectedId=None, **kwargs) :
-  return Menu([
-    Button(
-      'Add a class',
-      theId    = 'addClass',
-      hxGet    = '/menu/people/addClass',
-      hxTarget = '#level1div'
-    ),
+  theMenu = Menu([
     Button(
       'List classes',
       theId    = 'listClasses',
       hxGet    = '/menu/people/listClasses',
-      hxTarget = '#level1div'
-    ),
-    Button(
-      'Add a person',
-      theId    = 'addBorrower',
-      hxGet    = '/menu/people/addBorrower',
       hxTarget = '#level1div'
     ),
     Button(
@@ -95,6 +94,27 @@ async def secondLevelPeopleMenu(request, db, selectedId=None, **kwargs) :
       hxTarget = '#level1div'
     )
   ], selectedId=selectedId, klassName='vertical')
+
+  if request.user.is_authenticated :
+    theMenu.appendChild(
+      Button(
+        'Add a person',
+        theId    = 'addBorrower',
+        hxGet    = '/menu/people/addBorrower',
+        hxTarget = '#level1div'
+      )
+    )
+
+    theMenu.appendChild(
+      Button(
+        'Add a class',
+        theId    = 'addClass',
+        hxGet    = '/menu/people/addClass',
+        hxTarget = '#level1div'
+      )
+    )
+
+  return theMenu
 
 @pagePart
 async def secondLevelTasksMenu(request, db, selectedId=None, **kwargs) :
@@ -106,3 +126,29 @@ async def secondLevelTasksMenu(request, db, selectedId=None, **kwargs) :
       hxTarget = '#level1div'
     )
   ], selectedId=selectedId, klassName='vertical')
+
+@pagePart
+async def secondLevelAdminMenu(request, db, selectedId=None, **kwargs) :
+  theMenu = Menu([], klassName='vertical')
+
+  if request.user.is_authenticated :
+    theMenu.appendChild(
+      Button(
+        'Logout',
+        theId    = 'logout',
+        hxGet    = '/logout',
+        hxTarget = '#level1div'
+      )
+    )
+    theMenu.select('logout')
+  else :
+    theMenu.appendChild(
+      Button(
+        'Login',
+        theId    = 'login',
+        hxGet    = '/login',
+        hxTarget = '#level1div'
+      )
+    )
+    theMenu.select('login')
+  return theMenu

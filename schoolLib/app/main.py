@@ -3,8 +3,16 @@ import os
 import yaml
 
 from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
+
+from starlette_login.backends import SessionAuthBackend
+from starlette_login.login_manager import Config as LoginManagerConfig
+from starlette_login.login_manager import LoginManager
+from starlette_login.login_manager import ProtectionLevel
+from starlette_login.middleware import AuthenticationMiddleware
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
@@ -19,6 +27,7 @@ import schoolLib.app.books
 import schoolLib.app.people
 import schoolLib.app.tasks.menu
 import schoolLib.app.metaStructure
+import schoolLib.app.admin
 
 @pagePart
 async def homePage(request, db, **kwargs):
@@ -28,7 +37,7 @@ async def homePage(request, db, **kwargs):
     StdBody()
   )
 
-getRoute('/', homePage)
+getRoute('/', homePage, anyUser=True)
 
 @pagePart
 async def helpPages(request, db, aPath=None, **kwargs) :
@@ -42,7 +51,7 @@ async def helpPages(request, db, aPath=None, **kwargs) :
     Level1div(MarkdownDiv(someMarkdown))
   ])
 
-getRoute('/help/{aPath:path}', helpPages)
+getRoute('/help/{aPath:path}', helpPages, anyUser=True)
 
 async def notFound(request, theException) :
   print("-------------")
@@ -71,13 +80,35 @@ async def serverError(request, theException) :
     ])
   ], status_code=500), request)
 
+
+# see: https://starlette-login.readthedocs.io/en/stable/usage/
+sessionSecretKey = "c73EM6satGAKhRB2bxTy5CPZ4VYdXLnSzfwrF8qNJvegpD9jum"
+loginManagerConfig = LoginManagerConfig(
+  protection_level=ProtectionLevel.Strong
+)
+loginManager = LoginManager(
+  redirect_to='/login_endpoint',
+  secret_key=sessionSecretKey,
+  config=loginManagerConfig
+)
+loginManager.set_user_loader(loadUsers)
+
 app = Starlette(
   debug=True,
   routes=routes,
   exception_handlers={
     404: notFound,
     500: serverError
-  }
+  },
+  middleware=[
+    Middleware(SessionMiddleware, secret_key=sessionSecretKey),
+    Middleware(
+      AuthenticationMiddleware,
+      backend=SessionAuthBackend(loginManager),
+      login_manager=loginManager,
+    )
+  ]
 )
+app.state.login_manager = loginManager
 app.mount('/static', StaticFiles(packages=['schoolLib']), name='static')
 

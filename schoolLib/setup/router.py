@@ -9,7 +9,8 @@ from starlette.exceptions import HTTPException
 from starlette.responses import HTMLResponse
 from starlette.routing   import Route #, Mount, WebSocketRoute
 
-from schoolLib.setup.configuration import config
+from schoolLib.setup.configuration   import config
+from schoolLib.htmxComponents.layout import *
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -25,6 +26,11 @@ def htmlResponseFromHtmx(htmxComponent, request) :
   # objects do response to `collectHtml` messages
 
   kwargs = {}
+  if 'HX-Request' not in request.headers :
+    htmxComponent = HtmlPage(
+      StdHeaders(),
+      htmxComponent
+    )
   htmxComponent.collectHtml(htmlFragments)
   kwargs = htmxComponent.kwargs
   url = request.url.path
@@ -44,10 +50,16 @@ def htmlResponseFromHtmx(htmxComponent, request) :
   #print("-------------------------------------------------")
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
-async def callWithParameters(request, func) :
+loginFunc = None
+
+def registerLoginPage(aLoginFunc) :
+  global loginFunc
+  loginFunc = aLoginFunc
+
+async def callWithParameters(request, func, anyUser=False) :
   params = {}
   if request.query_params :
-    params.update(request.guery_params)
+    params.update(request.query_params)
   if request.path_params :
     params.update(request.path_params)
   path = ":memory:"
@@ -56,39 +68,51 @@ async def callWithParameters(request, func) :
   try :
     db = sqlite3.connect(path)
     #print(yaml.dump(params))
-    htmxComponent = await func(request, db, **params)
+    if anyUser :
+      htmxComponent = await func(request, db, **params)
+    elif loginFunc :
+      message = "You must be logged in to access this page"
+      if 'develop' in config :
+        message += f" ({request.url.path})"
+      htmxComponent = await loginFunc(request, db, message=message)
+    else :
+      raise HTTPException(
+        404,
+        detail=f"No login page registered while trying to serve {request.url.path}"
+      )
     return htmlResponseFromHtmx(htmxComponent, request)
   finally :
     db.close()
 
-def getRoute(aRoute, getFunc, name=None) :
+def getRoute(aRoute, getFunc, anyUser=False, name=None) :
   @wraps(getFunc)
   async def getWrapper(request) :
-    return await callWithParameters(request, getFunc)
+    print(f"Any user: {anyUser}")
+    return await callWithParameters(request, getFunc, anyUser=anyUser)
   routes.append(Route(aRoute, getWrapper, name=name, methods=["GET"]))
 
-def putRoute(aRoute, putFunc, name=None) :
+def putRoute(aRoute, putFunc, anyUser=False, name=None) :
   @wraps(putFunc)
   async def putWrapper(request) :
-    return await callWithParameters(request, putFunc)
+    return await callWithParameters(request, putFunc, anyUser=anyUser)
   routes.append(Route(aRoute, putWrapper, name=name, methods=["PUT", "POST"]))
 
-def postRoute(aRoute, postFunc, name=None) :
+def postRoute(aRoute, postFunc, anyUser=False, name=None) :
   @wraps(postFunc)
   async def postWrapper(request) :
-    return await callWithParameters(request, postFunc)
+    return await callWithParameters(request, postFunc, anyUser=anyUser)
   routes.append(Route(aRoute, postWrapper, name=name, methods=["POST"]))
 
-def patchRoute(aRoute, patchFunc, name=None) :
+def patchRoute(aRoute, patchFunc, anyUser=False, name=None) :
   @wraps(patchFunc)
   async def patchWrapper(request) :
-    return await callWithParameters(request, patchFunc)
+    return await callWithParameters(request, patchFunc, anyUser=anyUser)
   routes.append(Route(aRoute, patchWrapper, name=name, methods=["PATCH", "POST"]))
 
-def deleteRoute(aRoute, deleteFunc, name=None) :
+def deleteRoute(aRoute, deleteFunc, anyUser=False, name=None) :
   @wraps(deleteFunc)
   async def deleteWrapper(request) :
-    return await callWithParameters(request, deleteFunc)
+    return await callWithParameters(request, deleteFunc, anyUser=anyUser)
   routes.append(Route(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
 
 ###############################################################
