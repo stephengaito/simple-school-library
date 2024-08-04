@@ -46,3 +46,8 @@ itemsPhysical.dateAdded: date
 itemsPhysical.dateBorrowed: date
 itemsPhysical.dateLastSeen: date
 itemsPhysical.status: text
+
+# helpPages
+helpPages.id: integer
+helpPages.path: text
+helpPages.content: text

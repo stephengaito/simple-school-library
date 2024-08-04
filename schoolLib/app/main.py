@@ -82,7 +82,7 @@ async def serverError(request, theException) :
 
 
 # see: https://starlette-login.readthedocs.io/en/stable/usage/
-sessionSecretKey = "c73EM6satGAKhRB2bxTy5CPZ4VYdXLnSzfwrF8qNJvegpD9jum"
+sessionSecretKey = config['secretKey']
 loginManagerConfig = LoginManagerConfig(
   protection_level=ProtectionLevel.Strong
 )

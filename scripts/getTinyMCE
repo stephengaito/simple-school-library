@@ -3,8 +3,8 @@
 # This bash script installs the TinyMCE JavaScript editor for the use of
 # the Simple School Library
 
-
 # see: https://www.tiny.cloud/get-tiny/
+# see: https://www.tiny.cloud/docs/tinymce/latest/upgrading/#upgrading-tinymce-self-hosted-manually
 
 tinyMCEVersion=7.2.1
 

@@ -47,6 +47,8 @@ installScript slReindex
 
 installScript slPassword
 
+installScript slUpdateDatabase
+
 echo ""
 echo "The editable school library command have been created"
 echo ""
