@@ -24,10 +24,13 @@ async def listRoutes(request, db, aPath=None, **kwargs) :
       anEndpoint,
       target="_blank"
     ))
+    aList.appendChild(Text(
+      f"AnyUser = {aRoute.anyUser}", textType='s'
+    ))
     routesList.appendChild(aList)
   return HtmlPage( StdHeaders(), routesList )
 
-getRoute('/routes/{aPath:path}', listRoutes)
+getRoute('/routes/{aPath:path}', listRoutes, anyUser=True)
 
 @pagePart
 async def listPageParts(request, db, aPath=None, **kwargs) :

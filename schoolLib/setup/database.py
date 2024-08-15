@@ -275,3 +275,22 @@ def getSortedClasses(theClasses) :
 def getOrderedClassList(db, selectedClass=None) :
   classes = getClasses(db, selectedClass=selectedClass)
   return getSortedClasses(classes)
+
+###############################################################
+# Some simple database handling utilities
+#
+# deal with help pages
+
+def getHelpPageHtml(db, helpPagePath) :
+  selectSql = SelectSql(
+  ).fields("content"
+  ).tables("helpPages"
+  ).whereValue('path', helpPagePath)
+  print(selectSql.sql())
+  results = selectSql.parseResults(
+    db.execute(selectSql.sql()),
+    fetchAll=False
+  )
+  if results :
+    return results[0][0]
+  return None

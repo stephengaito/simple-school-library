@@ -211,23 +211,6 @@ class TextAreaInput(FormInputsBase) :
         f'<textarea {self.computeHtmxAttrs()}>{taValue}</textarea>'
       )
 
-class HelpEditor(TextAreaInput) :
-  def __init__(self, **kwargs) :
-    kwargs['theId'] = 'helpEditor'
-    super().__init__(**kwargs)
-
-  def collectHtml(self, htmlFragments) :
-    super().collectHtml(htmlFragments)
-    htmlFragments.append("""
-    <script>
-      tinymce.init([
-        selector: 'textarea#helpEditor',
-        browser_spellcheck: true,
-        plugins: ''advlist autolink link image lists charmap preview''
-      ]);
-    </script>
-    """)
-
 class ClassesSelector(HtmxBase) :
   def __init__(
     self,

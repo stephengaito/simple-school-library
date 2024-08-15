@@ -21,7 +21,7 @@ async def getLoginForm(request, db, message="Please login", **kwargs) :
     ], "Login", hxTarget='this', hxPost='/login')
   ])
 
-getRoute('/login', getLoginForm)
+getRoute('/login', getLoginForm, anyUser=True)
 registerLoginPage(getLoginForm)
 
 @pagePart
@@ -31,10 +31,11 @@ async def postLoginPage(request, db, **kwargs) :
   if theForm['userName'] == 'slib' :
     if authenticateSlibUser(theForm['userPassword'], db) :
       user = SLibUser()
+  print(f"Logged in user: {user.display_name}")
   await login_user(request, user)
   return await callPagePart('app.main.homePage', request, db, **kwargs)
 
-postRoute('/login', postLoginPage)
+postRoute('/login', postLoginPage, anyUser=True)
 
 @pagePart
 async def logoutPage(request, db, **kwargs) :

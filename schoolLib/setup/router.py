@@ -1,6 +1,6 @@
 
 from functools import wraps
-from inspect import signature, getdoc, getsource
+from inspect import signature, getdoc, getsource, iscoroutinefunction
 import re
 import sqlite3
 import yaml
@@ -17,7 +17,12 @@ from schoolLib.htmxComponents.layout import *
 #
 # see: https://restfulapi.net/http-methods/
 
-routes = []
+class SSLRoute(Route) :
+  def __init__(self, aRoute, aFunc, anyUser=False, **kwargs) :
+    self.anyUser = anyUser
+    super().__init__(aRoute, aFunc, **kwargs)
+
+routes    = []
 
 def htmlResponseFromHtmx(htmxComponent, request) :
   htmlFragments = []
@@ -69,7 +74,10 @@ async def callWithParameters(request, func, anyUser=False) :
     db = sqlite3.connect(path)
     #print(yaml.dump(params))
     if anyUser :
-      htmxComponent = await func(request, db, **params)
+      if iscoroutinefunction(func) :
+        htmxComponent = await func(request, db, **params)
+      else :
+        htmxComponent = func(request, db, **params)
     elif loginFunc :
       message = "You must be logged in to access this page"
       if 'develop' in config :
@@ -89,31 +97,31 @@ def getRoute(aRoute, getFunc, anyUser=False, name=None) :
   async def getWrapper(request) :
     print(f"Any user: {anyUser}")
     return await callWithParameters(request, getFunc, anyUser=anyUser)
-  routes.append(Route(aRoute, getWrapper, name=name, methods=["GET"]))
+  routes.append(SSLRoute(aRoute, getWrapper, name=name, methods=["GET"]))
 
 def putRoute(aRoute, putFunc, anyUser=False, name=None) :
   @wraps(putFunc)
   async def putWrapper(request) :
     return await callWithParameters(request, putFunc, anyUser=anyUser)
-  routes.append(Route(aRoute, putWrapper, name=name, methods=["PUT", "POST"]))
+  routes.append(SSLRoute(aRoute, putWrapper, name=name, methods=["PUT", "POST"]))
 
 def postRoute(aRoute, postFunc, anyUser=False, name=None) :
   @wraps(postFunc)
   async def postWrapper(request) :
     return await callWithParameters(request, postFunc, anyUser=anyUser)
-  routes.append(Route(aRoute, postWrapper, name=name, methods=["POST"]))
+  routes.append(SSLRoute(aRoute, postWrapper, name=name, methods=["POST"]))
 
 def patchRoute(aRoute, patchFunc, anyUser=False, name=None) :
   @wraps(patchFunc)
   async def patchWrapper(request) :
     return await callWithParameters(request, patchFunc, anyUser=anyUser)
-  routes.append(Route(aRoute, patchWrapper, name=name, methods=["PATCH", "POST"]))
+  routes.append(SSLRoute(aRoute, patchWrapper, name=name, methods=["PATCH", "POST"]))
 
 def deleteRoute(aRoute, deleteFunc, anyUser=False, name=None) :
   @wraps(deleteFunc)
   async def deleteWrapper(request) :
     return await callWithParameters(request, deleteFunc, anyUser=anyUser)
-  routes.append(Route(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
+  routes.append(SSLRoute(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
 
 ###############################################################
 # Capture the "external facing" page parts
