@@ -67,7 +67,7 @@ def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
     )
   ], selectedId=selectedId, klassName='vertical')
 
-  if request.user.is_authenticated :
+  if pageData.user.is_authenticated :
     theMenu.appendChild(
       Button(
         'Add a book',
@@ -95,7 +95,7 @@ def secondLevelPeopleMenu(pageData, selectedId=None, **kwargs) :
     )
   ], selectedId=selectedId, klassName='vertical')
 
-  if request.user.is_authenticated :
+  if pageData.user.is_authenticated :
     theMenu.appendChild(
       Button(
         'Add a person',
@@ -128,10 +128,26 @@ def secondLevelTasksMenu(pageData, selectedId=None, **kwargs) :
   ], selectedId=selectedId, klassName='vertical')
 
 @pagePart
+def secondLevelHelpMenu(pageData, helpPagePath, selectedId=None, **kwargs) :
+  theMenu = Menu([], klassName='vertical')
+
+  if pageData.user.is_authenticated :
+    theMenu.appendChild(
+      Button(
+        'Edit',
+        theId    = 'editHelp',
+        hxGet    = f'/editHelp{helpPagePath}',
+        hxTarget = '#level1div'
+      )
+    )
+    theMenu.select('editHelp')
+  return theMenu
+
+@pagePart
 def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
   theMenu = Menu([], klassName='vertical')
 
-  if request.user.is_authenticated :
+  if pageData.user.is_authenticated :
     theMenu.appendChild(
       Button(
         'Logout',

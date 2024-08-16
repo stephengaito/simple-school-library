@@ -7,7 +7,7 @@ We build a simple school library using:
   - in particular we use the [SQLite FTS5
     Extension](https://sqlite.org/fts5.html)
 
-- [Jinja](https://jinja.palletsprojects.com/en/3.0.x/)
+- [TinyMCE](https://www.tiny.cloud/)
 
 - [Python-Markdown](https://python-markdown.github.io/)
 

@@ -1,5 +1,6 @@
 
 from schoolLib.setup.database                  import *
+from schoolLib.htmxComponents.htmx            import *
 from schoolLib.htmxComponents.simpleComponents import *
 from schoolLib.htmxComponents.forms            import *
 
@@ -19,13 +20,25 @@ class HelpEditor(TextAreaInput) :
     super().collectHtml(htmlFragments)
     htmlFragments.append("""
     <script>
-      tinymce.init([
+      tinymce.init({
         selector: 'textarea#helpEditor',
+        license_key: 'gpl',
+        promotion: false,
         browser_spellcheck: true,
-        plugins: ''advlist autolink link image lists charmap preview''
-      ]);
+        plugins: 'advlist autolink link image lists charmap preview'
+      });
     </script>
     """)
+
+class HelpEditorForm(Form) :
+  def __init__(self, helpPageHtml, helpPagePath, hxPost, **kwargs) :
+    super().__init__([], submitMsg="Save changes", hxPost=hxPost, **kwargs)
+    self.appendChild(Label(f'Help page for {helpPagePath}'))
+    self.appendChild(HelpEditor(
+      value=helpPageHtml,
+      placeholder=f'Add some text for {helpPagePath}',
+      name='helpContent'
+    ))
 
 def getHelpPage(pageData, helpPagePath, hxPost=None, **kwargs) :
   helpPageHtml = getHelpPageHtml(pageData.db, helpPagePath)
@@ -35,33 +48,29 @@ def getHelpPage(pageData, helpPagePath, hxPost=None, **kwargs) :
     elif not hxPost :
       helpPageHtml = f"<p>No hxPost supplied for {helpPagePath}</p>"
     else :
-      return Form([
-        Label(f'Help page for {helpPagePath}'),
-        HelpEditor(name='helpContent', **kwargs)
-      ], hxPost=hxPost, submitMsg="Save changes")
-
+      return HelpEditorForm(helpPageHtml, helpPagePath, hxPost, **kwargs)
   return HelpPage(helpPageHtml, **kwargs)
 
-async def postHelpPage(pageData, helpPagePath, **kwargs) :
+def postHelpPage(pageData, helpPagePath, **kwargs) :
   theForm = pageData.form
   selectSql = SelectSql(
   ).fields('content'
   ).tables('helpPages'
   ).whereValue('path', helpPagePath)
   results = selectSql.parseResults(
-    db.execute(selectSql.sql()),
+    pageData.db.execute(selectSql.sql()),
     fetchAll=False
   )
   if results :
-    db.execute(UpdateSql(
+    pageData.db.execute(UpdateSql(
     ).whereValue('path', helpPagePath
     ).sql('helpPages', {
-      'content' : theForm['content']
+      'content' : theForm['helpContent']
     }))
   else :
-    db.execute(InsertSql().sql('helpPages', {
+    pageData.db.execute(InsertSql().sql('helpPages', {
       'path'    : helpPagePath,
-      'content' : theForm['content']
+      'content' : theForm['helpContent']
     }))
-  db.commit()
+  pageData.db.commit()
   return getHelpPage(pageData, helpPagePath, **kwargs)

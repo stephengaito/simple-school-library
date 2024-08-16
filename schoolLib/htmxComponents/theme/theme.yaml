@@ -102,6 +102,18 @@ TableRowClasses:
   default:
     - '[&:nth-child(5n+2)]:bg-gray-100'
 
+HelpEditorClasses:
+  default:
+    - border-2
+    - border-solid
+    - rounded-lg
+
+HelpEditorFormClasses:
+  default:
+    - float-left
+    - flex
+    - flex-col
+
 SearchBoxClasses:
   default:
     - border-2

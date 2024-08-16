@@ -197,7 +197,7 @@ class TextAreaInput(FormInputsBase) :
 
   def collectHtml(self, htmlFragments) :
     taValue = ""
-    if self.value : taValue = self.value
+    if self.taValue : taValue = self.taValue
 
     if self.label :
       htmlFragments.append(f"""

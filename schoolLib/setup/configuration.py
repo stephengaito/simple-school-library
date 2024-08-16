@@ -2,7 +2,7 @@
 import os
 import yaml
 
-from starlette.templating import Jinja2Templates
+#from starlette.templating import Jinja2Templates
 
 ###############################################################
 # A simple (global) configuration system
@@ -32,12 +32,12 @@ config = {}
 def sanitizeConfig(config, verbose=False) :
   if 'database' not in config :
     config['database'] = 'db.sqlite'
-  if 'templatesDir' not in config :
-    config['templatesDir'] = os.path.join(
-      os.path.dirname(os.path.dirname(__file__)),
-      'templates'
-    )
-  templates = Jinja2Templates(directory=config['templatesDir'])
+  #if 'templatesDir' not in config :
+  #  config['templatesDir'] = os.path.join(
+  #    os.path.dirname(os.path.dirname(__file__)),
+  #    'templates'
+  #  )
+  #templates = Jinja2Templates(directory=config['templatesDir'])
 
   if 'makrdownDir' not in config :
     config['markdownDir'] = os.path.join(

@@ -292,5 +292,6 @@ def getHelpPageHtml(db, helpPagePath) :
     fetchAll=False
   )
   if results :
-    return results[0][0]
+    print(yaml.dump(results[0]['content']))
+    return results[0]['content']
   return None

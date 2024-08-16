@@ -41,15 +41,41 @@ getRoute('/', homePage, anyUser=True)
 
 @pagePart
 def helpPages(pageData, aPath=None, **kwargs) :
-  if not aPath : aPath = 'help'
-  someMarkdown = loadMarkdownFromFile(aPath)
-
+  if not aPath : aPath = '/'
   return Level0div([
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='home', **kwargs),
-    Level1div(MarkdownDiv(someMarkdown))
+    Level1div([
+      schoolLib.app.menus.secondLevelHelpMenu(pageData, aPath),
+      getHelpPage(pageData, aPath, hxPost=f'/editHelp{aPath}')
+    ])
   ])
 
-getRoute('/help/{aPath:path}', helpPages, anyUser=True)
+getRoute('/help{aPath:path}', helpPages, anyUser=True)
+
+@pagePart
+def editHelpPage(pageData, aPath=None, **kwargs) :
+  if not aPath : aPath = '/'
+  helpPageHtml = getHelpPageHtml(pageData.db, aPath)
+  print(helpPageHtml)
+  return Level1div([
+    Div([]),
+    HelpEditorForm(
+      helpPageHtml, aPath, f'/editHelp{aPath}', hxTarget='#level1div'
+    )
+  ])
+
+getRoute('/editHelp{aPath:path}', editHelpPage)
+
+@pagePart
+def postHelpPages(pageData, aPath=None, **kwargs) :
+  if not aPath : aPath = '/'
+  return postHelpPage(
+    pageData, aPath,
+    hxPost=f'/editHelp{aPath}', hxTarget='#level1div',
+    **kwargs
+  )
+
+postRoute('/editHelp{aPath:path}', postHelpPages)
 
 async def notFound(request, theException) :
   print("-------------")
