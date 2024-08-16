@@ -10,17 +10,13 @@ from schoolLib.app.menus import *
 # routes
 
 @pagePart
-async def adminMenu(request, db, **kwargs) :
+def adminMenu(pageData, **kwargs) :
   tasksMarkdown = "somthing about **admin**"
 
   return Level0div([
-    await callPagePart(
-      'app.menus.topLevelMenu', request, db, selectedId='admin'
-    ),
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
     Level1div([
-      await callPagePart(
-        'app.menus.secondLevelAdminMenu', request, db, **kwargs
-      )
+      schoolLib.app.menus.secondLevelAdminMenu(pageData, **kwargs)
     ])
   ], theId='level0div')
 

@@ -4,7 +4,7 @@ from schoolLib.setup.router   import pagePart
 from schoolLib.htmxComponents import *
 
 @pagePart
-async def topLevelMenu(request, db, selectedId=None, **kwargs) :
+def topLevelMenu(pageData, selectedId=None, **kwargs) :
   return Menu([
     Button(
       'Home',
@@ -39,7 +39,7 @@ async def topLevelMenu(request, db, selectedId=None, **kwargs) :
   ], selectedId=selectedId)
 
 @pagePart
-async def secondLevelBooksMenu(request, db, selectedId=None, **kwargs) :
+def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
   theMenu = Menu([
     Button(
       'Take out a book',
@@ -79,7 +79,7 @@ async def secondLevelBooksMenu(request, db, selectedId=None, **kwargs) :
   return theMenu
 
 @pagePart
-async def secondLevelPeopleMenu(request, db, selectedId=None, **kwargs) :
+def secondLevelPeopleMenu(pageData, selectedId=None, **kwargs) :
   theMenu = Menu([
     Button(
       'List classes',
@@ -117,7 +117,7 @@ async def secondLevelPeopleMenu(request, db, selectedId=None, **kwargs) :
   return theMenu
 
 @pagePart
-async def secondLevelTasksMenu(request, db, selectedId=None, **kwargs) :
+def secondLevelTasksMenu(pageData, selectedId=None, **kwargs) :
   return Menu([
     Button(
       'Books checked out',
@@ -128,7 +128,7 @@ async def secondLevelTasksMenu(request, db, selectedId=None, **kwargs) :
   ], selectedId=selectedId, klassName='vertical')
 
 @pagePart
-async def secondLevelAdminMenu(request, db, selectedId=None, **kwargs) :
+def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
   theMenu = Menu([], klassName='vertical')
 
   if request.user.is_authenticated :

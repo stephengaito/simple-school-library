@@ -20,7 +20,7 @@ from schoolLib.app.menus import *
 # content
 
 @pagePart
-async def editClassForm(request, db,
+def editClassForm(pageData,
   className=None, classDesc=None, classOrder=None, classColour=None,
   submitMessage="Save changes", hxPost=None,
   **kwargs
@@ -56,7 +56,7 @@ async def editClassForm(request, db,
   )
 
 @pagePart
-async def listClasses(request, db, **kwargs) :
+def listClasses(pageData, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('Name')),
@@ -65,7 +65,7 @@ async def listClasses(request, db, **kwargs) :
     TableHeader(Text('Actions'), colspan=4)
   ]))
 
-  theClasses = getClasses(db)
+  theClasses = getClasses(pageData.db)
   sortedClasses = getSortedClasses(theClasses)
   for aClass in sortedClasses :
     tableRows.append(TableRow([
@@ -87,24 +87,23 @@ async def listClasses(request, db, **kwargs) :
     ]))
 
   return Level1div([
-    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='listClasses'),
+    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='listClasses'),
     Table(tableRows, theId='level2div')
   ])
 
 @pagePart
-async def addAClass(request, db, **kwargs) :
+def addAClass(pageData, **kwargs) :
   maxClassOrder = 0
-  classes = getClasses(db)
+  classes = getClasses(pageData.db)
   for aClassId, aClass in classes.items() :
     if maxClassOrder < aClass['classOrder'] :
       maxClassOrder = aClass['classOrder']
   maxClassOrder += 1
 
   return Level1div([
-    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='addClass'),
-    await callPagePart(
-      'app.people.classes.editClassForm',
-      request, db,
+    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='addClass'),
+    schoolLib.app.people.classes.editClassForm(
+      pageData,
       classOrder=maxClassOrder,
       submitMessage='Add new class',
       hxPost='/classes/new',
@@ -116,14 +115,10 @@ async def addAClass(request, db, **kwargs) :
 # routes
 
 @pagePart
-async def peopleMenu(request, db, **kwargs) :
+def peopleMenu(pageData, **kwargs) :
   return Level0div([
-    await callPagePart(
-      'app.menus.topLevelMenu', request, db, selectedId='people'
-    ),
-    await callPagePart(
-      'app.people.classes.addAClass', request, db, **kwargs
-    )
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.classes.addAClass(pageData, **kwargs)
   ], theId='level0div')
 
 getRoute('/menu/people', peopleMenu)
@@ -133,29 +128,26 @@ getRoute('/menu/people/addClass',addAClass)
 getRoute('/menu/people/listClasses',listClasses)
 
 @pagePart
-async def postSaveNewClass(request, db, **kwargs) :
-  theForm = await request.form()
-  db.execute(InsertSql().sql('classes', {
+def postSaveNewClass(pageData, db, **kwargs) :
+  theForm = pageData.form
+  pageData.db.execute(InsertSql().sql('classes', {
     'name'       : theForm['className'],
     'classOrder' : theForm['classOrder'],
     'desc'       : theForm['classDesc'],
     'colour'     : theForm['classColour']
   }))
-  db.commit()
-  return await callPagePart(
-    'app.people.classes.listClasses', request, db, **kwargs
-  )
+  pageData.db.commit()
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 postRoute('/classes/new', postSaveNewClass)
 
 @pagePart
-async def getEditAClassForm(request, db, classId=None, **kwargs) :
+def getEditAClassForm(pageData, classId=None, **kwargs) :
   if classId :
-    theClasses = getClasses(db)
+    theClasses = getClasses(pageData.db)
     if classId in theClasses :
-      return await callPagePart(
-        'app.people.classes.editClassForm',
-        request, db,
+      return schoolLib.app.people.classes.editClassForm(
+        pageData,
         className=theClasses[classId]['name'],
         classDesc=theClasses[classId]['desc'],
         classOrder=theClasses[classId]['classOrder'],
@@ -164,16 +156,14 @@ async def getEditAClassForm(request, db, classId=None, **kwargs) :
         hxPost=f'/classes/edit/{classId}',
         **kwargs
       )
-  return await callPagePart(
-    'app.people.classes.listClasses', request, db, **kwargs
-  )
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 getRoute('/classes/edit/{classId:int}', getEditAClassForm)
 
 @pagePart
-async def putUpdateAClass(request, db, classId=None, **kwargs) :
-  theForm = await request.form()
-  db.execute(UpdateSql(
+def putUpdateAClass(pageData, classId=None, **kwargs) :
+  theForm = pageData.form
+  pageData.db.execute(UpdateSql(
   ).whereValue('id', classId
   ).sql('classes', {
     'name'       : theForm['className'],
@@ -181,28 +171,24 @@ async def putUpdateAClass(request, db, classId=None, **kwargs) :
     'desc'       : theForm['classDesc'],
     'colour'     : theForm['classColour']
   }))
-  db.commit()
-  return await callPagePart(
-    'app.people.classes.listClasses', request, db, **kwargs
-  )
+  pageData.db.commit()
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 putRoute('/classes/edit/{classId:int}', putUpdateAClass)
 
 @pagePart
-async def deleteAnEmptyClass(request, db, classId=None, **kwargs) :
+def deleteAnEmptyClass(pageData, classId=None, **kwargs) :
   if classId :
     selectSql = SelectSql(
     ).fields('id').tables('borrowers'
     ).whereValue('classId', classId)
-    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
     if not results :
       cmd = DeleteSql().whereValue('id', classId).sql('classes')
-      db.execute(cmd)
-      db.commit()
+      pageData.db.execute(cmd)
+      pageData.db.commit()
     else :
       print("Can NOT delete a class which is not empty!")
-  return await callPagePart(
-    'app.people.classes.listClasses', request, db, **kwargs
-  )
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 deleteRoute('/classes/delete/{classId:int}', deleteAnEmptyClass)

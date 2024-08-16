@@ -30,7 +30,7 @@ import schoolLib.app.metaStructure
 import schoolLib.app.admin
 
 @pagePart
-async def homePage(request, db, **kwargs):
+def homePage(pageData, **kwargs):
   """ The Home Page """
   return HtmlPage(
     StdHeaders(),
@@ -40,14 +40,12 @@ async def homePage(request, db, **kwargs):
 getRoute('/', homePage, anyUser=True)
 
 @pagePart
-async def helpPages(request, db, aPath=None, **kwargs) :
+def helpPages(pageData, aPath=None, **kwargs) :
   if not aPath : aPath = 'help'
   someMarkdown = loadMarkdownFromFile(aPath)
 
   return Level0div([
-    await callPagePart(
-      'app.menus.topLevelMenu', request, db, selectedId='home', **kwargs
-    ),
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='home', **kwargs),
     Level1div(MarkdownDiv(someMarkdown))
   ])
 
@@ -58,27 +56,31 @@ async def notFound(request, theException) :
   print(repr(request))
   print(repr(theException))
   print("-------------")
+  pageData = PageData(None)
+  await pageData.getRequestData(request)
   return htmlResponseFromHtmx(Level0div([
-    await callPagePart('app.menus.topLevelMenu', request, None, selectedId='home'),
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
     Level1div([
       Text("Opps! Something went wrong! We can't find that page!"),
       Text(f"Looking for: [{request.url}]")
     ])
-  ], status_code=404), request)
+  ], status_code=404), pageData)
 
 async def serverError(request, theException) :
   print("-------------")
   print(repr(request))
   print(repr(theException))
   print("-------------")
+  pageData = PageData(None)
+  await pageData.getRequestData(request)
   return htmlResponseFromHtmx(Level0div([
-    await callPagePart('app.menus.topLevelMenu', request, None, selectedId='home'),
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
     Level1div([
       Text("Opps! Something went wrong! We can't find that page!", type='p'),
       Text(f"Looking for: [{request.url}]", type='p'),
       Text(f"Error: {repr(theException)}", type="p"),
     ])
-  ], status_code=500), request)
+  ], status_code=500), pageData)
 
 
 # see: https://starlette-login.readthedocs.io/en/stable/usage/

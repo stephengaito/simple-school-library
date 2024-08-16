@@ -15,8 +15,8 @@ from schoolLib.htmxComponents import *
 # content
 
 @pagePart
-async def editItemsInfoForm(
-  request, db,
+def editItemsInfoForm(
+  pageData,
   title=None, authors=None, publisher=None, series=None,
   bookType=None, keywords=None, summary=None,
   dewey=None, isbn=None,
@@ -88,7 +88,7 @@ async def editItemsInfoForm(
 # routes
 
 @pagePart
-async def getShowItemsInfo(request, db, itemsInfoId=None, **kwargs) :
+def getShowItemsInfo(pageData, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     infoSelectSql = SelectSql(
     ).fields(
@@ -103,7 +103,7 @@ async def getShowItemsInfo(request, db, itemsInfoId=None, **kwargs) :
     )
     print(infoSelectSql.sql())
     itemInfo = infoSelectSql.parseResults(
-      db.execute(infoSelectSql.sql()),
+      pageData.db.execute(infoSelectSql.sql()),
       fetchAll=False
     )
     if itemInfo :
@@ -130,7 +130,7 @@ async def getShowItemsInfo(request, db, itemsInfoId=None, **kwargs) :
       )
       print(physicalSelectSql.sql())
       physicalItems = physicalSelectSql.parseResults(
-        db.execute(physicalSelectSql.sql())
+        pageData.db.execute(physicalSelectSql.sql())
       )
       physicalItemsRow = []
       physicalItemsRow.append(TableRow([
@@ -144,7 +144,7 @@ async def getShowItemsInfo(request, db, itemsInfoId=None, **kwargs) :
         TableHeader(Text("Class"))
       ]))
       if physicalItems :
-        classes = getClasses(db)
+        classes = getClasses(pageData.db)
         for aBook in physicalItems :
           print(yaml.dump(aBook))
           borrowerName = ""
@@ -220,10 +220,9 @@ getRoute(
 )
 
 @pagePart
-async def getNewItemsInfoForm(request, db, **kwargs) :
-  return await callPagePart(
-    'app.books.itemsInfo.editItemsInfoForm',
-    request, db,
+def getNewItemsInfoForm(pageData, **kwargs) :
+  return schoolLib.app.books.itemsInfo.editItemsInfoForm(
+    pageData,
     submitMessage='Add new book',
     hxPost='/itemsInfo/new',
     **kwargs
@@ -232,9 +231,9 @@ async def getNewItemsInfoForm(request, db, **kwargs) :
 getRoute('/itemsInfo/new', getNewItemsInfoForm)
 
 @pagePart
-async def postSaveNewItemsInfo(request, db, **kwargs):
-  theForm = await request.form()
-  db.execute(InsertSql().sql('itemsInfo', {
+def postSaveNewItemsInfo(pageData, **kwargs):
+  theForm = pageData.form
+  pageData.db.execute(InsertSql().sql('itemsInfo', {
     'title'     : theForm['title'],
     'authors'   : theForm['authors'],
     'publisher' : theForm['publisher'],
@@ -245,10 +244,9 @@ async def postSaveNewItemsInfo(request, db, **kwargs):
     'dewey'     : theForm['dewey'],
     'isbn'      : theForm['isbn']
   }))
-  db.commit()
-  return await callPagePart(
-    'app.books.itemsInfo.editItemsInfoForm',
-    request, db,
+  pageData.db.commit()
+  return schoolLib.app.books.itemsInfo.editItemsInfoForm(
+    pageData,
     submitMessage='Add new book',
     hxPost='/itemsInfo/new',
     **kwargs
@@ -257,7 +255,7 @@ async def postSaveNewItemsInfo(request, db, **kwargs):
 postRoute('/itemsInfo/new', postSaveNewItemsInfo)
 
 @pagePart
-async def getEditAnItemsInfoForm(request, db, itemsInfoId=None, **kwargs) :
+def getEditAnItemsInfoForm(pageData, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     selectSql = SelectSql().fields(
       'title', 'authors', 'publisher',
@@ -266,7 +264,7 @@ async def getEditAnItemsInfoForm(request, db, itemsInfoId=None, **kwargs) :
     ).tables('itemsInfo'
     ).whereValue('id', itemsInfoId)
     itemsInfo = selectSql.parseResults(
-      db.execute(selectSql.sql()),
+      pageData.db.execute(selectSql.sql()),
       fetchAll=False
     )
     if itemsInfo :
@@ -283,9 +281,8 @@ async def getEditAnItemsInfoForm(request, db, itemsInfoId=None, **kwargs) :
         submitMessage='Save changes',
         hxPost=f'/itemsInfo/edit/{itemsInfoId}',
       )
-  return await callPagePart(
-    'app.books.itemsInfo.editItemsInfoForm',
-    request, db,
+  return schoolLib.app.books.itemsInfo.editItemsInfoForm(
+    pageData,
     submitMessage='Add new book',
     hxPost='/itemsInfo/new',
     **kwargs
@@ -294,10 +291,10 @@ async def getEditAnItemsInfoForm(request, db, itemsInfoId=None, **kwargs) :
 getRoute('/itemsInfo/edit/{itemsInfoId:int}', getEditAnItemsInfoForm)
 
 @pagePart
-async def putUpdateAnItemsInfo(request, db, itemsInfoId=None, **kwargs) :
+def putUpdateAnItemsInfo(pageData, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
-    theForm = await request.form()
-    db.execute(UpdateSql(
+    theForm = pageData.form
+    pageData.db.execute(UpdateSql(
     ).whereValue('id', itemsInfoId
     ).sql('itemsInfo', {
       'title'     : theForm['title'],
@@ -310,10 +307,9 @@ async def putUpdateAnItemsInfo(request, db, itemsInfoId=None, **kwargs) :
       'dewey'     : theForm['dewey'],
       'isbn'      : theForm['isbn']
     }))
-    db.commit()
-  return await callPagePart(
-    'app.books.itemsInfo.editItemsInfoForm',
-    request, db,
+    pageData.db.commit()
+  return schoolLib.app.books.itemsInfo.editItemsInfoForm(
+    pageData,
     submitMessage='Add new book',
     hxPost='/itemsInfo/new',
     **kwargs

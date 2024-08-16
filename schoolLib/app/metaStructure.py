@@ -8,8 +8,10 @@ from pygments.formatters import HtmlFormatter
 from schoolLib.setup          import *
 from schoolLib.htmxComponents import *
 
+devUser = True
+
 @pagePart
-async def listRoutes(request, db, aPath=None, **kwargs) :
+def listRoutes(pageData, aPath=None, **kwargs) :
   if aPath : aPath = '/'+aPath
   routesList = Div([])
   for aRoute in routes :
@@ -30,10 +32,10 @@ async def listRoutes(request, db, aPath=None, **kwargs) :
     routesList.appendChild(aList)
   return HtmlPage( StdHeaders(), routesList )
 
-getRoute('/routes/{aPath:path}', listRoutes, anyUser=True)
+getRoute('/routes/{aPath:path}', listRoutes, anyUser=devUser)
 
 @pagePart
-async def listPageParts(request, db, aPath=None, **kwargs) :
+def listPageParts(pageData, aPath=None, **kwargs) :
   computePagePartUsers()
   partsList = Div([])
   pagePartKeys = sorted(pageParts.keys())
@@ -58,7 +60,7 @@ async def listPageParts(request, db, aPath=None, **kwargs) :
       for aKey, aValue in aMetaData.items() :
         if aValue :
           if '{' in aValue : aValue = aValue.split('{')[0].rstrip('/')
-          if aKey in ['callPagePart'] :
+          if aKey in ['pagePart'] :
             metaDataList.appendChild(Text([
               Text(aKey+':', textType='none'),
               Link(f'/pageParts/{aValue}', aValue, target='_blank')
@@ -85,10 +87,10 @@ async def listPageParts(request, db, aPath=None, **kwargs) :
      partsList
   )
 
-getRoute('/pageParts/{aPath:path}', listPageParts)
+getRoute('/pageParts/{aPath:path}', listPageParts, anyUser=devUser)
 
 @pagePart
-async def provideUIOverview(request, db, aPath=None, **kwargs) :
+def provideUIOverview(pageData, aPath=None, **kwargs) :
   savePath = None
   showPath = ""
   if aPath :
@@ -223,4 +225,4 @@ async def provideUIOverview(request, db, aPath=None, **kwargs) :
     )
   )
 
-getRoute('/uiOverview/{aPath:path}', provideUIOverview)
+getRoute('/uiOverview/{aPath:path}', provideUIOverview, anyUser=devUser)

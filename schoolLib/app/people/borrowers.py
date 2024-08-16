@@ -12,7 +12,7 @@ from schoolLib.app.finders import *
 # content
 
 @pagePart
-async def editBorrowerForm(request, db,
+def editBorrowerForm(pageData,
   borrowerId=None, submitMessage='Save changes', hxPost=None,
   **kwargs
 ) :
@@ -32,13 +32,16 @@ async def editBorrowerForm(request, db,
     ).tables('borrowers'
     ).whereValue('id', borrowerId)
     borrower = selectSql.parseResults(
-      db.execute(selectSql.sql()),
+      pageData.db.execute(selectSql.sql()),
       fetchAll=False
     )
     if borrower :
-      sortedClasses = getOrderedClassList(db, selectedClass=borrower[0]['classId'])
+      sortedClasses = getOrderedClassList(
+        pageData.db, selectedClass=borrower[0]['classId']
+      )
       borrower = borrower[0]
-  if not sortedClasses : sortedClasses = getOrderedClassList(db)
+  if not sortedClasses :
+    sortedClasses = getOrderedClassList(pageData.db)
 
   return FormTable([
     TextInput(
@@ -69,12 +72,11 @@ async def editBorrowerForm(request, db,
 # routes
 
 @pagePart
-async def getNewBorrowerForm(request, db, **kwargs) :
+def getNewBorrowerForm(pageData, **kwargs) :
   return Level1div([
-    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='addBorrower'),
-    await callPagePart(
-      'app.people.borrowers.editBorrowerForm',
-      request, db,
+    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='addBorrower'),
+    schoolLib.app.people.borrowers.editBorrowerForm(
+      pageData,
       submitMsg='Add a new borrower',
       hxPost='/borrowers/new',
       **kwargs
@@ -84,18 +86,17 @@ async def getNewBorrowerForm(request, db, **kwargs) :
 getRoute('/menu/people/addBorrower', getNewBorrowerForm)
 
 @pagePart
-async def postSaveNewBorrower(request, db, **kwargs) :
-  theForm = await request.form()
-  db.execute(InsertSql().sql('borrowers', {
+def postSaveNewBorrower(pageData, **kwargs) :
+  theForm = pageData.form
+  pageData.db.execute(InsertSql().sql('borrowers', {
     'firstName'  : theForm['firstName'],
     'familyName' : theForm['familyName'],
     'cohort'     : theForm['cohort'],
     'classId'    : theForm['assignedClass']
   }))
-  db.commit()
-  return await callPagePart(
-    'app.people.borrowers.editBorrowerForm',
-    request, db,
+  pageData.db.commit()
+  return schoolLib.app.people.borrowers.editBorrowerForm(
+    pageData,
     submitMsg='Add a new borrower',
     hxPost='/borrowers/new',
     **kwargs
@@ -104,10 +105,9 @@ async def postSaveNewBorrower(request, db, **kwargs) :
 postRoute('/borrowers/new', postSaveNewBorrower)
 
 @pagePart
-async def getEditABorrowerForm(request, db, borrowerId=None, **kwargs) :
-  return await callPagePart(
-    'app.people.borrowers.editBorrowerForm',
-    request, db,
+def getEditABorrowerForm(pageData, borrowerId=None, **kwargs) :
+  return schoolLib.app.people.borrowers.editBorrowerForm(
+    pageData,
     borrowerId=borrowerId,
     submitMsg= 'Save changes',
     hxPost=f"/borrowers/edit/{borrowerId}",
@@ -117,10 +117,10 @@ async def getEditABorrowerForm(request, db, borrowerId=None, **kwargs) :
 getRoute('/borrowers/edit/{borrowerId:int}', getEditABorrowerForm)
 
 @pagePart
-async def putUpdatedBorrower(request, db, borrowerId=None, **kwargs) :
+def putUpdatedBorrower(pageData, borrowerId=None, **kwargs) :
   if borrowerId :
-    theForm = await request.form()
-    db.execute(UpdateSql(
+    theForm = pageData.form
+    pageData.db.execute(UpdateSql(
     ).whereValue('id', borrowerId
     ).sql('borrowers', {
       'firstName'  : theForm['firstName'],
@@ -128,10 +128,9 @@ async def putUpdatedBorrower(request, db, borrowerId=None, **kwargs) :
       'cohort'     : theForm['cohort'],
       'classId'    : theForm['assignedClass']
     }))
-    db.commit()
-  return await callPagePart(
-    'app.people.borrowers.editBorrowerForm',
-    request, db,
+    pageData.db.commit()
+  return schoolLib.app.people.borrowers.editBorrowerForm(
+    pageData,
     submitMsg='Add a new borrower',
     hxPost='/borrowers/new',
     **kwargs
@@ -140,7 +139,7 @@ async def putUpdatedBorrower(request, db, borrowerId=None, **kwargs) :
 putRoute('/borrowers/edit/{borrowerId:int}', putUpdatedBorrower)
 
 @pagePart
-async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
+def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
   if borrowerId :
     bSelectSql = SelectSql(
     ).fields(
@@ -148,12 +147,12 @@ async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
     ).tables('borrowers'
     ).whereValue('id', borrowerId)
     borrower = bSelectSql.parseResults(
-      db.execute(bSelectSql.sql()),
+      pageData.db.execute(bSelectSql.sql()),
       fetchAll=False
     )
     if borrower :
       borrower = borrower[0]
-      theClasses = getClasses(db)
+      theClasses = getClasses(pageData.db)
       borrower['className'] = theClasses[borrower['classId']]['name']
       ibSelectSql = SelectSql(
       ).fields(
@@ -170,7 +169,7 @@ async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
         'itemsInfo.id', 'itemsPhysical.itemsInfoId'
       )
       itemsBorrowed = ibSelectSql.parseResults(
-        db.execute(ibSelectSql.sql())
+        pageData.db.execute(ibSelectSql.sql())
       )
       itemsBorrowedRows = []
       itemsBorrowedRows.append(
@@ -225,12 +224,8 @@ async def getShowBorrowerInfo(request, db, borrowerId=None, **kwargs) :
         Table(itemsBorrowedRows)
       ])
   return Level1div([
-    #await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
-    await callPagePart(
-      'app.finders.findABorrower',
-      request, db,
-      **kwargs
-    )
+    #schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
+    schoolLib.app.finders.findABorrower(pageData, **kwargs)
   ])
 
 getRoute('/borrowers/show/{borrowerId:int}', getShowBorrowerInfo)

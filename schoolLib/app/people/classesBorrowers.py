@@ -17,7 +17,7 @@ from schoolLib.htmxComponents import *
 # content
 
 @pagePart
-async def listPupilsInAClassTable(request, db, classId=None, **kwargs) :
+def listPupilsInAClassTable(pageData, classId=None, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('First name')),
@@ -35,7 +35,7 @@ async def listPupilsInAClassTable(request, db, classId=None, **kwargs) :
       "borrowers", "classes"
     ).whereValue("classId", classId
     ).whereField("classId", "classes.id")
-    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
     for aRow in results :
       tableRows.append(TableRow([
         TableEntry(Text(aRow['firstName'])),
@@ -53,7 +53,7 @@ async def listPupilsInAClassTable(request, db, classId=None, **kwargs) :
   return Table(tableRows, theId='level1div')
 
 @pagePart
-async def updatePupilsInClassForm(request, db, classId=None, hxPost=None, **kwargs) :
+def updatePupilsInClassForm(pageData, classId=None, hxPost=None, **kwargs) :
   tableRows = []
   tableRows.append(TableRow([
     TableHeader(Text('First name')),
@@ -63,7 +63,7 @@ async def updatePupilsInClassForm(request, db, classId=None, hxPost=None, **kwar
     TableHeader(Text('New class'))
   ]))
   if classId and hxPost :
-    theClasses = getClasses(db, selectedClass=classId)
+    theClasses = getClasses(pageData.db, selectedClass=classId)
     sortedClasses = getSortedClasses(theClasses)
     selectSql = SelectSql(
     ).fields(
@@ -73,7 +73,7 @@ async def updatePupilsInClassForm(request, db, classId=None, hxPost=None, **kwar
       "borrowers", "classes"
     ).whereValue("classId", classId
     ).whereField("classId", "classes.id")
-    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
     for aRow in results :
       tableRows.append(TableRow([
         TableEntry(Text(aRow['firstName'])),
@@ -95,29 +95,27 @@ async def updatePupilsInClassForm(request, db, classId=None, hxPost=None, **kwar
 getRoute('/classes/list/{classId:int}', listPupilsInAClassTable)
 
 @pagePart
-async def getUpdatePupilsInAClassForm(request, db, classId=None, **kwargs) :
-  return await callPagePart(
-    'app.people.classesBorrowers.updatePupilsInClassForm',
-    request, db, classId=classId, hxPost='/classes/update',
+def getUpdatePupilsInAClassForm(pageData, classId=None, **kwargs) :
+  return schoolLib.app.people.classesBorrowers.updatePupilsInClassForm(
+    pageData,
+    classId=classId, hxPost='/classes/update',
     *kwargs
   )
 
 getRoute('/classes/update/{classId:int}', getUpdatePupilsInAClassForm)
 
 @pagePart
-async def putUpdatePupilesInAClass(request, db, **kwargs) :
-  theForm = await request.form()
+def putUpdatePupilesInAClass(pageData, **kwargs) :
+  theForm = pageData.form
   for aKey in theForm.keys() :
     rowClass = theForm[aKey].split('-')
     updateSql = UpdateSql(
     ).whereValue('id', rowClass[1]
     ).whereValue('classId', rowClass[2], operator='!=')
-    db.execute(updateSql.sql('borrowers', {
+    pageData.db.execute(updateSql.sql('borrowers', {
       'classId' : rowClass[2]
     }))
-  db.commit()
-  return await callPagePart(
-    'app.people.classes.listClasses', request, db, **kwargs
-  )
+  pageData.db.commit()
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 putRoute('/classes/update', putUpdatePupilesInAClass)

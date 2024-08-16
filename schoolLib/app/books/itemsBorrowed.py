@@ -13,8 +13,8 @@ from schoolLib.app.menus import *
 # content
 
 @pagePart
-async def editItemsBorrowedForm(
-  request, db,
+def editItemsBorrowedForm(
+  pageData,
   dateBorrowed=None, dateDue=None,
   submitMessage="Save changes", hxPost=None,
   **kwargs
@@ -42,20 +42,19 @@ async def editItemsBorrowedForm(
 # routes
 
 @pagePart
-async def getNewItemsBorrowedForm(request, db,
+def getNewItemsBorrowedForm(pageData,
   itemsPhysicalId=None, borrowerId=None,
   **kwargs
 ) :
   if itemsPhysicalId and borrowersId :
-    return await callPagePart(
-      'app.books.itemsBorrowed.editItemsBorrowedForm',
-      request, db,
+    return schoolLib.app.books.itemsBorrowed.editItemsBorrowedForm(
+      pageData,
       submitMessage='Take out a new book',
       hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
       **kwargs
     )
   return Level0div(
-    await callPagePart('app.menus.topLevelMenu', request, db)
+    schoolLib.app.menus.topLevelMenu(pageData)
   )
 
 getRoute(
@@ -64,21 +63,21 @@ getRoute(
 )
 
 @pagePart
-async def postSaveNewItemsBorrowed(request, db,
+def postSaveNewItemsBorrowed(pageData,
   itemsPhysicalId=None, borrowersId=None,
   **kwargs
 ) :
   if itemsPhysicalId and borrowerId :
-    theForm = await request.form()
-    db.execute(InsertSql().sql('itemsBorrowed', {
+    theForm = pageData.form
+    pageData.db.execute(InsertSql().sql('itemsBorrowed', {
       'borrowersId'     : borrowersId,
       'itemsPhysicalId' : itemsPhysicalId,
       'dateBorrowed'    : theForm['dateBorrowed'],
       'dateDue'         : theForm['dateDue']
     }))
-    db.commit()
+    pageData.db.commit()
   return Level0div(
-    await callPagePart('app.menus.topLevelMenu', request, db)
+    schoolLib.app.menus.topLevelMenu(pageData)
   )
 
 postRoute(
@@ -87,7 +86,7 @@ postRoute(
 )
 
 @pagePart
-async def getEditItemsBorrowedForm(request, db,
+def getEditItemsBorrowedForm(pageData,
   itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None,
   **kwargs
 ) :
@@ -100,13 +99,12 @@ async def getEditItemsBorrowedForm(request, db,
     ).whereValue('borrowersId', borrowersId
     ).whereValue('itemsPhysicalId', itemsPhysicalId)
     itemsBorrowed = selectSql.parseResults(
-      db.execute(selectSql.sql()),
+      pageData.db.execute(selectSql.sql()),
       fetchAll=False
     )
     if itemsBorrowed :
-      return await callPagePart(
-        'app.books.itemsBorrowed.editItemsBorrowedForm',
-        request, db,
+      return schoolLib.app.books.itemsBorrowed.editItemsBorrowedForm(
+        pageData,
         dateBorrowed=itemsBorrowed[0]['dateBorrowed'],
         dateDue=itemsBorrowed[0]['dateDue'],
         submitMessage='Save changes',
@@ -114,7 +112,7 @@ async def getEditItemsBorrowedForm(request, db,
         **kwargs
       )
   return Level0div(
-    await callPagePart('app.menus.topLevelMenu', request, db)
+    schoolLib.app.menus.topLevelMenu(pageData)
   )
 
 getRoute(
@@ -123,13 +121,13 @@ getRoute(
 )
 
 @pagePart
-async def putUpdateAnItemsBorrowed(requeset, db,
+def putUpdateAnItemsBorrowed(pageData,
   itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None,
   **kwargs
 ) :
   if itemsPhysicalId and borrowersId and itemsBorrowedId :
-    theForm = await request.form()
-    db.execute(UpdateSql(
+    theForm = pageData.form
+    pageData.db.execute(UpdateSql(
     ).whereValue('id', itemsBorrowedId
     ).whereValue('borrowersId', itemsBorrowersId
     ).whereValue('itemsPhysicalId', itemsPhysicalId
@@ -137,9 +135,9 @@ async def putUpdateAnItemsBorrowed(requeset, db,
       'dateBorrowed' : theForm['dateBorrowed'],
       'dateDue'      : theForm['dateDue']
     }))
-    db.commit()
+    pageData.db.commit()
   return Level0div(
-    await callPagePart('app.menus.topLevelMenu', request, db)
+    schoolLib.app.menus.topLevelMenu(pageData)
   )
 
 putRoute(

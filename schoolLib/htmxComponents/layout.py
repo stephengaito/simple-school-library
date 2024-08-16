@@ -29,7 +29,7 @@ class StdHeaders(HtmxBase) :
 
       <link rel="stylesheet" href="/static/css/main.css" type="text/css" />
 
-      <script src="/path/or/uri/to/tinymce.min.js" referrerpolicy="origin"></script>
+      <script src="/static/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
       <script src="/static/js/htmx.min.js"></script>
       <script src="/static/js/idiomorph-ext.min.js"></script>
     """)

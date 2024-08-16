@@ -9,7 +9,11 @@ from starlette.exceptions import HTTPException
 from starlette.responses import HTMLResponse
 from starlette.routing   import Route #, Mount, WebSocketRoute
 
+from starlette_login.utils import login_user, logout_user
+
 from schoolLib.setup.configuration   import config
+from schoolLib.setup.authenticate    import OtherUser
+
 from schoolLib.htmxComponents.layout import *
 
 ###############################################################
@@ -22,23 +26,45 @@ class SSLRoute(Route) :
     self.anyUser = anyUser
     super().__init__(aRoute, aFunc, **kwargs)
 
+class PageData :
+  def __init__(self, db) :
+    self.db      = db
+    self.login   = None
+    self.logout  = False
+    self.headers = {}
+    self.form    = {}
+    self.path    = ""
+    self.user    = OtherUser()
+
+  async def getRequestData(self, request) :
+    self.form    = await request.form()
+    self.headers = request.headers
+    self.path    = request.url.path
+    self.user    = request.user
+
+  def setUser(self, user) :
+    self.login = user
+
+  def shouldLogout(self) :
+    self.logout = True
+
 routes    = []
 
-def htmlResponseFromHtmx(htmxComponent, request) :
+def htmlResponseFromHtmx(htmxComponent, pageData) :
   htmlFragments = []
 
   # alas this is an implicit cicularlity.... we know that "htmxComponent"
   # objects do response to `collectHtml` messages
 
   kwargs = {}
-  if 'HX-Request' not in request.headers :
+  if 'HX-Request' not in pageData.headers :
     htmxComponent = HtmlPage(
       StdHeaders(),
       htmxComponent
     )
   htmxComponent.collectHtml(htmlFragments)
   kwargs = htmxComponent.kwargs
-  url = request.url.path
+  url = pageData.path
   if url != '/' and not url.startswith('/routes') \
     and not url.startswith('/pageParts') and 'develop' in config :
     htmlFragments.insert(
@@ -67,28 +93,34 @@ async def callWithParameters(request, func, anyUser=False) :
     params.update(request.query_params)
   if request.path_params :
     params.update(request.path_params)
-  path = ":memory:"
+  #print(yaml.dump(params))
+
+  dbPath = ":memory:"
   if 'database' in config :
-    path = config['database']
+    dbPath = config['database']
   try :
-    db = sqlite3.connect(path)
-    #print(yaml.dump(params))
-    if anyUser :
-      if iscoroutinefunction(func) :
-        htmxComponent = await func(request, db, **params)
-      else :
-        htmxComponent = func(request, db, **params)
+    db = sqlite3.connect(dbPath)
+    pageData = PageData(db)
+    await pageData.getRequestData(request)
+    if anyUser or pageData.user.is_authenticated :
+      htmxComponent = func(pageData, **params)
     elif loginFunc :
       message = "You must be logged in to access this page"
       if 'develop' in config :
         message += f" ({request.url.path})"
-      htmxComponent = await loginFunc(request, db, message=message)
+      htmxComponent = loginFunc(pageData, message=message)
     else :
       raise HTTPException(
         404,
         detail=f"No login page registered while trying to serve {request.url.path}"
       )
-    return htmlResponseFromHtmx(htmxComponent, request)
+
+    if pageData.login :
+      await login_user(request, pageData.login)
+    elif pageData.logout :
+      await logout_user(request)
+
+    return htmlResponseFromHtmx(htmxComponent, pageData)
   finally :
     db.close()
 
@@ -97,31 +129,41 @@ def getRoute(aRoute, getFunc, anyUser=False, name=None) :
   async def getWrapper(request) :
     print(f"Any user: {anyUser}")
     return await callWithParameters(request, getFunc, anyUser=anyUser)
-  routes.append(SSLRoute(aRoute, getWrapper, name=name, methods=["GET"]))
+  routes.append(SSLRoute(
+    aRoute, getWrapper, anyUser=anyUser, name=name, methods=["GET"]
+  ))
 
 def putRoute(aRoute, putFunc, anyUser=False, name=None) :
   @wraps(putFunc)
   async def putWrapper(request) :
     return await callWithParameters(request, putFunc, anyUser=anyUser)
-  routes.append(SSLRoute(aRoute, putWrapper, name=name, methods=["PUT", "POST"]))
+  routes.append(SSLRoute(
+    aRoute, putWrapper, anyUser=anyUser, name=name, methods=["PUT", "POST"]
+  ))
 
 def postRoute(aRoute, postFunc, anyUser=False, name=None) :
   @wraps(postFunc)
   async def postWrapper(request) :
     return await callWithParameters(request, postFunc, anyUser=anyUser)
-  routes.append(SSLRoute(aRoute, postWrapper, name=name, methods=["POST"]))
+  routes.append(SSLRoute(
+    aRoute, postWrapper, anyUser=anyUser, name=name, methods=["POST"]
+  ))
 
 def patchRoute(aRoute, patchFunc, anyUser=False, name=None) :
   @wraps(patchFunc)
   async def patchWrapper(request) :
     return await callWithParameters(request, patchFunc, anyUser=anyUser)
-  routes.append(SSLRoute(aRoute, patchWrapper, name=name, methods=["PATCH", "POST"]))
+  routes.append(SSLRoute(
+    aRoute, patchWrapper, anyUser=anyUser, name=name, methods=["PATCH", "POST"]
+  ))
 
 def deleteRoute(aRoute, deleteFunc, anyUser=False, name=None) :
   @wraps(deleteFunc)
   async def deleteWrapper(request) :
     return await callWithParameters(request, deleteFunc, anyUser=anyUser)
-  routes.append(SSLRoute(aRoute, deleteWrapper, name=name, methods=["GET", "DELETE"]))
+  routes.append(SSLRoute(
+    aRoute, deleteWrapper, anyUser=anyUser, name=name, methods=["GET", "DELETE"]
+  ))
 
 ###############################################################
 # Capture the "external facing" page parts
@@ -135,6 +177,7 @@ regExps = [
   r"Link\(\s*f?'(?P<link>[^\']*)'",
   r"hxGet\s*=\s*f?'(?P<hxGet>[^\']*)'",
   r"hxPost\s*=\s*'(?P<hxPost>[^\']*)'",
+  r"schoolLib\.(?P<pagePart>[^\(\s]*)\s*\(\s*pageData",
   r"callPagePart\(\s*\'(?P<callPagePart>[^\']*)\'"
 ]
 metaDataRegExp = re.compile('|'.join(regExps))
@@ -160,12 +203,6 @@ class PagePart :
       metaData.append(aMatch.groupdict())
     self.metaData = metaData
     self.src = src
-
-async def callPagePart(aKey, request, db, **kwargs) :
-  if aKey not in pageParts :
-    raise HTTPException(404, detail=f"Could not call the page part: {aKey} ")
-  theFunc = pageParts[aKey].func
-  return await theFunc(request, db, **kwargs)
 
 def pagePart(func) :
   PagePart(func)  # register this pagePart

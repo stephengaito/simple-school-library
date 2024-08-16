@@ -27,10 +27,10 @@ class HelpEditor(TextAreaInput) :
     </script>
     """)
 
-def getHelpPage(request, db, helpPagePath, hxPost=None, **kwargs) :
-  helpPageHtml = getHelpPageHtml(db, helpPagePath)
+def getHelpPage(pageData, helpPagePath, hxPost=None, **kwargs) :
+  helpPageHtml = getHelpPageHtml(pageData.db, helpPagePath)
   if not helpPageHtml :
-    if not request.user.is_authenticated :
+    if not pageData.user.is_authenticated :
       helpPageHtml = f"<p>Please ask the administrator to add this help page ({helpPagePath})</p>"
     elif not hxPost :
       helpPageHtml = f"<p>No hxPost supplied for {helpPagePath}</p>"
@@ -42,8 +42,8 @@ def getHelpPage(request, db, helpPagePath, hxPost=None, **kwargs) :
 
   return HelpPage(helpPageHtml, **kwargs)
 
-async def postHelpPage(request, db, helpPagePath, **kwargs) :
-  theForm = await request.form()
+async def postHelpPage(pageData, helpPagePath, **kwargs) :
+  theForm = pageData.form
   selectSql = SelectSql(
   ).fields('content'
   ).tables('helpPages'
@@ -64,4 +64,4 @@ async def postHelpPage(request, db, helpPagePath, **kwargs) :
       'content' : theForm['content']
     }))
   db.commit()
-  return getHelpPage(request, db, helpPagePath, **kwargs)
+  return getHelpPage(pageData, helpPagePath, **kwargs)

@@ -8,7 +8,7 @@ from schoolLib.app.menus import *
 # borrowers
 
 @pagePart
-async def findABorrower(request, db, probe=None, nameRows=[], **kwargs) :
+def findABorrower(pageData, probe=None, nameRows=[], **kwargs) :
   return Level2div([
     SearchBox(
       hxPost='/search/borrowers',
@@ -20,20 +20,17 @@ async def findABorrower(request, db, probe=None, nameRows=[], **kwargs) :
   ], attrs={'hx-ext':'morph'})
 
 @pagePart
-async def getFindBorrowerForm(request, db, **kwargs) :
+def getFindBorrowerForm(pageData, **kwargs) :
   return Level1div([
-    await callPagePart('app.menus.secondLevelPeopleMenu', request, db, selectedId='findBorrower'),
-    await callPagePart(
-      'app.finders.findABorrower',
-      request, db, **kwargs
-    )
+    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
+    schoolLib.app.finders.findABorrower(pageData, **kwargs)
   ])
 
 getRoute('/search/borrowers', getFindBorrowerForm)
 
 @pagePart
-async def postSearchForBorrower(request, db, **kwargs) :
-  theForm = await request.form()
+def postSearchForBorrower(pageData, **kwargs) :
+  theForm = pageData.form
   nameRows =[]
   selectSql = SelectSql(
   ).fields(
@@ -46,16 +43,15 @@ async def postSearchForBorrower(request, db, **kwargs) :
       'borrowersFTS', theForm['search']+'*', operator='MATCH'
     )
   print(selectSql.sql())
-  results = selectSql.parseResults(db.execute(selectSql.sql()))
+  results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
   for aRow in results :
     nameRows.append(TableRow(TableEntry(Link(
       f'/borrowers/show/{aRow['borrowerId']}',
       f'{aRow['firstName']} {aRow['familyName']}',
       hxTarget='#level2div'
     ))))
-  return await callPagePart(
-    'app.finders.findABorrower',
-    request, db,
+  return schoolLib.app.finders.findABorrower(
+    pageData,
     probe=theForm['search'], nameRows=nameRows,
     **kwargs
   )
@@ -66,7 +62,7 @@ postRoute('/search/borrowers', postSearchForBorrower)
 # items (aka Books)
 
 @pagePart
-async def findAnItem(request, db, probe=None, itemRows=[], **kwargs) :
+def findAnItem(pageData, probe=None, itemRows=[], **kwargs) :
   return Level2div([
     SearchBox(
       hxPost='/search/items',
@@ -78,20 +74,17 @@ async def findAnItem(request, db, probe=None, itemRows=[], **kwargs) :
   ], attrs={'hx-ext':'morph'})
 
 @pagePart
-async def getFindAnItemForm(request, db, **kwargs) :
+def getFindAnItemForm(pageData, **kwargs) :
   return Level1div([
-    await callPagePart('app.menus.secondLevelBooksMenu', request, db, selectedId='findBook'),
-    await callPagePart(
-      'app.finders.findAnItem',
-      request, db, **kwargs
-    )
+    schoolLib.app.menus.secondLevelBooksMenu(pageData, selectedId='findBook'),
+    schoolLib.app.finders.findAnItem(pageData, **kwargs)
   ])
 
 getRoute('/search/items', getFindAnItemForm)
 
 @pagePart
-async def postSearchForAnItem(request, db, **kwargs) :
-  theForm = await request.form()
+def postSearchForAnItem(pageData, **kwargs) :
+  theForm = pageData.form
   itemRows = []
   selectSql = SelectSql(
   ).fields(
@@ -105,16 +98,15 @@ async def postSearchForAnItem(request, db, **kwargs) :
       'itemsFTS', theForm['search']+'*', operator='MATCH'
     )
   print(selectSql.sql())
-  results = selectSql.parseResults(db.execute(selectSql.sql()))
+  results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
   for aRow in results :
     itemRows.append(TableRow(TableEntry(Link(
       f'/itemsInfo/show/{aRow['itemsInfoId']}',
       aRow['title'],
       hxTarget='#level2div'
     ))))
-  return await callPagePart(
-    'app.finders.findAnItem',
-    request, db,
+  return schoolLib.app.finders.findAnItem(
+    pageData,
     probe=theForm['search'], itemRows=itemRows,
     **kwargs
   )

@@ -63,8 +63,8 @@ def authenticateSlibUser(password, db) :
     salt = base64.b64decode(salt)
     encryptedPassword = encryptSlibPassword(password, salt)
     if hashedPassword == encryptedPassword : return True
-  except :
-    pass
+  except Exception as err :
+    print(repr(err))
   return False
 
 def passwordCli() :

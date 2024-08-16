@@ -11,13 +11,13 @@ from schoolLib.app.menus import *
 # routes
 
 @pagePart
-async def booksMenu(request, db, **kwargs) :
+def booksMenu(pageData, **kwargs) :
   someMarkdown = "somthing about **books**"
 
   return Level0div([
-    await callPagePart('app.menus.topLevelMenu', request, db, selectedId='books'),
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     Level1div([
-      await callPagePart('app.menus.secondLevelBooksMenu', request, db, selectedId='takeOut'),
+      schoolLib.app.menus.secondLevelBooksMenu(pageData, selectedId='takeOut'),
       MarkdownDiv(someMarkdown)
     ])
   ])

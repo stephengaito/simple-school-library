@@ -1,7 +1,7 @@
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-from schoolLib.app.menus import *
+import schoolLib.app.menus
 
 ##########################################################################
 # content
@@ -19,7 +19,7 @@ def booksCheckedOutTableHeader() :
   ])
 
 @pagePart
-async def booksCheckedOut(request, db, **kwargs) :
+def booksCheckedOut(pageData, **kwargs) :
   bcoRows = []
   bcoRows.append(booksCheckedOutTableHeader())
   selectSql = SelectSql(
@@ -42,10 +42,10 @@ async def booksCheckedOut(request, db, **kwargs) :
   )
   #print(selectSql.sql())
   booksCheckedOut = selectSql.parseResults(
-    db.execute(selectSql.sql())
+    pageData.db.execute(selectSql.sql())
   )
   if booksCheckedOut :
-    classes = getClasses(db)
+    classes = getClasses(pageData.db)
     for aBook in booksCheckedOut :
       bcoRows.append(TableRow([
         TableEntry(Text(
@@ -71,8 +71,8 @@ async def booksCheckedOut(request, db, **kwargs) :
         TableEntry(Text("")),
       ]))
   return Level1div([
-    await callPagePart('app.menus.secondLevelTasksMenu',
-      request, db, selectedId='booksCheckedOut'
+    schoolLib.app.menus.secondLevelTasksMenu(
+      pageData, selectedId='booksCheckedOut'
     ),
     Table(bcoRows)
   ])
@@ -81,16 +81,15 @@ async def booksCheckedOut(request, db, **kwargs) :
 # routes
 
 @pagePart
-async def tasksMenu(request, db, **kwargs) :
+def tasksMenu(pageData, **kwargs) :
   tasksMarkdown = "somthing about **tasks**"
 
   return Level0div([
-    await callPagePart(
-      'app.menus.topLevelMenu', request, db, selectedId='tasks'
+    schoolLib.app.menus.topLevelMenu(
+      pageData, selectedId='tasks'
     ),
-    await callPagePart(
-      'app.tasks.menu.booksCheckedOut',
-      request, db, **kwargs
+    schoolLib.app.tasks.menu.booksCheckedOut(
+      pageData, **kwargs
     )
   ], theId='level0div')
 
