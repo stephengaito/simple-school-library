@@ -11,7 +11,7 @@ We build a simple school library using:
 
 - [Python-Markdown](https://python-markdown.github.io/)
 
-- [</> htmx](https://htmx.org/)
+- [</> htmx](https://htmx.org/) & [///\_hyperscript](https://hyperscript.org/)
 
 - [Bootstrap Icons](https://icons.getbootstrap.com/)
 

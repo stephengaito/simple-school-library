@@ -57,7 +57,8 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   # objects do response to `collectHtml` messages
 
   kwargs = {}
-  if 'HX-Request' not in pageData.headers :
+  if not isinstance(htmxComponent, HtmlPage) \
+    and 'HX-Request' not in pageData.headers :
     htmxComponent = HtmlPage(
       StdHeaders(),
       htmxComponent
@@ -176,7 +177,7 @@ regExps = [
   r"hxTarget\s*=\s*'(?P<hxTarget>[^\']*)'",
   r"Link\(\s*f?'(?P<link>[^\']*)'",
   r"hxGet\s*=\s*f?'(?P<hxGet>[^\']*)'",
-  r"hxPost\s*=\s*'(?P<hxPost>[^\']*)'",
+  r"hxPost\s*=\s*(?P<hxPost>[^\s,]*)",
   r"schoolLib\.(?P<pagePart>[^\(\s]*)\s*\(\s*pageData",
   r"callPagePart\(\s*\'(?P<callPagePart>[^\']*)\'"
 ]

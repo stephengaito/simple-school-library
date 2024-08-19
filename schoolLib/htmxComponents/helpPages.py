@@ -5,7 +5,14 @@ from schoolLib.htmxComponents.simpleComponents import *
 from schoolLib.htmxComponents.forms            import *
 
 class HelpPage(RawHtml) :
+  def __init__(self, helpPageHtml, helpPagePath, **kwargs) :
+    super().__init__(helpPageHtml, **kwargs)
+    self.helpPagePath = helpPagePath.lstrip('/')
+
   def collectHtml(self, htmlFragments, **kwargs) :
+    EditorButton(
+      hxGet=f"/editHelp/{self.helpPagePath}"
+    ).collectHtml(htmlFragments)
     htmlFragments.append(f'<div {self.computeHtmxAttrs()}>')
     htmlFragments.append(self.rawHtml)
     htmlFragments.append('</div>')
@@ -39,6 +46,7 @@ class HelpEditorForm(Form) :
       placeholder=f'Add some text for {helpPagePath}',
       name='helpContent'
     ))
+    self.appendChild(CancelButton("Cancel", hyperscript="on click trigger closeModal"))
 
 def getHelpPage(pageData, helpPagePath, hxPost=None, **kwargs) :
   helpPageHtml = getHelpPageHtml(pageData.db, helpPagePath)
@@ -49,7 +57,7 @@ def getHelpPage(pageData, helpPagePath, hxPost=None, **kwargs) :
       helpPageHtml = f"<p>No hxPost supplied for {helpPagePath}</p>"
     else :
       return HelpEditorForm(helpPageHtml, helpPagePath, hxPost, **kwargs)
-  return HelpPage(helpPageHtml, **kwargs)
+  return HelpPage(helpPageHtml, helpPagePath, **kwargs)
 
 def postHelpPage(pageData, helpPagePath, **kwargs) :
   theForm = pageData.form

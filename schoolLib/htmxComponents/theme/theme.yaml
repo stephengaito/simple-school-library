@@ -18,6 +18,14 @@ ButtonClasses:
     - outline-2
     - outline-blue-500
 
+CancelButtonClasses:
+  default:
+    - p-1
+    - m-1
+    - border-2
+    - border-solid
+    - rounded-lg
+
 DivClasses:
   default:
    - m-1
@@ -102,6 +110,12 @@ TableRowClasses:
   default:
     - '[&:nth-child(5n+2)]:bg-gray-100'
 
+HelpPageClasses:
+  default:
+    - border-2
+    - border-solid
+    - rounded-lg
+
 HelpEditorClasses:
   default:
     - border-2
@@ -126,3 +140,21 @@ SearchBoxAttrs:
     - hx-trigger="input changed delay:250ms"
     - hx-target="#level2div"
     - hx-swap="morph:{ignoreActiveValue:true}"
+
+HelpButtonClasses:
+  default:
+    - float-right
+
+HelpButtonAttrs:
+  default:
+    - width="24"
+    - height="24"
+
+EditorButtonClasses:
+  default:
+    - float-right
+
+EditorButtonAttrs:
+  default:
+    - width="24"
+    - height="24"

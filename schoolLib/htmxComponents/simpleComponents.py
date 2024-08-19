@@ -1,6 +1,35 @@
 
 from schoolLib.htmxComponents.htmx import *
 
+class ModalDialog(HtmxChildrenBase) :
+  def __init__(self, modalChildren,
+     additionalHyperscript=None, underlayDismisses=True,
+     **kwargs
+  ) :
+    super().__init__(modalChildren, **kwargs)
+    self.additionalHyperscript = additionalHyperscript
+    self.underlayDismisses     = underlayDismisses
+
+  # The following has been adapted from the HTMX modal example
+  # see: https://htmx.org/examples/modal-custom/
+  #
+  def collectHtml(self, htmlFragments) :
+    hyperscript = "on closeModal add .closing then wait for animationend"
+    if self.additionalHyperscript :
+      hyperscript += f" then {self.additionalHyperscript}"
+    hyperscript +=" then remove me"
+
+    underlayCondition = ""
+    if self.underlayDismisses :
+      underlayCondition = 'script="on click trigger closeModal"'
+
+    htmlFragments.append(f'<div id="modal" script="{hyperscript}">')
+    htmlFragments.append(f'<div class="modal-underlay" {underlayCondition}></div>')
+    htmlFragments.append('<div class="modal-content">')
+    self.collectChildrenHtml(htmlFragments)
+    htmlFragments.append("</div>")
+    htmlFragments.append("</div>")
+
 class Div(HtmxChildrenBase) :
 
   def collectHtml(self, htmlFragments) :
@@ -105,6 +134,7 @@ class Text(HtmxChildrenBase) :
     elif textType.startswith('b')  : textType = 'button'
     elif textType.startswith('a')  : textType = 'a'
     elif textType.startswith('c')  : textType = 'code'
+    elif textType.startswith('d')  : textType = 'div'
     else                           : textType = None
     self.textType = textType
 
@@ -127,6 +157,13 @@ class Text(HtmxChildrenBase) :
 class Button(Text) :
   def __init__(self, text, textType='b', **kwargs) :
     super().__init__(text, textType=textType, **kwargs)
+
+class DivButton(Text) :
+  def __init__(self, text, textType='d', **kwargs) :
+    super().__init__(text, textType=textType, **kwargs)
+
+class CancelButton(DivButton) :
+  pass
 
 class LongCode(Text) :
   def __init__(self, text, textType='pre', **kwargs) :
@@ -154,3 +191,22 @@ class Link(Text) :
     if target : kwargs['attrs'].append(f'target="{target}"')
     super().__init__(text, textType=textType, **kwargs)
 
+class ImgButton(HtmxBase) :
+  def __init__(self, imgName, **kwargs) :
+    super().__init__(**kwargs)
+    self.imgName = imgName
+
+  def collectHtml(self, htmlFragments, **kwargs) :
+    htmlFragments.append(
+      f'<img src="/static/svg/bootstrap/{self.imgName}.svg" {self.computeHtmxAttrs()}>'
+    )
+
+class HelpButton(ImgButton) :
+  def __init__(self, **kwargs) :
+    super().__init__('question-circle', **kwargs)
+
+class EditorButton(ImgButton) :
+  def __init__(self, **kwargs) :
+    if 'hxTarget' not in kwargs : kwargs['hxTarget'] = "body"
+    if 'hxSwap'   not in kwargs : kwargs['hxSwap']   = "beforeend"
+    super().__init__('pencil-square', **kwargs)

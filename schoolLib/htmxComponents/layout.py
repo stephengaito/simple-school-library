@@ -32,6 +32,7 @@ class StdHeaders(HtmxBase) :
       <script src="/static/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
       <script src="/static/js/htmx.min.js"></script>
       <script src="/static/js/idiomorph-ext.min.js"></script>
+      <script src="/static/js/hyperscript.min.js"></script>
     """)
     htmlFragments.extend(self.additionalHeaders)
 

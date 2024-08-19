@@ -153,7 +153,7 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
         'Logout',
         theId    = 'logout',
         hxGet    = '/logout',
-        hxTarget = '#level1div'
+        hxTarget = '#level0div'
       )
     )
     theMenu.select('logout')
@@ -163,7 +163,7 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
         'Login',
         theId    = 'login',
         hxGet    = '/login',
-        hxTarget = '#level1div'
+        hxTarget = '#level0div'
       )
     )
     theMenu.select('login')

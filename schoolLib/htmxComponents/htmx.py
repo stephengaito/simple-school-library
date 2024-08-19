@@ -61,21 +61,23 @@ class HtmxBase :
     hxTrigger=None,
     hxTarget=None,
     hxSwap=None,
+    hyperscript=None,
     **kwargs
   ) :
-    self.kwargs    = kwargs
-    self.theId     = theId
-    self.klass     = klass
-    self.klassName = klassName
-    self.style     = style
-    self.styleName = styleName
-    self.attrs     = attrs
-    self.attrsName = attrsName
-    self.hxGet     = hxGet
-    self.hxPost    = hxPost
-    self.hxTrigger = hxTrigger
-    self.hxTarget  = hxTarget
-    self.hxSwap    = hxSwap
+    self.kwargs      = kwargs
+    self.theId       = theId
+    self.klass       = klass
+    self.klassName   = klassName
+    self.style       = style
+    self.styleName   = styleName
+    self.attrs       = attrs
+    self.attrsName   = attrsName
+    self.hxGet       = hxGet
+    self.hxPost      = hxPost
+    self.hxTrigger   = hxTrigger
+    self.hxTarget    = hxTarget
+    self.hxSwap      = hxSwap
+    self.hyperscript = hyperscript
 
   def collectHtml(self, htmlFragments, **kwargs) :
     pass
@@ -143,6 +145,11 @@ class HtmxBase :
     if self.theId : idStr = f'id="{self.theId}"'
     return idStr
 
+  def computeHyperscript(self) :
+    hyperscript = ""
+    if self.hyperscript : hyperscript = f'script="{self.hyperscript}"'
+    return hyperscript
+
   def computeHtmxAttrs(self) :
     className = self.__class__.__name__
     classDict = className+'Classes'
@@ -160,6 +167,7 @@ class HtmxBase :
       self.computeAction(),
       self.computeTarget(),
       self.computeTrigger(),
+      self.computeHyperscript(),
       self.computeClass(classDict),
       self.computeStyle(styleDict),
       self.computeAttrs(attrsDict)

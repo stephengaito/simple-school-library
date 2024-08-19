@@ -55,9 +55,9 @@ def sanitizeConfig(config, verbose=False) :
   if verbose :
     print("----------------------------------------")
     print(yaml.dump(config))
-    print(repr(templates))
+    #print(repr(templates))
     print("----------------------------------------")
-  config['templates'] = templates
+  #config['templates'] = templates
 
 def loadedConfig(aConfigPath, reportErrors=False, verbose=False) :
   if verbose : reportErrors = True

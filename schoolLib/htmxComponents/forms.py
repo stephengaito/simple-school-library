@@ -7,9 +7,9 @@ from schoolLib.htmxComponents.tables import *
 from schoolLib.htmxComponents.simpleComponents import *
 
 class Form(HtmxChildrenBase) :
-  def __init__(self, aComponent, submitMsg, **kwargs) :
+  def __init__(self, aComponent, submitMsg, buttonHyperscript=None, **kwargs) :
     super().__init__(aComponent, **kwargs)
-    self.submitButton = Button(submitMsg)
+    self.submitButton = Button(submitMsg, hyperscript=buttonHyperscript)
 
   def collectHtml(self, htmlFragments) :
     htmlFragments.append(f'<form {self.computeHtmxAttrs()}>')

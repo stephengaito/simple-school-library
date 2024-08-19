@@ -57,12 +57,16 @@ def editHelpPage(pageData, aPath=None, **kwargs) :
   if not aPath : aPath = '/'
   helpPageHtml = getHelpPageHtml(pageData.db, aPath)
   print(helpPageHtml)
-  return Level1div([
-    Div([]),
+  # see: https://stackoverflow.com/a/33794114
+  return ModalDialog([
     HelpEditorForm(
-      helpPageHtml, aPath, f'/editHelp{aPath}', hxTarget='#level1div'
+      helpPageHtml, aPath, f'/editHelp{aPath}', hxTarget='#level1div',
+      buttonHyperscript="on click trigger closeModal"
     )
-  ])
+  ],
+    additionalHyperscript="call tinymce.activeEditor.destroy()",
+    underlayDismisses=False
+  )
 
 getRoute('/editHelp{aPath:path}', editHelpPage)
 
