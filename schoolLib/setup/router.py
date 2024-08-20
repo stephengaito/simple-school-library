@@ -38,7 +38,10 @@ class PageData :
 
   async def getRequestData(self, request) :
     self.form    = await request.form()
-    self.headers = request.headers
+    theHeaders = {}
+    for aHeader, aValue in request.headers.items() :
+      theHeaders[aHeader] = aValue
+    self.headers = theHeaders
     self.path    = request.url.path
     self.user    = request.user
 
@@ -58,7 +61,7 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
 
   kwargs = {}
   if not isinstance(htmxComponent, HtmlPage) \
-    and 'HX-Request' not in pageData.headers :
+    and 'hx-request' not in pageData.headers :
     htmxComponent = HtmlPage(
       StdHeaders(),
       htmxComponent

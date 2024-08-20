@@ -233,7 +233,7 @@ getRoute('/itemsInfo/new', getNewItemsInfoForm)
 @pagePart
 def postSaveNewItemsInfo(pageData, **kwargs):
   theForm = pageData.form
-  pageData.db.execute(InsertSql().sql('itemsInfo', {
+  pageData.db.execute(*InsertSql().sql('itemsInfo', {
     'title'     : theForm['title'],
     'authors'   : theForm['authors'],
     'publisher' : theForm['publisher'],

@@ -88,7 +88,7 @@ getRoute('/menu/people/addBorrower', getNewBorrowerForm)
 @pagePart
 def postSaveNewBorrower(pageData, **kwargs) :
   theForm = pageData.form
-  pageData.db.execute(InsertSql().sql('borrowers', {
+  pageData.db.execute(*InsertSql().sql('borrowers', {
     'firstName'  : theForm['firstName'],
     'familyName' : theForm['familyName'],
     'cohort'     : theForm['cohort'],

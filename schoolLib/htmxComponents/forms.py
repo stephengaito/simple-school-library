@@ -58,15 +58,20 @@ class FormInputsBase(HtmxBase) :
 
 class FormInputs(FormInputsBase) :
   def collectHtml(self, htmlFragments) :
+    someFragments = []
+    HelpButton(
+      hxGet=f"/help/{self.name}",
+    ).collectHtml(someFragments)
+    helpButtonStr = " ".join(someFragments)
     if self.label :
       htmlFragments.append(f"""
         <tr>
         <td><label>{self.label}</label></td>
-        <td><input type="{self.inputType}" {self.computeHtmxAttrs()}/></td>
+        <td><input type="{self.inputType}" {self.computeHtmxAttrs()}/>{helpButtonStr}</td>
         </tr>
       """)
     else :
-      htmlFragments.append(f'<input type="{self.inputType}" {self.computeHtmxAttrs()}/>')
+      htmlFragments.append(f'<input type="{self.inputType}" {self.computeHtmxAttrs()}/>{helpButtonStr}')
 
 class TextInput(FormInputs) :
   def __init__(

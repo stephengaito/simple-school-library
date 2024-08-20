@@ -47,6 +47,12 @@ loadSchema()
 # The allows us to know enough about the structure of the SQL
 # to be able make a list of dicts from the results
 
+def sqliteEscapeSingleQuotes(aStr) :
+  return aStr.replace(r"'", r"''")
+
+def sqliteUnEscapeSingleQuotes(aStr) :
+  return aStr.replace(r"''", r"'")
+
 class SqlBuilder :
 
   def __init__(self) :
@@ -62,7 +68,7 @@ class SqlBuilder :
   def whereValue(self, field, value, operator='=') :
     wrappedValue = str(value)
     if field in schemaFields and schemaFields[field] != "INTEGER" :
-      wrappedValue = f"'{value}'"
+      wrappedValue = f"'{sqliteEscapeSingleQuotes(value)}'"
     self.whereList.append(f"{field} {operator} {wrappedValue}")
     return self
 
@@ -197,16 +203,20 @@ class InsertSql(SqlBuilder) :
     for aKey, aValue in values.items() :
       if aKey == 'id' : continue
       keysList.append(aKey)
-      valuesList.append(f"'{aValue}'")
+      valuesList.append(f"{sqliteEscapeSingleQuotes(aValue)}")
 
     cmd = "INSERT INTO "
     cmd += table
     cmd += " ( "
     cmd += ", ".join(keysList)
     cmd += " ) VALUES ( "
-    cmd += ", ".join(valuesList)
+    cmd += ", ".join(['?'] *len(valuesList))
     cmd += ")"
-    return cmd
+    print(f"InsertSql cmd: [{cmd}]")
+    values = tuple(valuesList)
+    print(f"InsertSql values: [{values}]")
+
+    return (cmd, values)
 
 class UpdateSql(SqlBuilder) :
 
@@ -215,7 +225,7 @@ class UpdateSql(SqlBuilder) :
     setList = []
     for aKey, aValue in values.items() :
       if aKey == 'id' : continue
-      setList.append(f"{aKey} = '{aValue}'")
+      setList.append(f"{aKey} = '{sqliteEscapeSingleQuotes(aValue)}'")
 
     cmd = "UPDATE "
     cmd += table
@@ -281,17 +291,17 @@ def getOrderedClassList(db, selectedClass=None) :
 #
 # deal with help pages
 
-def getHelpPageHtml(db, helpPagePath) :
+def getHelpPageHtml(db, aHelpPage) :
   selectSql = SelectSql(
   ).fields("content"
   ).tables("helpPages"
-  ).whereValue('path', helpPagePath)
+  ).whereValue('path', aHelpPage)
   print(selectSql.sql())
   results = selectSql.parseResults(
     db.execute(selectSql.sql()),
     fetchAll=False
   )
   if results :
-    print(yaml.dump(results[0]['content']))
-    return results[0]['content']
+    print(yaml.dump(sqliteUnEscapeSingleQuotes(results[0]['content'])))
+    return sqliteUnEscapeSingleQuotes(results[0]['content'])
   return None

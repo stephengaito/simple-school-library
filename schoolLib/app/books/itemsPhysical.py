@@ -112,7 +112,7 @@ def postSaveNewItemsPhysical(pageData, itemsInfoId=None, **kwargs) :
       barcode = computeNewBarcode(pageData.db)
     else :
       barcode = theForm['barcode']
-    pageData.db.execute(InsertSql().sql('itemsPhysical', {
+    pageData.db.execute(*InsertSql().sql('itemsPhysical', {
       'itemsInfoId'  : itemsInfoId,
       'barcode'      : barcode,
       'dateAdded'    : theForm['dateAdded'],

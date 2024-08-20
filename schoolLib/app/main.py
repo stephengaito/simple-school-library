@@ -40,46 +40,39 @@ def homePage(pageData, **kwargs):
 getRoute('/', homePage, anyUser=True)
 
 @pagePart
-def helpPages(pageData, aPath=None, **kwargs) :
-  if not aPath : aPath = '/'
-  return Level0div([
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='home', **kwargs),
-    Level1div([
-      schoolLib.app.menus.secondLevelHelpMenu(pageData, aPath),
-      getHelpPage(pageData, aPath, hxPost=f'/editHelp{aPath}')
-    ])
-  ])
+def helpPages(pageData, aHelpPage=None, **kwargs) :
+  if not aHelpPage : aHelpPage = 'uknownPage'
+  print(f"HelpPages: [{aHelpPage}]")
+  print(yaml.dump(pageData.headers))
+  return getHelpPage(pageData, aHelpPage, hxPost=f'/editHelp/{aHelpPage}')
 
-getRoute('/help{aPath:path}', helpPages, anyUser=True)
+getRoute('/help/{aHelpPage:str}', helpPages, anyUser=True)
 
 @pagePart
-def editHelpPage(pageData, aPath=None, **kwargs) :
-  if not aPath : aPath = '/'
-  helpPageHtml = getHelpPageHtml(pageData.db, aPath)
+def editHelpPage(pageData, aHelpPage=None, **kwargs) :
+  if not aHelpPage : aHelpPage = 'unknownPage'
+  helpPageHtml = getHelpPageHtml(pageData.db, aHelpPage)
   print(helpPageHtml)
   # see: https://stackoverflow.com/a/33794114
-  return ModalDialog([
+  return HelpEditorModalDialog([
     HelpEditorForm(
-      helpPageHtml, aPath, f'/editHelp{aPath}', hxTarget='#level1div',
-      buttonHyperscript="on click trigger closeModal"
+      helpPageHtml, aHelpPage, f'/editHelp/{aHelpPage}',
+      buttonHyperscript="on click trigger closeEditorModal"
     )
-  ],
-    additionalHyperscript="call tinymce.activeEditor.destroy()",
-    underlayDismisses=False
-  )
+  ])
 
-getRoute('/editHelp{aPath:path}', editHelpPage)
+getRoute('/editHelp/{aHelpPage:str}', editHelpPage)
 
 @pagePart
-def postHelpPages(pageData, aPath=None, **kwargs) :
-  if not aPath : aPath = '/'
+def postHelpPages(pageData, aHelpPage=None, **kwargs) :
+  if not aHelpPage : aHelpPage = 'unknownPage'
   return postHelpPage(
-    pageData, aPath,
-    hxPost=f'/editHelp{aPath}', hxTarget='#level1div',
+    pageData, aHelpPage,
+    hxPost=f'/editHelp/{aHelpPage}', hxTarget='#level1div',
     **kwargs
   )
 
-postRoute('/editHelp{aPath:path}', postHelpPages)
+postRoute('/editHelp/{aHelpPage:str}', postHelpPages)
 
 async def notFound(request, theException) :
   print("-------------")

@@ -130,7 +130,7 @@ getRoute('/menu/people/listClasses',listClasses)
 @pagePart
 def postSaveNewClass(pageData, db, **kwargs) :
   theForm = pageData.form
-  pageData.db.execute(InsertSql().sql('classes', {
+  pageData.db.execute(*InsertSql().sql('classes', {
     'name'       : theForm['className'],
     'classOrder' : theForm['classOrder'],
     'desc'       : theForm['classDesc'],

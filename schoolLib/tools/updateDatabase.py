@@ -37,7 +37,7 @@ def cli() :
     try :
       print(f"Running update: {anUpdateVersion}")
       knownDbVersions[anUpdateVersion](db)
-      db.execute(InsertSql().sql('dbVersions', {
+      db.execute(*InsertSql().sql('dbVersions', {
         'version' : anUpdateVersion
       }))
       db.commit()

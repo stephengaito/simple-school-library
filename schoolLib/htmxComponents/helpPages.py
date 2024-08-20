@@ -4,15 +4,28 @@ from schoolLib.htmxComponents.htmx            import *
 from schoolLib.htmxComponents.simpleComponents import *
 from schoolLib.htmxComponents.forms            import *
 
+class HelpModalDialog(ModalDialog) :
+  # just use the ModalDialog defaults as they are!
+  pass
+
+class HelpEditorModalDialog(ModalDialog) :
+  def __init__(self, modalChildren, **kwargs) :
+    kwargs['modalType']             = 'Editor'
+    kwargs['additionalHyperscript'] = "call tinymce.activeEditor.destroy()"
+    kwargs['underlayDismisses']     = False
+    super().__init__(modalChildren, **kwargs)
+
 class HelpPage(RawHtml) :
-  def __init__(self, helpPageHtml, helpPagePath, **kwargs) :
+  def __init__(self, helpPageHtml, helpPagePath, isAdmin=False, **kwargs) :
     super().__init__(helpPageHtml, **kwargs)
-    self.helpPagePath = helpPagePath.lstrip('/')
+    self.helpPagePath = helpPagePath
+    self.isAdmin      = isAdmin
 
   def collectHtml(self, htmlFragments, **kwargs) :
-    EditorButton(
-      hxGet=f"/editHelp/{self.helpPagePath}"
-    ).collectHtml(htmlFragments)
+    if self.isAdmin :
+      EditorButton(
+        hxGet=f"/editHelp/{self.helpPagePath}"
+      ).collectHtml(htmlFragments)
     htmlFragments.append(f'<div {self.computeHtmxAttrs()}>')
     htmlFragments.append(self.rawHtml)
     htmlFragments.append('</div>')
@@ -46,9 +59,12 @@ class HelpEditorForm(Form) :
       placeholder=f'Add some text for {helpPagePath}',
       name='helpContent'
     ))
-    self.appendChild(CancelButton("Cancel", hyperscript="on click trigger closeModal"))
+    self.appendChild(CancelButton(
+      "Cancel",
+      hyperscript="on click trigger closeEditorModal"
+    ))
 
-def getHelpPage(pageData, helpPagePath, hxPost=None, **kwargs) :
+def getHelpPage(pageData, helpPagePath, modal=True, hxPost=None, **kwargs) :
   helpPageHtml = getHelpPageHtml(pageData.db, helpPagePath)
   if not helpPageHtml :
     if not pageData.user.is_authenticated :
@@ -56,10 +72,24 @@ def getHelpPage(pageData, helpPagePath, hxPost=None, **kwargs) :
     elif not hxPost :
       helpPageHtml = f"<p>No hxPost supplied for {helpPagePath}</p>"
     else :
-      return HelpEditorForm(helpPageHtml, helpPagePath, hxPost, **kwargs)
-  return HelpPage(helpPageHtml, helpPagePath, **kwargs)
+      return HelpEditorModalDialog([
+        HelpEditorForm(
+          helpPageHtml, helpPagePath, hxPost,
+          buttonHyperscript="on click trigger closeEditorModal",
+          **kwargs
+        )
+      ])
+
+  helpComponent = HelpPage(
+      helpPageHtml, helpPagePath,
+      isAdmin=pageData.user.is_authenticated,
+      **kwargs
+    )
+  if modal : helpComponent = HelpModalDialog([ helpComponent ])
+  return helpComponent
 
 def postHelpPage(pageData, helpPagePath, **kwargs) :
+  print(f"postHepPage[helpPagePath]: [{helpPagePath}]")
   theForm = pageData.form
   selectSql = SelectSql(
   ).fields('content'
@@ -76,7 +106,7 @@ def postHelpPage(pageData, helpPagePath, **kwargs) :
       'content' : theForm['helpContent']
     }))
   else :
-    pageData.db.execute(InsertSql().sql('helpPages', {
+    pageData.db.execute(*InsertSql().sql('helpPages', {
       'path'    : helpPagePath,
       'content' : theForm['helpContent']
     }))

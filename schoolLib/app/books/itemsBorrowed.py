@@ -69,7 +69,7 @@ def postSaveNewItemsBorrowed(pageData,
 ) :
   if itemsPhysicalId and borrowerId :
     theForm = pageData.form
-    pageData.db.execute(InsertSql().sql('itemsBorrowed', {
+    pageData.db.execute(*InsertSql().sql('itemsBorrowed', {
       'borrowersId'     : borrowersId,
       'itemsPhysicalId' : itemsPhysicalId,
       'dateBorrowed'    : theForm['dateBorrowed'],

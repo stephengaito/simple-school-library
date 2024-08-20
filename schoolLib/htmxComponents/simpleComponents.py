@@ -2,11 +2,13 @@
 from schoolLib.htmxComponents.htmx import *
 
 class ModalDialog(HtmxChildrenBase) :
-  def __init__(self, modalChildren,
+  def __init__(self, modalChildren, modalType='Help',
      additionalHyperscript=None, underlayDismisses=True,
      **kwargs
   ) :
     super().__init__(modalChildren, **kwargs)
+    self.modalType             = modalType
+    self.modalTypeLower        = modalType.lower()
     self.additionalHyperscript = additionalHyperscript
     self.underlayDismisses     = underlayDismisses
 
@@ -14,18 +16,18 @@ class ModalDialog(HtmxChildrenBase) :
   # see: https://htmx.org/examples/modal-custom/
   #
   def collectHtml(self, htmlFragments) :
-    hyperscript = "on closeModal add .closing then wait for animationend"
+    hyperscript = f"on close{self.modalType}Modal add .closing then wait for animationend"
     if self.additionalHyperscript :
       hyperscript += f" then {self.additionalHyperscript}"
     hyperscript +=" then remove me"
 
     underlayCondition = ""
     if self.underlayDismisses :
-      underlayCondition = 'script="on click trigger closeModal"'
+      underlayCondition = f'script="on click trigger close{self.modalType}Modal"'
 
-    htmlFragments.append(f'<div id="modal" script="{hyperscript}">')
-    htmlFragments.append(f'<div class="modal-underlay" {underlayCondition}></div>')
-    htmlFragments.append('<div class="modal-content">')
+    htmlFragments.append(f'<div id="{self.modalTypeLower}-modal" script="{hyperscript}">')
+    htmlFragments.append(f'<div class="{self.modalTypeLower}-modal-underlay" {underlayCondition}></div>')
+    htmlFragments.append(f'<div class="{self.modalTypeLower}-modal-content">')
     self.collectChildrenHtml(htmlFragments)
     htmlFragments.append("</div>")
     htmlFragments.append("</div>")
@@ -203,6 +205,8 @@ class ImgButton(HtmxBase) :
 
 class HelpButton(ImgButton) :
   def __init__(self, **kwargs) :
+    if 'hxTarget' not in kwargs : kwargs['hxTarget'] = "body"
+    if 'hxSwap'   not in kwargs : kwargs['hxSwap']   = "beforeend"
     super().__init__('question-circle', **kwargs)
 
 class EditorButton(ImgButton) :
