@@ -115,6 +115,8 @@ HelpPageClasses:
     - border-2
     - border-solid
     - rounded-lg
+    - max-w-prose
+    - inline-block
 
 HelpEditorClasses:
   default:
@@ -133,6 +135,7 @@ SearchBoxClasses:
     - border-2
     - border-solid
     - rounded-lg
+
 SearchBoxAttrs:
   default:
     - autocomplete="off"
@@ -143,7 +146,7 @@ SearchBoxAttrs:
 
 HelpButtonClasses:
   default:
-    - float-right
+    - inline
 
 HelpButtonAttrs:
   default:
@@ -152,9 +155,12 @@ HelpButtonAttrs:
 
 EditorButtonClasses:
   default:
-    - float-right
+    - inline-block
+    - align-top
 
 EditorButtonAttrs:
   default:
-    - width="24"
-    - height="24"
+    - width="12"
+    - height="12"
+#    - width="24"
+#    - height="24"

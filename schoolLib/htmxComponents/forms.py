@@ -31,6 +31,7 @@ class FormInputsBase(HtmxBase) :
     value=None,
     defaultValue=None,
     placeholder=None,
+    helpName=None,
     **kwargs
   ) :
     super().__init__(**kwargs)
@@ -48,6 +49,9 @@ class FormInputsBase(HtmxBase) :
     self.placeholder  = placeholder
     self.label        = label
 
+    if not helpName : helpName = name
+    self.helpName     = helpName
+
   def computeHtmxAttrs(self) :
     fiAttrs = super().computeHtmxAttrs()
     fiAttrs += f' name="{self.name}"'
@@ -60,7 +64,7 @@ class FormInputs(FormInputsBase) :
   def collectHtml(self, htmlFragments) :
     someFragments = []
     HelpButton(
-      hxGet=f"/help/{self.name}",
+      hxGet=f"/help/{self.helpName}/modal",
     ).collectHtml(someFragments)
     helpButtonStr = " ".join(someFragments)
     if self.label :
@@ -204,16 +208,22 @@ class TextAreaInput(FormInputsBase) :
     taValue = ""
     if self.taValue : taValue = self.taValue
 
+    someFragments = []
+    HelpButton(
+      hxGet=f"/help/{self.helpName}/modal",
+    ).collectHtml(someFragments)
+    helpButtonStr = " ".join(someFragments)
+
     if self.label :
       htmlFragments.append(f"""
         <tr>
         <td><label>{self.label}</label></td>
-        <td><textarea {self.computeHtmxAttrs()}>{taValue}</textarea></td>
+        <td><textarea {self.computeHtmxAttrs()}>{taValue}</textarea>{helpButtonStr}</td>
         </tr>
       """)
     else :
       htmlFragments.append(
-        f'<textarea {self.computeHtmxAttrs()}>{taValue}</textarea>'
+        f'<textarea {self.computeHtmxAttrs()}>{taValue}</textarea>{helpButtonStr}'
       )
 
 class ClassesSelector(HtmxBase) :
@@ -246,6 +256,9 @@ class ClassesSelector(HtmxBase) :
         f'<option value="{self.name}-{aClass['id']}" {aClass['selected']} >{addEmojiColour(aClass['colour'],aClass['name'])}</option>'
       )
     htmlFragments.append('</select>')
+    HelpButton(
+      hxGet=f"/help/{self.helpName}/modal"
+    ).collectHtml(htmlFragments)
 
     if self.label :
       # add the suffixes
@@ -259,12 +272,16 @@ class EmojiColourSelector(HtmxBase) :
     name,
     label=None,
     selectedColourName="",
+    helpName=None,
     **kwargs
   ) :
     super().__init__(**kwargs)
     self.name               = name
     self.label              = label
     self.selectedColourName = selectedColourName
+
+    if not helpName : helpName = name
+    self.helpName = helpName
 
   def collectHtml(self, htmlFragments) :
     ecsAttrs = self.computeHtmxAttrs()
@@ -286,6 +303,9 @@ class EmojiColourSelector(HtmxBase) :
         f'<option value="{aColourName}" {selected} >{aCodePoint} {aColourName} {aCodePoint}</option>'
       )
     htmlFragments.append('</select>')
+    HelpButton(
+      hxGet=f"/help/{self.helpName}/modal"
+    ).collectHtml(htmlFragments)
 
     if self.label :
       # add the suffixes

@@ -221,7 +221,7 @@ getRoute(
 
 @pagePart
 def getNewItemsInfoForm(pageData, **kwargs) :
-  return schoolLib.app.books.itemsInfo.editItemsInfoForm(
+  return editItemsInfoForm(
     pageData,
     submitMessage='Add new book',
     hxPost='/itemsInfo/new',

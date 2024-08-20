@@ -2,7 +2,7 @@
 import yaml
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-from schoolLib.app.menus import *
+import schoolLib.app.menus
 
 ##########################################################################
 # borrowers
@@ -13,6 +13,7 @@ def findABorrower(pageData, probe=None, nameRows=[], **kwargs) :
     SearchBox(
       hxPost='/search/borrowers',
       name='search',
+      helpName='findBorrower',
       value=probe,
       placeholder="Type a person's name"
     ),
@@ -67,6 +68,7 @@ def findAnItem(pageData, probe=None, itemRows=[], **kwargs) :
     SearchBox(
       hxPost='/search/items',
       name='search',
+      helpName='findBook',
       value=probe,
       placeholder='Type a book title...'
     ),

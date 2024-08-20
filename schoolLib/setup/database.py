@@ -67,7 +67,9 @@ class SqlBuilder :
 
   def whereValue(self, field, value, operator='=') :
     wrappedValue = str(value)
-    if field in schemaFields and schemaFields[field] != "INTEGER" :
+    print(f"{field} := {value}")
+    print(schemaFields[field])
+    if field in schemaFields and schemaFields[field] != "integer" :
       wrappedValue = f"'{sqliteEscapeSingleQuotes(value)}'"
     self.whereList.append(f"{field} {operator} {wrappedValue}")
     return self

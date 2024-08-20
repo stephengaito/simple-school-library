@@ -40,39 +40,62 @@ def homePage(pageData, **kwargs):
 getRoute('/', homePage, anyUser=True)
 
 @pagePart
-def helpPages(pageData, aHelpPage=None, **kwargs) :
+def helpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
   if not aHelpPage : aHelpPage = 'uknownPage'
   print(f"HelpPages: [{aHelpPage}]")
-  print(yaml.dump(pageData.headers))
-  return getHelpPage(pageData, aHelpPage, hxPost=f'/editHelp/{aHelpPage}')
+  print(f"isModal: [{isModal}]")
+  modal = True
+  modalStr = 'modal'
+  if isModal.startswith('no') :
+    modal = False
+    modalStr = 'nonModal'
+  print(f"modalStr: [{modalStr}]")
+  return getHelpPage(
+    pageData, aHelpPage,
+    hxPost=f'/editHelp/{aHelpPage}/{modalStr}',
+    modal=modal
+  )
 
-getRoute('/help/{aHelpPage:str}', helpPages, anyUser=True)
+getRoute('/help/{aHelpPage:str}/{isModal:str}', helpPages, anyUser=True)
 
 @pagePart
-def editHelpPage(pageData, aHelpPage=None, **kwargs) :
+def editHelpPage(pageData, aHelpPage=None, isModal='yes', **kwargs) :
   if not aHelpPage : aHelpPage = 'unknownPage'
   helpPageHtml = getHelpPageHtml(pageData.db, aHelpPage)
   print(helpPageHtml)
+  modal = True
+  modalStr = 'modal'
+  if isModal.startswith('no') :
+    modal = False
+    modalStr = 'nonModal'
   # see: https://stackoverflow.com/a/33794114
   return HelpEditorModalDialog([
     HelpEditorForm(
-      helpPageHtml, aHelpPage, f'/editHelp/{aHelpPage}',
-      buttonHyperscript="on click trigger closeEditorModal"
+      helpPageHtml, aHelpPage,
+      f'/editHelp/{aHelpPage}/{modalStr}',
+      hxTarget='#helpPage',
+      hxSwap='outerHTML',
+      modal=modal
     )
   ])
 
-getRoute('/editHelp/{aHelpPage:str}', editHelpPage)
+getRoute('/editHelp/{aHelpPage:str}/{isModal:str}', editHelpPage)
 
 @pagePart
-def postHelpPages(pageData, aHelpPage=None, **kwargs) :
+def postHelpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
   if not aHelpPage : aHelpPage = 'unknownPage'
+  modal = True
+  modalStr = 'modal'
+  if isModal.startswith('no') :
+    modal = False
+    modalStr = 'nonModal'
   return postHelpPage(
-    pageData, aHelpPage,
-    hxPost=f'/editHelp/{aHelpPage}', hxTarget='#level1div',
+    pageData, aHelpPage, modal=modal,
+    hxPost=f'/editHelp/{aHelpPage}/{modalStr}',
     **kwargs
   )
 
-postRoute('/editHelp/{aHelpPage:str}', postHelpPages)
+postRoute('/editHelp/{aHelpPage:str}/{isModal:str}', postHelpPages)
 
 async def notFound(request, theException) :
   print("-------------")

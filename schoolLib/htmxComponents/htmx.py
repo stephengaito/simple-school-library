@@ -1,5 +1,6 @@
 
 import glob
+import json
 import os
 import yaml
 
@@ -61,6 +62,7 @@ class HtmxBase :
     hxTrigger=None,
     hxTarget=None,
     hxSwap=None,
+    hxHeaders={},
     hyperscript=None,
     **kwargs
   ) :
@@ -77,6 +79,7 @@ class HtmxBase :
     self.hxTrigger   = hxTrigger
     self.hxTarget    = hxTarget
     self.hxSwap      = hxSwap
+    self.hxHeaders   = hxHeaders
     self.hyperscript = hyperscript
 
   def collectHtml(self, htmlFragments, **kwargs) :
@@ -140,6 +143,13 @@ class HtmxBase :
       targetStr += f' hx-swap="{self.hxSwap}"'
     return targetStr
 
+  def computeHeaders(self) :
+    headersStr = ""
+    if self.hxHeaders :
+      headersStr = f"hx-headers='{json.dumps(self.hxHeaders)}'"
+      print(headersStr)
+    return headersStr
+
   def computeId(self) :
     idStr = ""
     if self.theId : idStr = f'id="{self.theId}"'
@@ -167,6 +177,7 @@ class HtmxBase :
       self.computeAction(),
       self.computeTarget(),
       self.computeTrigger(),
+      self.computeHeaders(),
       self.computeHyperscript(),
       self.computeClass(classDict),
       self.computeStyle(styleDict),

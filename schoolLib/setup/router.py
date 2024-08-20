@@ -71,8 +71,9 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   url = pageData.path
   if url != '/' and not url.startswith('/routes') \
     and not url.startswith('/pageParts') and 'develop' in config :
-    htmlFragments.insert(
-      len(htmlFragments)-1,
+    print("--------------------")
+    print(htmlFragments[len(htmlFragments)-1])
+    htmlFragments.append(
       f"""
         <div class="m-5 grid grid-cols-10 gap-4 content-start">
         <a href="/routes{url}" target="_blank"><img src="/static/svg/bootstrap/filetype-py.svg" width="24" height="24"></a>
@@ -80,6 +81,8 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
         </div>
       """
     )
+    print(htmlFragments[len(htmlFragments)-1])
+    print("--------------------")
   #print("-------------------------------------------------")
   #print('\n'.join(htmlFragments))
   #print("-------------------------------------------------")

@@ -8,7 +8,9 @@ def getHomeMenu(pageData, **kwargs) :
   return Level0div([
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
     Level1div(
-      getHelpPage(pageData, 'homePage', modal=False, hxPost='/editHelp/homePage'),
+      getHelpPage(
+        pageData, 'homePage', modal=False,
+        hxPost='/editHelp/homePage/nonModal'),
       klassName='gridless'
     )
   ], theId='level0div')

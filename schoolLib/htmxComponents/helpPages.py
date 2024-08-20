@@ -16,25 +16,37 @@ class HelpEditorModalDialog(ModalDialog) :
     super().__init__(modalChildren, **kwargs)
 
 class HelpPage(RawHtml) :
-  def __init__(self, helpPageHtml, helpPagePath, isAdmin=False, **kwargs) :
+  def __init__(self,
+    helpPageHtml, helpPagePath, isAdmin=False, modal='yes', **kwargs
+  ) :
+    if isinstance(modal, bool)  : pass
+    elif modal.startswith('no') : modal = False
+    else                        : modal = True
+    self.modal = modal
+    modalStr = 'modal'
+    if not modal : modalStr = 'nonModal'
+    self.modalStr = modalStr
     super().__init__(helpPageHtml, **kwargs)
     self.helpPagePath = helpPagePath
     self.isAdmin      = isAdmin
 
   def collectHtml(self, htmlFragments, **kwargs) :
-    if self.isAdmin :
-      EditorButton(
-        hxGet=f"/editHelp/{self.helpPagePath}"
-      ).collectHtml(htmlFragments)
+    htmlFragments.append('<div id="helpPage">')
     htmlFragments.append(f'<div {self.computeHtmxAttrs()}>')
     htmlFragments.append(self.rawHtml)
     htmlFragments.append('</div>')
+    if self.isAdmin :
+      EditorButton(
+        hxGet=f"/editHelp/{self.helpPagePath}/{self.modalStr}"
+      ).collectHtml(htmlFragments)
+    htmlFragments.append('</div>')
 
 class HelpEditor(TextAreaInput) :
-  def __init__(self, hxPost=None, **kwargs) :
+  def __init__(self, hxPost=None, modal=True, **kwargs) :
     kwargs['theId'] = 'helpEditor'
     self.hxPost = hxPost
     super().__init__(**kwargs)
+    self.modal  = modal
 
   def collectHtml(self, htmlFragments) :
     super().collectHtml(htmlFragments)
@@ -51,13 +63,16 @@ class HelpEditor(TextAreaInput) :
     """)
 
 class HelpEditorForm(Form) :
-  def __init__(self, helpPageHtml, helpPagePath, hxPost, **kwargs) :
+  def __init__(self, helpPageHtml, helpPagePath, hxPost, modal=True, **kwargs) :
+    if 'buttonHyperscript' not in kwargs : kwargs['buttonHyperscript'] = \
+      "on click trigger closeEditorModal"
     super().__init__([], submitMsg="Save changes", hxPost=hxPost, **kwargs)
     self.appendChild(Label(f'Help page for {helpPagePath}'))
     self.appendChild(HelpEditor(
       value=helpPageHtml,
       placeholder=f'Add some text for {helpPagePath}',
-      name='helpContent'
+      name='helpContent',
+      modal=modal
     ))
     self.appendChild(CancelButton(
       "Cancel",
@@ -74,22 +89,20 @@ def getHelpPage(pageData, helpPagePath, modal=True, hxPost=None, **kwargs) :
     else :
       return HelpEditorModalDialog([
         HelpEditorForm(
-          helpPageHtml, helpPagePath, hxPost,
-          buttonHyperscript="on click trigger closeEditorModal",
-          **kwargs
+          helpPageHtml, helpPagePath, hxPost, modal=modal, **kwargs
         )
       ])
 
   helpComponent = HelpPage(
       helpPageHtml, helpPagePath,
       isAdmin=pageData.user.is_authenticated,
+      modal=modal,
       **kwargs
     )
   if modal : helpComponent = HelpModalDialog([ helpComponent ])
   return helpComponent
 
-def postHelpPage(pageData, helpPagePath, **kwargs) :
-  print(f"postHepPage[helpPagePath]: [{helpPagePath}]")
+def postHelpPage(pageData, helpPagePath, modal=True, **kwargs) :
   theForm = pageData.form
   selectSql = SelectSql(
   ).fields('content'
@@ -111,4 +124,4 @@ def postHelpPage(pageData, helpPagePath, **kwargs) :
       'content' : theForm['helpContent']
     }))
   pageData.db.commit()
-  return getHelpPage(pageData, helpPagePath, **kwargs)
+  return getHelpPage(pageData, helpPagePath, modal=modal, **kwargs)

@@ -14,7 +14,7 @@ description of each class.
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-from schoolLib.app.menus import *
+import schoolLib.app.menus
 
 ##########################################################################
 # content
@@ -108,7 +108,15 @@ def addAClass(pageData, **kwargs) :
       submitMessage='Add new class',
       hxPost='/classes/new',
       **kwargs
-    )
+    ),
+    Div([]),
+    Div([
+      getHelpPage(
+        pageData, 'addClass', modal=False,
+        klass=['max-w-prose', 'inline-block'],
+        hxPost='/editHelp/addClass/nonModal'
+      )
+    ])
   ])
 
 ##########################################################################

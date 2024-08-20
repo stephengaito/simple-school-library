@@ -131,16 +131,16 @@ def secondLevelTasksMenu(pageData, selectedId=None, **kwargs) :
 def secondLevelHelpMenu(pageData, aHelpPage, selectedId=None, **kwargs) :
   theMenu = Menu([], klassName='vertical')
 
-  if pageData.user.is_authenticated :
-    theMenu.appendChild(
-      Button(
-        'Edit',
-        theId    = 'editHelp',
-        hxGet    = f'/editHelp/{aHelpPage}',
-        hxTarget = '#level1div'
-      )
-    )
-    theMenu.select('editHelp')
+  #if pageData.user.is_authenticated :
+  #  theMenu.appendChild(
+  #    Button(
+  #      'Edit',
+  #      theId    = 'editHelp',
+  #      hxGet    = f'/editHelp/{aHelpPage}',
+  #      hxTarget = '#level1div'
+  #    )
+  #  )
+  #  theMenu.select('editHelp')
   return theMenu
 
 @pagePart
