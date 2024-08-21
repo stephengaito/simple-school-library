@@ -20,5 +20,5 @@ def adminMenu(pageData, **kwargs) :
     ])
   ], theId='level0div')
 
-getRoute('/menu/admin', adminMenu)
+getRoute('/menu/admin', adminMenu, anyUser=True)
 

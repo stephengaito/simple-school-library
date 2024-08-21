@@ -228,4 +228,4 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
     schoolLib.app.finders.findABorrower(pageData, **kwargs)
   ])
 
-getRoute('/borrowers/show/{borrowerId:int}', getShowBorrowerInfo)
+getRoute('/borrowers/show/{borrowerId:int}', getShowBorrowerInfo, anyUser=True)

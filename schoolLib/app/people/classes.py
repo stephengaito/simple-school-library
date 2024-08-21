@@ -72,18 +72,30 @@ def listClasses(pageData, **kwargs) :
       TableEntry(Text(aClass['name'])),
       TableEntry(Text(aClass['desc'])),
       TableEntry(Text(addEmojiColour(aClass['colour'],aClass['colour']))),
-      TableEntry(Button(
-        'List', hxGet=f'/classes/list/{aClass['id']}', hxTarget='#level1div'
-      )),
-      TableEntry(Button(
-        'Update', hxGet=f'/classes/update/{aClass['id']}', hxTarget='#level1div'
-      )),
-      TableEntry(Button(
-        'Edit', hxGet=f'/classes/edit/{aClass['id']}', hxTarget='#level1div'
-      )),
-      TableEntry(Button(
-        'Delete', hxGet=f'/classes/delete/{aClass['id']}', hxTarget='#level1div'
-      )),
+      TableEntry(Div([
+        Button(
+          'List', hxGet=f'/classes/list/{aClass['id']}', hxTarget='#level1div'
+        ),
+        HelpButton(hxGet=f"/help/listClass/modal")
+      ])),
+      TableEntry(Div([
+        Button(
+          'Update', hxGet=f'/classes/update/{aClass['id']}', hxTarget='#level1div'
+        ),
+        HelpButton(hxGet=f"/help/updateClass/modal")
+      ])),
+      TableEntry(Div([
+        Button(
+          'Edit', hxGet=f'/classes/edit/{aClass['id']}', hxTarget='#level1div'
+        ),
+        HelpButton(hxGet=f"/help/editClass/modal")
+      ])),
+      TableEntry(Div([
+        Button(
+          'Delete', hxGet=f'/classes/delete/{aClass['id']}', hxTarget='#level1div'
+        ),
+        HelpButton(hxGet=f"/help/deleteClass/modal")
+      ])),
     ]))
 
   return Level1div([
@@ -129,7 +141,7 @@ def peopleMenu(pageData, **kwargs) :
     schoolLib.app.people.classes.addAClass(pageData, **kwargs)
   ], theId='level0div')
 
-getRoute('/menu/people', peopleMenu)
+getRoute('/menu/people', peopleMenu, anyUser=True)
 
 getRoute('/menu/people/addClass',addAClass)
 

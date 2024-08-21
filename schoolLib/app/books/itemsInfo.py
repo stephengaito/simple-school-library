@@ -216,7 +216,7 @@ def getShowItemsInfo(pageData, itemsInfoId=None, **kwargs) :
 
 getRoute(
   '/itemsInfo/show/{itemsInfoId:int}',
-  getShowItemsInfo
+  getShowItemsInfo, anyUser=True
 )
 
 @pagePart

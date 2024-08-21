@@ -27,7 +27,7 @@ def getFindBorrowerForm(pageData, **kwargs) :
     schoolLib.app.finders.findABorrower(pageData, **kwargs)
   ])
 
-getRoute('/search/borrowers', getFindBorrowerForm)
+getRoute('/search/borrowers', getFindBorrowerForm, anyUser=True)
 
 @pagePart
 def postSearchForBorrower(pageData, **kwargs) :
@@ -57,7 +57,7 @@ def postSearchForBorrower(pageData, **kwargs) :
     **kwargs
   )
 
-postRoute('/search/borrowers', postSearchForBorrower)
+postRoute('/search/borrowers', postSearchForBorrower, anyUser=True)
 
 ##########################################################################
 # items (aka Books)
@@ -82,7 +82,7 @@ def getFindAnItemForm(pageData, **kwargs) :
     schoolLib.app.finders.findAnItem(pageData, **kwargs)
   ])
 
-getRoute('/search/items', getFindAnItemForm)
+getRoute('/search/items', getFindAnItemForm, anyUser=True)
 
 @pagePart
 def postSearchForAnItem(pageData, **kwargs) :
@@ -113,4 +113,4 @@ def postSearchForAnItem(pageData, **kwargs) :
     **kwargs
   )
 
-postRoute('/search/items', postSearchForAnItem)
+postRoute('/search/items', postSearchForAnItem, anyUser=True)

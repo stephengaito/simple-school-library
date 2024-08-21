@@ -96,7 +96,7 @@ getRoute('/classes/list/{classId:int}', listPupilsInAClassTable)
 
 @pagePart
 def getUpdatePupilsInAClassForm(pageData, classId=None, **kwargs) :
-  return schoolLib.app.people.classesBorrowers.updatePupilsInClassForm(
+  return updatePupilsInClassForm(
     pageData,
     classId=classId, hxPost='/classes/update',
     *kwargs

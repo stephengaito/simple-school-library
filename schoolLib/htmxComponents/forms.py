@@ -232,12 +232,15 @@ class ClassesSelector(HtmxBase) :
     sortedClasses,
     name,
     label=None,
+    helpName=None,
     **kwargs
   ) :
     super().__init__(**kwargs)
     self.sortedClasses = sortedClasses
     self.name          = name
     self.label         = label
+    if not helpName : helpName = name
+    self.helpName      = helpName
 
   def collectHtml(self, htmlFragments) :
     csAttrs = self.computeHtmxAttrs()

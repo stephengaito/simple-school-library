@@ -22,4 +22,4 @@ def booksMenu(pageData, **kwargs) :
     ])
   ])
 
-getRoute('/menu/books', booksMenu)
+getRoute('/menu/books', booksMenu, anyUser=True)
