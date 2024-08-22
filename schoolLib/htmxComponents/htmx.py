@@ -82,6 +82,40 @@ class HtmxBase :
     self.hxHeaders   = hxHeaders
     self.hyperscript = hyperscript
 
+  def addKwargs(
+    self,
+    theId=None,
+    klass=[],
+    klassName=None,
+    style=[],
+    styleName=None,
+    attrs=[],
+    attrsName=None,
+    hxGet=None,
+    hxPost=None,
+    hxTrigger=None,
+    hxTarget=None,
+    hxSwap=None,
+    hxHeaders={},
+    hyperscript=None,
+    **kwargs
+  ) :
+    if kwargs      : self.kwargs.extend(kwargs)
+    if theId       : self.theId       = theId
+    if klass       : self.klass.extend(klass)
+    if klassName   : self.klassName   = klassName
+    if style       : self.style.extend(style)
+    if styleName   : self.styleName   = styleName
+    if attrs       : self.attrs.extend(attrs)
+    if attrsName   : self.attrsName   = attrsName
+    if hxGet       : self.hxGet       = hxGet
+    if hxPost      : self.hxPost      = hxPost
+    if hxTrigger   : self.hxTrigger   = hxTrigger
+    if hxTarget    : self.hxTarget    = hxTarget
+    if hxSwap      : self.hxSwap      = hxSwap
+    if hxHeaders   : self.hxHeaders.extend(hxHeaders)
+    if hyperscript : self.hyperscript = hyperscript
+
   def collectHtml(self, htmlFragments, **kwargs) :
     pass
 

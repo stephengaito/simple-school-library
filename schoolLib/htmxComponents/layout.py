@@ -46,7 +46,9 @@ class StdBody(HtmxBase) :
         hx-target="#initialOuterDiv"
         hx-swap="outerHTML"
       ></div>
+      <div id="footerMessages" class="fixed bottom-0 w-screen"></div>
     """)
+      #<div id="footerMessages" class="fixed bottom-0 w-screen" script="on mutation of #footerMessages wait 5s then remove #footerMessages.innerHTML"></div>
 
 class HtmlPage(HtmxBase) :
   def __init__(self, headers, body, **kwargs) :
@@ -58,6 +60,6 @@ class HtmlPage(HtmxBase) :
     htmlFragments.append('<!DOCTYPE html>')
     htmlFragments.append('<html lang="en"><head>')
     self.headers.collectHtml(htmlFragments)
-    htmlFragments.append("</head><body><div>")
+    htmlFragments.append("</head><body>")
     self.body.collectHtml(htmlFragments)
-    htmlFragments.append("</div></body></html>")
+    htmlFragments.append("</body></html>")

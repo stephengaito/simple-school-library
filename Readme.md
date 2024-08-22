@@ -52,3 +52,9 @@ Resources:
 
 - [The best Favicon Generator (completely free) -
   favicon.io](https://favicon.io/)
+
+## Consider
+
+Moving away from our HTMX components and using [Ludic : 🌳 Web
+Development in Pure Python with Type-Guided
+Components.](https://github.com/getludic/ludic)

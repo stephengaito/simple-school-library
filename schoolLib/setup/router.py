@@ -14,7 +14,8 @@ from starlette_login.utils import login_user, logout_user
 from schoolLib.setup.configuration   import config
 from schoolLib.setup.authenticate    import OtherUser
 
-from schoolLib.htmxComponents.layout import *
+#from schoolLib.htmxComponents.layout import *
+from schoolLib.htmxComponents import *
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -89,10 +90,14 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
 loginFunc = None
-
 def registerLoginPage(aLoginFunc) :
   global loginFunc
   loginFunc = aLoginFunc
+
+homePageFunc = None
+def registerHomePage(aHomePageFunc) :
+  global homePageFunc
+  homePageFunc = aHomePageFunc
 
 async def callWithParameters(request, func, anyUser=False) :
   params = {}
@@ -112,10 +117,13 @@ async def callWithParameters(request, func, anyUser=False) :
     if anyUser or pageData.user.is_authenticated :
       htmxComponent = func(pageData, **params)
     elif loginFunc :
-      message = "You must be logged in to access this page"
+      message = "You must be logged in to access that page"
       if 'develop' in config :
         message += f" ({request.url.path})"
-      htmxComponent = loginFunc(pageData, message=message)
+      htmxComponent = WithFooterMessage(
+        WarnFooterMessage(Text(message)),
+        homePageFunc(pageData)
+      )
     else :
       raise HTTPException(
         404,

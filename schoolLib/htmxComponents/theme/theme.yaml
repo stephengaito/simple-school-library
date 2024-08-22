@@ -164,3 +164,22 @@ EditorButtonAttrs:
     - height="12"
 #    - width="24"
 #    - height="24"
+
+# this value specifies how long the footer message waits before deleting
+# itself (default: 5s)
+#footerMessageDelay: 5s
+
+OKFooterMessageClasses:
+  default:
+    - text-center
+    - bg-green-200
+
+FailedFooterMessageClasses:
+  default:
+    - text-center
+    - bg-red-200
+
+WarnFooterMessageClasses:
+  default:
+    - text-center
+    - bg-purple-200

@@ -17,6 +17,8 @@ def getHomeMenu(pageData, **kwargs) :
 
 getRoute('/menu/home', getHomeMenu, anyUser=True)
 
+registerHomePage(getHomeMenu)
+
 #postRoute('/menu/home',
 #  lambda pageData : postHelpPage(pageData, 'homePage', hxPost='/menu/home')
 #)
