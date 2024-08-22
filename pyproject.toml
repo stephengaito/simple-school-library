@@ -13,13 +13,17 @@ dependencies = [
     "pygments>=2.18.0",
     "Starlette-Login>=0.2.1",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = {text = "MIT"}
 
 [project.scripts]
 slReindex         = "schoolLib.tools.reindexer:cli"
 slPassword        = "schoolLib.setup.authenticate:passwordCli"
 slUpdateDatabase  = "schoolLib.tools.updateDatabase:cli"
+slDump            = "schoolLib.tools.dumpDatabase:cli"
+slRestore         = "schoolLib.tools.restoreDatabase:cli"
+slSaveHelpPages   = "schoolLib.tools.saveHelpPages:cli"
+slLoadHelpPages   = "schoolLib.tools.loadHelpPages:cli"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]

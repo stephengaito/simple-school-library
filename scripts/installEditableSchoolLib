@@ -49,6 +49,14 @@ installScript slPassword
 
 installScript slUpdateDatabase
 
+installScript slDump
+
+installScript slRestore
+
+installScript slSaveHelpPages
+
+installScript slLoadHelpPages
+
 echo ""
 echo "The editable school library command have been created"
 echo ""
