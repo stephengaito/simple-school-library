@@ -65,7 +65,7 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
     and 'hx-request' not in pageData.headers :
     htmxComponent = HtmlPage(
       StdHeaders(),
-      htmxComponent
+      StdBody(htmxComponent)
     )
   htmxComponent.collectHtml(htmlFragments)
   kwargs = htmxComponent.kwargs

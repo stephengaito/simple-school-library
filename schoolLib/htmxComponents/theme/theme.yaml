@@ -37,6 +37,12 @@ Level1divClasses:
   gridless:
     - m-1
 
+LinkClasses:
+  default:
+    - cursor-pointer
+    - underline
+    - decoration-sky-950
+
 ListClasses:
   default:
    - m-2
@@ -167,7 +173,7 @@ EditorButtonAttrs:
 
 # this value specifies how long the footer message waits before deleting
 # itself (default: 5s)
-#footerMessageDelay: 5s
+#footerMessageDelay: 20s
 
 OKFooterMessageClasses:
   default:

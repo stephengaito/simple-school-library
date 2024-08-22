@@ -34,7 +34,7 @@ def homePage(pageData, **kwargs):
   """ The Home Page """
   return HtmlPage(
     StdHeaders(),
-    StdBody()
+    StdBody(InitialOuterDiv())
   )
 
 getRoute('/', homePage, anyUser=True)

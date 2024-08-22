@@ -36,7 +36,7 @@ class StdHeaders(HtmxBase) :
     """)
     htmlFragments.extend(self.additionalHeaders)
 
-class StdBody(HtmxBase) :
+class InitialOuterDiv(HtmxBase) :
   def collectHtml(self, htmlFragments) :
     htmlFragments.append("""
       <div
@@ -46,9 +46,18 @@ class StdBody(HtmxBase) :
         hx-target="#initialOuterDiv"
         hx-swap="outerHTML"
       ></div>
+    """)
+
+class StdBody(HtmxBase) :
+  def __init__(self, htmxComponent, **kwargs) :
+    super().__init__(**kwargs)
+    self.htmxComponent = htmxComponent
+
+  def collectHtml(self, htmlFragments) :
+    self.htmxComponent.collectHtml(htmlFragments)
+    htmlFragments.append("""
       <div id="footerMessages" class="fixed bottom-0 w-screen"></div>
     """)
-      #<div id="footerMessages" class="fixed bottom-0 w-screen" script="on mutation of #footerMessages wait 5s then remove #footerMessages.innerHTML"></div>
 
 class HtmlPage(HtmxBase) :
   def __init__(self, headers, body, **kwargs) :

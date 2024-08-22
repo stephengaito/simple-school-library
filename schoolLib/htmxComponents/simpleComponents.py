@@ -222,16 +222,17 @@ class WithFooterMessage(HtmxBase) :
     footerMessageDelay = "5s"
     if theme and 'footerMessageDelay' in theme :
       footerMessageDelay = theme['footerMessageDelay']
+    self.footerMessageDelay = footerMessageDelay
     self.footer.addKwargs(
       hyperscript=f"init wait {footerMessageDelay} then remove me"
     )
     self.main   = mainHtmx
 
   def collectHtml(self, htmlFragments, **kwargs) :
-    htmlFragments.append('<div hx-swap-oob="innerHTML:#footerMessages">')
+    self.main.collectHtml(htmlFragments)
+    htmlFragments.append(f'<div hx-swap-oob="innerHTML:#footerMessages" class="fixed bottom-0 w-screen" script="init wait {self.footerMessageDelay} then remove me">')
     self.footer.collectHtml(htmlFragments)
     htmlFragments.append('</div>')
-    self.main.collectHtml(htmlFragments)
 
 # The following *FooterMessage's are meant to be used with the above
 # WithFooterMesssage to colour the message background. Their primary
