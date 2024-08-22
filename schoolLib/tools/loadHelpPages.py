@@ -12,13 +12,15 @@ def cli() :
     dbPath = config['database']
     db = sqlite3.connect(dbPath)
     with open("tmp/helpPages.sql") as sqlFile :
-      aStm = []
+      aStmt = []
       for line in sqlFile :
         line = line.strip()
-        aStm.append(line)
+        aStmt.append(line)
         if ';' in line :
-          print(" ".join(aStm))
-          aStm = []
+          aStmt = " ".join(aStmt)
+          print(aStmt)
+          db.execute(aStmt)
+          aStmt = []
   except Exception as err :
     print(repr(err))
 
