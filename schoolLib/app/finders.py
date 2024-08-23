@@ -53,7 +53,7 @@ def postSearchForBorrower(pageData, **kwargs) :
     nameRows.append(TableRow(TableEntry(Link(
       f'/borrowers/show/{aRow['borrowerId']}',
       f'{aRow['firstName']} {aRow['familyName']}',
-      hxTarget='#level2div'
+      hxTarget='#level1div'
     ))))
   return schoolLib.app.finders.findABorrower(
     pageData,
@@ -111,7 +111,7 @@ def postSearchForAnItem(pageData, **kwargs) :
     itemRows.append(TableRow(TableEntry(Link(
       f'/itemsInfo/show/{aRow['itemsInfoId']}',
       aRow['title'],
-      hxTarget='#level2div'
+      hxTarget='#level1div'
     ))))
   return schoolLib.app.finders.findAnItem(
     pageData,

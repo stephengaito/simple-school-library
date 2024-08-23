@@ -83,9 +83,9 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   else :
     htmxComponent.collectHtml(htmlFragments)
   kwargs = htmxComponent.kwargs
-  #print("-------------------------------------------------")
-  #print('\n'.join(htmlFragments))
-  #print("-------------------------------------------------")
+  print("-------------------------------------------------")
+  print('\n'.join(htmlFragments))
+  print("-------------------------------------------------")
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
 homePageFunc = None

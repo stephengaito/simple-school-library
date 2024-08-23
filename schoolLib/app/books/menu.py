@@ -48,6 +48,20 @@ def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
   return theMenu
 
 @pagePart
+def secondLevelSingleBookMenu(pageData, selectedId=None, **kwargs) :
+  theMenu = Menu([], klassName='vertical')
+
+  # edit itemInfo
+  # delete book (only if no copies)
+  # add a copy
+
+  if pageData.user.is_authenticated :
+    pass
+
+  if selectedId : theMenu.select(selectedId)
+  return theMenu
+
+@pagePart
 def booksMenu(pageData, **kwargs) :
 
   return Level0div([

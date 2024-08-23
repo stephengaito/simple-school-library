@@ -49,6 +49,23 @@ def secondLevelPeopleMenu(pageData, selectedId=None, **kwargs) :
 
   return theMenu
 
+@pagePart
+def secondLevelSinglePersonMenu(pageData, selectedId=None, **kwargs) :
+  theMenu = Menu([], klassName='vertical')
+
+  # return book
+
+  # edit this person
+  # delete this person
+
+  if pageData.user.is_authenticated :
+    pass
+
+  if selectedId : theMenu.select(selectedId)
+
+  return theMenu
+
+
 ##########################################################################
 # routes
 

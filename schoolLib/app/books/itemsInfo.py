@@ -172,6 +172,9 @@ def getShowItemsInfo(pageData, itemsInfoId=None, **kwargs) :
             TableEntry(Text(borrowerClass))
           ]))
         return Level1div([
+          schoolLib.app.books.menu.secondLevelSingleBookMenu(
+            pageData, **kwargs
+          ),
           Table([
             TableRow([
               TableEntry(Text("Title")),
@@ -210,6 +213,9 @@ def getShowItemsInfo(pageData, itemsInfoId=None, **kwargs) :
               TableEntry(Text(itemInfo['summary']))
             ])
           ]),
+          EmptyDiv([]),
+          SpacedEmptyDiv([]),
+          EmptyDiv([]),
           Table(physicalItemsRow)
         ])
   return MarkdownDiv("some thing about itemsInfo")

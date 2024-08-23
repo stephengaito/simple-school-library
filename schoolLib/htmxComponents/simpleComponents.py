@@ -39,6 +39,12 @@ class Div(HtmxChildrenBase) :
     self.collectChildrenHtml(htmlFragments)
     htmlFragments.append('</div>')
 
+class EmptyDiv(Div) :
+  pass
+
+class SpacedEmptyDiv(EmptyDiv) :
+  pass
+
 # we defined a set of level divs which each act as replacement points.
 
 # The intent is that each larger number should be nested inside the lower

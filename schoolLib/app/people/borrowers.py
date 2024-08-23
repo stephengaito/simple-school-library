@@ -193,12 +193,12 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
               TableEntry(Link(
                 f'/itemsInfo/show/{anItem['itemsInfo_id']}',
                 anItem['itemsInfo_title'],
-                target='#level1div'
+                hxTarget='#level1div'
               )),
               TableEntry(Link(
                 f'/itemsInfo/show/{anItem['itemsInfo_id']}',
                 anItem['itemsPhysical_barCode'],
-                target='#level1div'
+                hxTarget='#level1div'
               )),
               TableEntry(Text(anItem['itemsInfo_dewey'])),
               TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
@@ -207,6 +207,9 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
             ])
           )
       return Level1div([
+        schoolLib.app.people.menu.secondLevelSinglePersonMenu(
+          pageData, **kwargs
+        ),
         Table([
           TableRow([
             TableEntry(Text('First Name')),
@@ -225,6 +228,9 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
             TableEntry(Text(borrower['className']))
           ]),
         ]),
+        EmptyDiv([]),
+        SpacedEmptyDiv([]),
+        EmptyDiv([]),
         Table(itemsBorrowedRows)
       ])
   return Level1div([

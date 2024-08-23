@@ -30,6 +30,10 @@ DivClasses:
   default:
    - m-1
 
+SpacedEmptyDivClasses:
+  default:
+    - m-4
+
 Level1divClasses:
   default:
     - grid
