@@ -25,7 +25,7 @@ loadedTheme()
 import schoolLib.app.home.menu
 import schoolLib.app.books
 import schoolLib.app.people
-import schoolLib.app.tasks.menu
+import schoolLib.app.tasks
 import schoolLib.app.metaStructure
 import schoolLib.app.admin
 

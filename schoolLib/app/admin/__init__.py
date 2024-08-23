@@ -1,3 +1,3 @@
 
-from schoolLib.app.admin.login import *
-from schoolLib.app.admin.menu import *
+import schoolLib.app.admin.login
+import schoolLib.app.admin.menu

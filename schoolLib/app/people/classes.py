@@ -113,7 +113,7 @@ def addAClass(pageData, **kwargs) :
   maxClassOrder += 1
 
   return Level1div([
-    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='addClass'),
+    #schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='addClass'),
     schoolLib.app.people.classes.editClassForm(
       pageData,
       classOrder=maxClassOrder,
@@ -133,15 +133,6 @@ def addAClass(pageData, **kwargs) :
 
 ##########################################################################
 # routes
-
-@pagePart
-def peopleMenu(pageData, **kwargs) :
-  return Level0div([
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-    schoolLib.app.people.classes.addAClass(pageData, **kwargs)
-  ], theId='level0div')
-
-getRoute('/menu/people', peopleMenu, anyUser=True)
 
 getRoute('/menu/people/addClass',addAClass)
 

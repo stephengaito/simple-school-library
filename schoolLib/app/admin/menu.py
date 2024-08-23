@@ -6,8 +6,29 @@ import schoolLib.app.menus
 ##########################################################################
 # content
 
-##########################################################################
-# routes
+@pagePart
+def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
+  theMenu = Menu([], klassName='vertical')
+
+  if pageData.user.is_authenticated :
+    theMenu.appendChild(
+      Button(
+        'Logout',
+        theId    = 'logout',
+        hxGet    = '/logout',
+        hxTarget = '#level0div'
+      )
+    )
+  else :
+    theMenu.appendChild(
+      Button(
+        'Login',
+        theId    = 'login',
+        hxGet    = '/login',
+        hxTarget = '#level0div'
+      )
+    )
+  return theMenu
 
 @pagePart
 def adminMenu(pageData, **kwargs) :
@@ -16,9 +37,17 @@ def adminMenu(pageData, **kwargs) :
   return Level0div([
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
     Level1div([
-      schoolLib.app.menus.secondLevelAdminMenu(pageData, **kwargs)
+      secondLevelAdminMenu(pageData, **kwargs),
+      getHelpPage(
+        pageData, 'adminPage', modal=False,
+        hxPost='/editHelp/adminPage/nonModal'
+      )
+
     ])
   ], theId='level0div')
+
+##########################################################################
+# routes
 
 getRoute('/menu/admin', adminMenu, anyUser=True)
 
