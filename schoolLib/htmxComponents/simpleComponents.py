@@ -190,7 +190,10 @@ class Label(Text) :
     super().__init__(text, textType=textType, **kwargs)
 
 class Link(Text) :
-  def __init__(self, url, text, textType='a', target=None, **kwargs) :
+  def __init__(
+    self, url, text, textType='a', level=None, target=None, **kwargs
+  ) :
+    if level : url += f'?level={level}'
     if 'attrs' not in kwargs : kwargs['attrs'] = []
     if 'hxTarget' in kwargs :
       kwargs['hxGet'] = url

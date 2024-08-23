@@ -88,7 +88,7 @@ def editItemsInfoForm(
 # routes
 
 @pagePart
-def getShowItemsInfo(pageData, itemsInfoId=None, **kwargs) :
+def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
   if itemsInfoId :
     infoSelectSql = SelectSql(
     ).fields(
@@ -167,11 +167,12 @@ def getShowItemsInfo(pageData, itemsInfoId=None, **kwargs) :
             TableEntry(Link(
               f'/borrowers/show/{aBook['borrowers_id']}',
               borrowerName,
-              hxTarget='#level1div'
+              level='level0div',
+              hxTarget='#level0div'
             )),
             TableEntry(Text(borrowerClass))
           ]))
-        return Level1div([
+        theComponent = Level1div([
           schoolLib.app.books.menu.secondLevelSingleBookMenu(
             pageData, **kwargs
           ),
@@ -218,6 +219,14 @@ def getShowItemsInfo(pageData, itemsInfoId=None, **kwargs) :
           EmptyDiv([]),
           Table(physicalItemsRow)
         ])
+        if level and '0' in level :
+          theComponent = Level0div([
+            schoolLib.app.menus.topLevelMenu(
+              pageData, selectedId='books'
+            ),
+            theComponent
+          ])
+        return theComponent
   return MarkdownDiv("some thing about itemsInfo")
 
 getRoute(

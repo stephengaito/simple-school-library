@@ -48,9 +48,11 @@ class PageData :
 
   def setUser(self, user) :
     self.login = user
+    self.user  = user
 
   def shouldLogout(self) :
     self.logout = True
+    self.user   = OtherUser()
 
 routes    = []
 
@@ -61,31 +63,31 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   # objects do response to `collectHtml` messages
 
   kwargs = {}
-  if not isinstance(htmxComponent, HtmlPage) :
-    if 'hx-request' not in pageData.headers :
+  if 'hx-request' in pageData.headers :
+    htmxComponent.collectHtml(htmlFragments)
+    url = pageData.path
+    if url != '/' and not url.startswith('/routes') \
+      and not url.startswith('/pageParts') and 'develop' in config :
+      htmlFragments.append(f"""
+        <div hx-swap-oob="innerHTML:#developerMessages">
+          <a href="/routes{url}" target="_blank">/routes{url}</a>
+          &nbsp; &nbsp; &nbsp; &nbsp;
+          <a href="/uiOverview{url}" target="_blank">/uiOverview{url}</a>
+        </div>
+      """)
+  else :
+    if isinstance(htmxComponent, HtmlPage) :
+      htmxComponent.collectHtml(htmlFragments)
+    else :
       htmxComponent = HtmlPage(
         StdHeaders(),
         StdBody(htmxComponent, url=pageData.path)
       )
       htmxComponent.collectHtml(htmlFragments)
-    else :
-      htmxComponent.collectHtml(htmlFragments)
-      url = pageData.path
-      if url != '/' and not url.startswith('/routes') \
-        and not url.startswith('/pageParts') and 'develop' in config :
-        htmlFragments.append(f"""
-          <div hx-swap-oob="innerHTML:#developerMessages">
-            <a href="/routes{url}" target="_blank">/routes{url}</a>
-            &nbsp; &nbsp; &nbsp; &nbsp;
-            <a href="/uiOverview{url}" target="_blank">/uiOverview{url}</a>
-          </div>
-        """)
-  else :
-    htmxComponent.collectHtml(htmlFragments)
   kwargs = htmxComponent.kwargs
-  print("-------------------------------------------------")
-  print('\n'.join(htmlFragments))
-  print("-------------------------------------------------")
+  #print("-------------------------------------------------")
+  #print('\n'.join(htmlFragments))
+  #print("-------------------------------------------------")
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
 homePageFunc = None
@@ -93,13 +95,26 @@ def registerHomePage(aHomePageFunc) :
   global homePageFunc
   homePageFunc = aHomePageFunc
 
+def goToHomePage(pageData, **kwargs) :
+  if not homePageFunc :
+    raise HTTPException(
+      404,
+      detail=f"No home page registered while trying to serve {request.url.path}"
+    )
+
+  if 'headers' not in kwargs : kwargs['headers'] = {}
+  kwargs['headers']['HX-Retarget'] = '#level0div'
+  return homePageFunc(pageData, **kwargs)
+
 async def callWithParameters(request, func, anyUser=False) :
   params = {}
   if request.query_params :
     params.update(request.query_params)
   if request.path_params :
     params.update(request.path_params)
+  #print("----------------------------")
   #print(yaml.dump(params))
+  #print("----------------------------")
 
   dbPath = ":memory:"
   if 'database' in config :

@@ -143,7 +143,7 @@ def putUpdatedBorrower(pageData, borrowerId=None, **kwargs) :
 putRoute('/borrowers/edit/{borrowerId:int}', putUpdatedBorrower)
 
 @pagePart
-def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
+def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
   if borrowerId :
     bSelectSql = SelectSql(
     ).fields(
@@ -193,12 +193,14 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
               TableEntry(Link(
                 f'/itemsInfo/show/{anItem['itemsInfo_id']}',
                 anItem['itemsInfo_title'],
-                hxTarget='#level1div'
+                level='level0div',
+                hxTarget='#level0div'
               )),
               TableEntry(Link(
                 f'/itemsInfo/show/{anItem['itemsInfo_id']}',
                 anItem['itemsPhysical_barCode'],
-                hxTarget='#level1div'
+                level='level0div',
+                hxTarget='#level0div'
               )),
               TableEntry(Text(anItem['itemsInfo_dewey'])),
               TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
@@ -206,7 +208,7 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
               TableEntry(Text("")),
             ])
           )
-      return Level1div([
+      theComponent = Level1div([
         schoolLib.app.people.menu.secondLevelSinglePersonMenu(
           pageData, **kwargs
         ),
@@ -233,6 +235,12 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
         EmptyDiv([]),
         Table(itemsBorrowedRows)
       ])
+      if level and '0' in level :
+        theComponent = Level0div([
+          schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+          theComponent
+        ])
+      return theComponent
   return Level1div([
     schoolLib.app.people.menu.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
     schoolLib.app.finders.findABorrower(pageData, **kwargs)

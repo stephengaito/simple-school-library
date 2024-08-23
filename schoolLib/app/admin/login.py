@@ -39,13 +39,13 @@ def postLoginPage(pageData, **kwargs) :
       user = SLibUser()
   print(f"Logged in user: {user.display_name}")
   pageData.setUser(user)
-  return schoolLib.app.main.homePage(pageData, hxTarget='#level0div')
+  return goToHomePage(pageData, hxTarget='#level0div')
 
 postRoute('/login', postLoginPage, anyUser=True)
 
 @pagePart
 def logoutPage(pageData, **kwargs) :
   if pageData.user.is_authenticated : pageData.shouldLogout()
-  return schoolLib.app.main.homePage(pageData, hxTarget='#level0div')
+  return goToHomePage(pageData, hxTarget='#level0div')
 
 getRoute('/logout', logoutPage, anyUser=True)
