@@ -9,7 +9,7 @@ import yaml
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-
+import schoolLib.app.books.menu
 
 ##########################################################################
 # content
@@ -221,12 +221,17 @@ getRoute(
 
 @pagePart
 def getNewItemsInfoForm(pageData, **kwargs) :
-  return editItemsInfoForm(
-    pageData,
-    submitMessage='Add new book',
-    hxPost='/itemsInfo/new',
-    **kwargs
-  )
+  return Level1div([
+    schoolLib.app.books.menu.secondLevelBooksMenu(
+      pageData, **kwargs
+    ),
+    editItemsInfoForm(
+      pageData,
+      submitMessage='Add new book',
+      hxPost='/itemsInfo/new',
+      **kwargs
+    )
+  ])
 
 getRoute('/itemsInfo/new', getNewItemsInfoForm)
 

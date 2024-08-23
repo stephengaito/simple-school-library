@@ -7,6 +7,8 @@ import yaml
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
 from schoolLib.app.finders import *
+import schoolLib.app.menus
+import schoolLib.app.people.menu
 
 ##########################################################################
 # content
@@ -74,7 +76,9 @@ def editBorrowerForm(pageData,
 @pagePart
 def getNewBorrowerForm(pageData, **kwargs) :
   return Level1div([
-    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='addBorrower'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='addBorrower'
+    ),
     schoolLib.app.people.borrowers.editBorrowerForm(
       pageData,
       submitMsg='Add a new borrower',
@@ -224,7 +228,7 @@ def getShowBorrowerInfo(pageData, borrowerId=None, **kwargs) :
         Table(itemsBorrowedRows)
       ])
   return Level1div([
-    #schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
     schoolLib.app.finders.findABorrower(pageData, **kwargs)
   ])
 

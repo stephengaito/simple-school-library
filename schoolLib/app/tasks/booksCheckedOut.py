@@ -1,7 +1,7 @@
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-import schoolLib.app.menus
+import schoolLib.app.tasks.menu
 
 ##########################################################################
 # content
@@ -71,7 +71,7 @@ def booksCheckedOut(pageData, **kwargs) :
         TableEntry(Text("")),
       ]))
   return Level1div([
-    schoolLib.app.menus.secondLevelTasksMenu(
+    schoolLib.app.tasks.menu.secondLevelTasksMenu(
       pageData, selectedId='booksCheckedOut'
     ),
     Table(bcoRows)

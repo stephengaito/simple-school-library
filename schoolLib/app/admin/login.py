@@ -2,26 +2,33 @@
 from schoolLib.setup          import *
 from schoolLib.htmxComponents import *
 import schoolLib.app.main
+import schoolLib.app.menus
+import schoolLib.app.admin.menu
 
 @pagePart
 def getLoginForm(pageData, message="Please login", **kwargs) :
   return Level0div([
-    Text(message),
-    FormTable([
-      TextInput(
-        label='User name',
-        name='userName',
-        placeholder='A user name...'
-      ),
-      PasswordInput(
-        label='User password',
-        name='userPassword',
-      )
-    ], "Login", hxTarget='#level0div', hxPost='/login')
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
+    Level1div([
+      schoolLib.app.admin.menu.secondLevelAdminMenu(pageData, selectedId='login'),
+      Div([
+        Text(message),
+        FormTable([
+          TextInput(
+            label='User name',
+            name='userName',
+            placeholder='A user name...'
+          ),
+          PasswordInput(
+            label='User password',
+            name='userPassword',
+          )
+        ], "Login", hxTarget='#level0div', hxPost='/login')
+      ])
+    ])
   ])
 
 getRoute('/login', getLoginForm, anyUser=True)
-registerLoginPage(getLoginForm)
 
 @pagePart
 def postLoginPage(pageData, **kwargs) :

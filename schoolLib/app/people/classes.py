@@ -15,6 +15,7 @@ description of each class.
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
 import schoolLib.app.menus
+import schoolLib.app.people.menu
 
 ##########################################################################
 # content
@@ -99,7 +100,9 @@ def listClasses(pageData, **kwargs) :
     ]))
 
   return Level1div([
-    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='listClasses'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
     Table(tableRows, theId='level2div')
   ])
 
@@ -113,7 +116,9 @@ def addAClass(pageData, **kwargs) :
   maxClassOrder += 1
 
   return Level1div([
-    #schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='addClass'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='addClass'
+    ),
     schoolLib.app.people.classes.editClassForm(
       pageData,
       classOrder=maxClassOrder,

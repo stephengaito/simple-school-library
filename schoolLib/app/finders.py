@@ -3,6 +3,8 @@ import yaml
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
 import schoolLib.app.menus
+import schoolLib.app.people.menu
+import schoolLib.app.books.menu
 
 ##########################################################################
 # borrowers
@@ -23,7 +25,9 @@ def findABorrower(pageData, probe=None, nameRows=[], **kwargs) :
 @pagePart
 def getFindBorrowerForm(pageData, **kwargs) :
   return Level1div([
-    schoolLib.app.menus.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='findBorrower'
+    ),
     schoolLib.app.finders.findABorrower(pageData, **kwargs)
   ])
 
@@ -78,7 +82,9 @@ def findAnItem(pageData, probe=None, itemRows=[], **kwargs) :
 @pagePart
 def getFindAnItemForm(pageData, **kwargs) :
   return Level1div([
-    schoolLib.app.menus.secondLevelBooksMenu(pageData, selectedId='findBook'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(
+      pageData, selectedId='findBook'
+    ),
     schoolLib.app.finders.findAnItem(pageData, **kwargs)
   ])
 

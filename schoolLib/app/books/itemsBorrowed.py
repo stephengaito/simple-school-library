@@ -7,7 +7,7 @@ Work with itemsBorrowed
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-from schoolLib.app.menus import *
+import schoolLib.app.menus
 
 ##########################################################################
 # content

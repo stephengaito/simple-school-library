@@ -16,7 +16,7 @@ from starlette_login.middleware import AuthenticationMiddleware
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-from schoolLib.app.menus import *
+import schoolLib.app.menus
 
 loadedConfig('config.yaml', verbose=True)
 loadedTheme()

@@ -88,11 +88,6 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   #print("-------------------------------------------------")
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
-loginFunc = None
-def registerLoginPage(aLoginFunc) :
-  global loginFunc
-  loginFunc = aLoginFunc
-
 homePageFunc = None
 def registerHomePage(aHomePageFunc) :
   global homePageFunc
@@ -115,7 +110,7 @@ async def callWithParameters(request, func, anyUser=False) :
     await pageData.getRequestData(request)
     if anyUser or pageData.user.is_authenticated :
       htmxComponent = func(pageData, **params)
-    elif loginFunc :
+    elif homePageFunc :
       message = "You must be logged in to access that page"
       if 'develop' in config :
         message += f" ({request.url.path})"
@@ -126,7 +121,7 @@ async def callWithParameters(request, func, anyUser=False) :
     else :
       raise HTTPException(
         404,
-        detail=f"No login page registered while trying to serve {request.url.path}"
+        detail=f"No home page registered while trying to serve {request.url.path}"
       )
 
     if pageData.login :
