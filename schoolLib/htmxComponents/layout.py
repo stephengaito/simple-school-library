@@ -49,12 +49,20 @@ class InitialOuterDiv(HtmxBase) :
     """)
 
 class StdBody(HtmxBase) :
-  def __init__(self, htmxComponent, **kwargs) :
+  def __init__(self, htmxComponent, url='/', **kwargs) :
     super().__init__(**kwargs)
     self.htmxComponent = htmxComponent
+    self.url           = url
 
   def collectHtml(self, htmlFragments) :
     self.htmxComponent.collectHtml(htmlFragments)
+    if 'develop' in config :
+      htmlFragments.append(f"""
+        <div id="developerMessages" class="fixed bottom-0 w-screen">
+          <a href="/routes{self.url}" target="_blank">/routes{self.url}</a>
+          <a href="/uiOverview" target="_blank">/uiOverview{self.url}</a>
+        </div>
+      """)
     htmlFragments.append("""
       <div id="footerMessages" class="fixed bottom-0 w-screen"></div>
     """)

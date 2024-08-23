@@ -34,7 +34,7 @@ class PageData :
     self.logout  = False
     self.headers = {}
     self.form    = {}
-    self.path    = ""
+    self.path    = "/"
     self.user    = OtherUser()
 
   async def getRequestData(self, request) :
@@ -61,29 +61,28 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   # objects do response to `collectHtml` messages
 
   kwargs = {}
-  if not isinstance(htmxComponent, HtmlPage) \
-    and 'hx-request' not in pageData.headers :
-    htmxComponent = HtmlPage(
-      StdHeaders(),
-      StdBody(htmxComponent)
-    )
-  htmxComponent.collectHtml(htmlFragments)
+  if not isinstance(htmxComponent, HtmlPage) :
+    if 'hx-request' not in pageData.headers :
+      htmxComponent = HtmlPage(
+        StdHeaders(),
+        StdBody(htmxComponent, url=pageData.path)
+      )
+      htmxComponent.collectHtml(htmlFragments)
+    else :
+      htmxComponent.collectHtml(htmlFragments)
+      url = pageData.path
+      if url != '/' and not url.startswith('/routes') \
+        and not url.startswith('/pageParts') and 'develop' in config :
+        htmlFragments.append(f"""
+          <div hx-swap-oob="innerHTML:#developerMessages">
+            <a href="/routes{url}" target="_blank">/routes{url}</a>
+            &nbsp; &nbsp; &nbsp; &nbsp;
+            <a href="/uiOverview{url}" target="_blank">/uiOverview{url}</a>
+          </div>
+        """)
+  else :
+    htmxComponent.collectHtml(htmlFragments)
   kwargs = htmxComponent.kwargs
-  url = pageData.path
-  if url != '/' and not url.startswith('/routes') \
-    and not url.startswith('/pageParts') and 'develop' in config :
-    print("--------------------")
-    print(htmlFragments[len(htmlFragments)-1])
-    htmlFragments.append(
-      f"""
-        <div class="m-5 grid grid-cols-10 gap-4 content-start">
-        <a href="/routes{url}" target="_blank"><img src="/static/svg/bootstrap/filetype-py.svg" width="24" height="24"></a>
-        <a href="/uiOverview" target="_blank"><img src="/static/svg/bootstrap/braces-asterisk.svg" width="24" height="24"></a>
-        </div>
-      """
-    )
-    print(htmlFragments[len(htmlFragments)-1])
-    print("--------------------")
   #print("-------------------------------------------------")
   #print('\n'.join(htmlFragments))
   #print("-------------------------------------------------")
