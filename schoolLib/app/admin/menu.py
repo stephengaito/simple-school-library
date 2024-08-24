@@ -11,7 +11,7 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
   theMenu = Menu([], klassName='vertical')
 
   if pageData.user.is_authenticated :
-    theMenu.appendChild(
+    theMenu.appendAChild(
       Button(
         'Logout',
         theId    = 'logout',
@@ -20,7 +20,7 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
       )
     )
   else :
-    theMenu.appendChild(
+    theMenu.appendAChild(
       Button(
         'Login',
         theId    = 'login',

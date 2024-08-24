@@ -125,7 +125,7 @@ def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
         joinType="LEFT"
       ).whereValue(
         'itemsPhysical.itemsInfoId', itemsInfoId
-      ).orderBy(
+      ).orderAscBy(
         'barCode'
       )
       print(physicalSelectSql.sql())
@@ -215,7 +215,7 @@ def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
             ])
           ]),
           EmptyDiv([]),
-          SpacedEmptyDiv([]),
+          SpacedDiv([]),
           EmptyDiv([]),
           Table(physicalItemsRow)
         ])

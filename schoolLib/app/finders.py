@@ -42,7 +42,7 @@ def postSearchForBorrower(pageData, **kwargs) :
     'borrowerId', 'firstName', 'familyName'
   ).tables('borrowersFTS'
   ).limitTo(10
-  ).orderBy('rank')
+  ).orderAscBy('rank')
   if theForm['search'] :
     selectSql.whereValue(
       'borrowersFTS', theForm['search']+'*', operator='MATCH'
@@ -103,7 +103,7 @@ def postSearchForAnItem(pageData, **kwargs) :
   ).tables(
     'itemsFTS'
   ).limitTo(10
-  ).orderBy('rank')
+  ).orderAscBy('rank')
   if theForm['search'] :
     selectSql.whereValue(
       'itemsFTS', theForm['search']+'*', operator='MATCH'

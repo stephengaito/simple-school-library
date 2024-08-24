@@ -231,8 +231,11 @@ class HtmxChildrenBase(HtmxBase) :
       someChildren = [ someChildren ]
     self.children = someChildren
 
-  def appendChild(self, aChild) :
+  def appendAChild(self, aChild) :
     self.children.append(aChild)
+
+  def appendChildren(self, someChildren) :
+    self.children.extend(someChildren)
 
   def collectChildrenHtml(self, htmlFragments) :
     for aChild in self.children :

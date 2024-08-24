@@ -70,6 +70,195 @@ def editBorrowerForm(pageData,
     )
   ], submitMsg="Save changes")
 
+
+def getBorrowerInfo(db, borrowerId) :
+
+  if not borrowerId : return None
+
+  bSelectSql = SelectSql(
+  ).fields(
+    'id', 'firstName', 'familyName', 'cohort', 'classId'
+  ).tables('borrowers'
+  ).whereValue('id', borrowerId)
+  borrower = bSelectSql.parseResults(
+    db.execute(bSelectSql.sql()),
+    fetchAll=False
+  )
+
+  if not borrower : return None
+
+  borrower = borrower[0]
+  theClasses = getClasses(db)
+  borrower['className'] = theClasses[borrower['classId']]['name']
+  return Table([
+    TableRow([
+      TableEntry(Text('First Name')),
+      TableEntry(Text(borrower['firstName'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text('Family Name')),
+      TableEntry(Text(borrower['familyName'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text('Cohort')),
+      TableEntry(Text(str(borrower['cohort']), klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text('Class')),
+      TableEntry(Text(borrower['className'], klass=['bg-yellow-200']))
+    ]),
+  ], klass=['max-w-prose'])
+
+def getBorrowerBooksOut(db, borrowerId) :
+  ibSelectSql = SelectSql(
+  ).fields(
+    'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
+    'itemsPhysical.barCode',
+    'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue'
+  ).tables(
+    'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
+  ).whereValue(
+    'itemsBorrowed.borrowersId', borrowerId
+  ).whereField(
+    'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
+  ).whereField(
+    'itemsInfo.id', 'itemsPhysical.itemsInfoId'
+  )
+  itemsBorrowed = ibSelectSql.parseResults(
+    db.execute(ibSelectSql.sql())
+  )
+  itemsBorrowedRows = []
+  itemsBorrowedRows.append(
+    TableRow([
+      TableHeader(Text('Title')),
+      TableHeader(Text('Barcode')),
+      TableHeader(Text('Dewey Decimal Code')),
+      TableHeader(Text('Date Borrowed')),
+      TableHeader(Text('Date Due')),
+    ])
+  )
+  if itemsBorrowed :
+    for anItem in itemsBorrowed :
+      itemsBorrowedRows.append(
+        TableRow([
+          TableEntry(Link(
+            f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+            anItem['itemsInfo_title'],
+            level='level0div',
+            hxTarget='#level0div'
+          )),
+          TableEntry(Link(
+            f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+            anItem['itemsPhysical_barCode'],
+            level='level0div',
+            hxTarget='#level0div'
+          )),
+          TableEntry(Text(anItem['itemsInfo_dewey'])),
+          TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
+          TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
+        ])
+      )
+  return itemsBorrowedRows
+
+def getBorrowerBooksHistory(db, borrowerId) :
+  ibSelectSql = SelectSql(
+  ).fields(
+    'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
+    'itemsPhysical.barCode',
+    'itemsReturned.dateBorrowed', 'itemsReturned.dateReturned'
+  ).tables(
+    'itemsReturned', 'itemsPhysical', 'itemsInfo'
+  ).whereValue(
+    'itemsReturned.borrowersId', borrowerId
+  ).whereField(
+    'itemsPhysical.id', 'itemsReturned.itemsPhysicalId'
+  ).whereField(
+    'itemsInfo.id', 'itemsPhysical.itemsInfoId'
+  ).orderDescBy('itemsReturned.dateBorrowed')
+  itemsReturned = ibSelectSql.parseResults(
+    db.execute(ibSelectSql.sql())
+  )
+  itemsReturnedRows = []
+  itemsReturnedRows.append(
+    TableRow([
+      TableHeader(Text('Title')),
+      TableHeader(Text('Barcode')),
+      TableHeader(Text('Dewey Decimal Code')),
+      TableHeader(Text('Date Borrowed')),
+      TableHeader(Text('Date Returned'))
+    ])
+  )
+  if itemsReturned :
+    for anItem in itemsReturned :
+      itemsReturnedRows.append(
+        TableRow([
+          TableEntry(Link(
+            f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+            anItem['itemsInfo_title'],
+            level='level0div',
+            hxTarget='#level0div'
+          )),
+          TableEntry(Link(
+            f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+            anItem['itemsPhysical_barCode'],
+            level='level0div',
+            hxTarget='#level0div'
+          )),
+          TableEntry(Text(anItem['itemsInfo_dewey'])),
+          TableEntry(Text(anItem['itemsReturned_dateBorrowed'])),
+          TableEntry(Text(anItem['itemsReturned_dateReturned'])),
+        ])
+      )
+  return itemsReturnedRows
+
+@pagePart
+def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
+  borrowerInfo = getBorrowerInfo(pageData.db, borrowerId)
+  if borrowerInfo :
+    theComponent = Level1div([
+      schoolLib.app.people.menu.secondLevelSinglePersonMenu(
+        pageData, **kwargs
+      ),
+      borrowerInfo,
+      EmptyDiv([]),
+      SpacedDiv([]),
+      EmptyDiv([]),
+      SpacedDiv([
+        RawHtml('<hr/>'),
+        Text(
+          'Books currently taken out',
+          klass=['bg-yellow-200', 'text-lg', 'font-extrabold']
+        ),
+        RawHtml('<hr/>')
+      ]),
+      EmptyDiv([]),
+      Table(getBorrowerBooksOut(pageData.db, borrowerId)),
+      EmptyDiv([]),
+      SpacedDiv([]),
+      EmptyDiv([]),
+      SpacedDiv([
+        RawHtml('<hr/>'),
+        Text(
+          'Reading history',
+          klass=['bg-yellow-200', 'text-lg', 'font-extrabold']
+        ),
+        RawHtml('<hr/>')
+      ]),
+      EmptyDiv([]),
+      Table(getBorrowerBooksHistory(pageData.db, borrowerId))
+    ])
+    if level and '0' in level :
+      theComponent = Level0div([
+        schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+        theComponent
+      ])
+    return theComponent
+  return Level1div([
+    schoolLib.app.people.menu.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
+    schoolLib.app.finders.findABorrower(pageData, **kwargs)
+  ])
+
+
 ##########################################################################
 # routes
 
@@ -141,109 +330,5 @@ def putUpdatedBorrower(pageData, borrowerId=None, **kwargs) :
   )
 
 putRoute('/borrowers/edit/{borrowerId:int}', putUpdatedBorrower)
-
-@pagePart
-def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
-  if borrowerId :
-    bSelectSql = SelectSql(
-    ).fields(
-      'id', 'firstName', 'familyName', 'cohort', 'classId'
-    ).tables('borrowers'
-    ).whereValue('id', borrowerId)
-    borrower = bSelectSql.parseResults(
-      pageData.db.execute(bSelectSql.sql()),
-      fetchAll=False
-    )
-    if borrower :
-      borrower = borrower[0]
-      theClasses = getClasses(pageData.db)
-      borrower['className'] = theClasses[borrower['classId']]['name']
-      ibSelectSql = SelectSql(
-      ).fields(
-        'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
-        'itemsPhysical.barCode',
-        'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue'
-      ).tables(
-        'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
-      ).whereValue(
-        'itemsBorrowed.borrowersId', borrowerId
-      ).whereField(
-        'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId'
-      ).whereField(
-        'itemsInfo.id', 'itemsPhysical.itemsInfoId'
-      )
-      itemsBorrowed = ibSelectSql.parseResults(
-        pageData.db.execute(ibSelectSql.sql())
-      )
-      itemsBorrowedRows = []
-      itemsBorrowedRows.append(
-        TableRow([
-          TableHeader(Text('Title')),
-          TableHeader(Text('Barcode')),
-          TableHeader(Text('Dewey Decimal Code')),
-          TableHeader(Text('Date Borrowed')),
-          TableHeader(Text('Date Due')),
-          TableHeader(Text('Date Returned'))
-        ])
-      )
-      if itemsBorrowed :
-        for anItem in itemsBorrowed :
-          itemsBorrowedRows.append(
-            TableRow([
-              TableEntry(Link(
-                f'/itemsInfo/show/{anItem['itemsInfo_id']}',
-                anItem['itemsInfo_title'],
-                level='level0div',
-                hxTarget='#level0div'
-              )),
-              TableEntry(Link(
-                f'/itemsInfo/show/{anItem['itemsInfo_id']}',
-                anItem['itemsPhysical_barCode'],
-                level='level0div',
-                hxTarget='#level0div'
-              )),
-              TableEntry(Text(anItem['itemsInfo_dewey'])),
-              TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
-              TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
-              TableEntry(Text("")),
-            ])
-          )
-      theComponent = Level1div([
-        schoolLib.app.people.menu.secondLevelSinglePersonMenu(
-          pageData, **kwargs
-        ),
-        Table([
-          TableRow([
-            TableEntry(Text('First Name')),
-            TableEntry(Text(borrower['firstName']))
-          ]),
-          TableRow([
-            TableEntry(Text('Family Name')),
-            TableEntry(Text(borrower['familyName']))
-          ]),
-          TableRow([
-            TableEntry(Text('Cohort')),
-            TableEntry(Text(str(borrower['cohort'])))
-          ]),
-          TableRow([
-            TableEntry(Text('Class')),
-            TableEntry(Text(borrower['className']))
-          ]),
-        ]),
-        EmptyDiv([]),
-        SpacedEmptyDiv([]),
-        EmptyDiv([]),
-        Table(itemsBorrowedRows)
-      ])
-      if level and '0' in level :
-        theComponent = Level0div([
-          schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-          theComponent
-        ])
-      return theComponent
-  return Level1div([
-    schoolLib.app.people.menu.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
-    schoolLib.app.finders.findABorrower(pageData, **kwargs)
-  ])
 
 getRoute('/borrowers/show/{borrowerId:int}', getShowBorrowerInfo, anyUser=True)

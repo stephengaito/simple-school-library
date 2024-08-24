@@ -27,7 +27,7 @@ def topLevelMenu(pageData, selectedId=None, **kwargs) :
   ])
 
   if pageData.user.is_authenticated :
-    theMenu.appendChild(
+    theMenu.appendAChild(
       Button(
         'Tasks',
         theId    = 'tasks',
@@ -36,7 +36,7 @@ def topLevelMenu(pageData, selectedId=None, **kwargs) :
       )
     )
 
-  theMenu.appendChild(
+  theMenu.appendAChild(
     Button(
       'Admin',
       theId    = 'admin',

@@ -67,17 +67,19 @@ class HelpEditorForm(Form) :
     if 'buttonHyperscript' not in kwargs : kwargs['buttonHyperscript'] = \
       "on click trigger closeEditorModal"
     super().__init__([], submitMsg="Save changes", hxPost=hxPost, **kwargs)
-    self.appendChild(Label(f'Help page for {helpPagePath}'))
-    self.appendChild(HelpEditor(
-      value=helpPageHtml,
-      placeholder=f'Add some text for {helpPagePath}',
-      name='helpContent',
-      modal=modal
-    ))
-    self.appendChild(CancelButton(
-      "Cancel",
-      hyperscript="on click trigger closeEditorModal"
-    ))
+    self.appendChildren([
+      Label(f'Help page for {helpPagePath}'),
+      HelpEditor(
+        value=helpPageHtml,
+        placeholder=f'Add some text for {helpPagePath}',
+        name='helpContent',
+        modal=modal
+      ),
+      CancelButton(
+        "Cancel",
+        hyperscript="on click trigger closeEditorModal"
+      )
+    ])
 
 def getHelpPage(pageData, helpPagePath, modal=True, hxPost=None, **kwargs) :
   helpPageHtml = getHelpPageHtml(pageData.db, helpPagePath)

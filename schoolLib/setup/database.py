@@ -58,6 +58,7 @@ class SqlBuilder :
   def __init__(self) :
     self.whereList    = []
     self.orderByList  = []
+    self.orderAsc     = True
     self.limitToValue = None
     self.groupByList  = []
 
@@ -81,8 +82,14 @@ class SqlBuilder :
       subCmd += " AND ".join(self.whereList)
     return subCmd
 
-  def orderBy(self, *keys) :
+  def orderAscBy(self, *keys) :
     self.orderByList.extend(keys)
+    self.orderAsc = True
+    return self
+
+  def orderDescBy(self, *keys) :
+    self.orderByList.extend(keys)
+    self.orderAsc = False
     return self
 
   def _buildOrderBy(self) :
@@ -90,6 +97,8 @@ class SqlBuilder :
     if self.orderByList :
       subCmd += " ORDER BY "
       subCmd += ", ".join(self.orderByList)
+      if not self.orderAsc :
+        subCmd += " DESC "
     return subCmd
 
   def limitTo(self, anExp) :
@@ -258,7 +267,7 @@ def getClasses(db, selectedClass=None) :
   selectSql = SelectSql(
   ).fields("id", "name", "classOrder", "desc", "colour"
   ).tables("classes"
-  ).orderBy('classOrder'
+  ).orderAscBy('classOrder'
   )
   print(selectSql.sql())
   results = selectSql.parseResults(db.execute(selectSql.sql()))

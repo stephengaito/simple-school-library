@@ -19,17 +19,19 @@ def listRoutes(pageData, aPath=None, **kwargs) :
     anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
     anEndpoint = anEndpoint.lstrip('schoolLib.')
     aList = List([])
-    aList.appendChild(Link(aRoute.path, aRoute.path, target='_blank'))
-    aList.appendChild(Text(str(aRoute.methods), textType='s'))
-    aList.appendChild(Link(
-      f'/pageParts/{anEndpoint}',
-      anEndpoint,
-      target="_blank"
-    ))
-    aList.appendChild(Text(
-      f"AnyUser = {aRoute.anyUser}", textType='s'
-    ))
-    routesList.appendChild(aList)
+    aList.appendChildren([
+      Link(aRoute.path, aRoute.path, target='_blank'),
+      Text(str(aRoute.methods), textType='s'),
+      Link(
+        f'/pageParts/{anEndpoint}',
+        anEndpoint,
+        target="_blank"
+      ),
+      Text(
+        f"AnyUser = {aRoute.anyUser}", textType='s'
+      )
+    ])
+    routesList.appendAChild(aList)
   return HtmlPage( StdHeaders(), routesList )
 
 getRoute('/routes/{aPath:path}', listRoutes, anyUser=devUser)
@@ -43,16 +45,18 @@ def listPageParts(pageData, aPath=None, **kwargs) :
     aPartList = List([])
     aPagePart = pageParts[aPagePartKey]
     if not aPagePart.name.startswith(aPath) : continue
-    aPartList.appendChild(Text(aPagePart.name, textType='none'))
-    aPartList.appendChild(Text(aPagePart.sig, textType='none'))
-    aPartList.appendChild(Text(aPagePart.doc, textType='none'))
+    aPartList.appendChildren([
+      Text(aPagePart.name, textType='none'),
+      Text(aPagePart.sig, textType='none'),
+      Text(aPagePart.doc, textType='none')
+    ])
     usersList = List([])
     for aUser in sorted(aPagePart.users) :
       if '/' in aUser :
-        usersList.appendChild(Link(f'/routes{aUser}', aUser ))
+        usersList.appendAChild(Link(f'/routes{aUser}', aUser ))
       else :
-        usersList.appendChild(Link(f'/pageParts/{aUser}', aUser ))
-    aPartList.appendChild(
+        usersList.appendAChild(Link(f'/pageParts/{aUser}', aUser ))
+    aPartList.appendAChild(
       Text(['Used by:', usersList], textType=None)
     )
     metaDataList = List([])
@@ -61,25 +65,25 @@ def listPageParts(pageData, aPath=None, **kwargs) :
         if aValue :
           if '{' in aValue : aValue = aValue.split('{')[0].rstrip('/')
           if aKey in ['pagePart'] :
-            metaDataList.appendChild(Text([
+            metaDataList.appendAChild(Text([
               Text(aKey+':', textType='none'),
               Link(f'/pageParts/{aValue}', aValue, target='_blank')
             ], textType='none'))
           elif aKey in ['hxGet', 'hxPost', 'link'] :
-            metaDataList.appendChild(Text([
+            metaDataList.appendAChild(Text([
               Text(aKey+':', textType='none'),
               Link(f'/routes{aValue}', aValue, target='_blank')
             ], textType=None))
           else :
-            metaDataList.appendChild(Text(f"{aKey}: {aValue}", textType='none'))
-    aPartList.appendChild(
+            metaDataList.appendAChild(Text(f"{aKey}: {aValue}", textType='none'))
+    aPartList.appendAChild(
       Text(['Meta-Structure:', metaDataList], textType='none')
     )
     pygmentedSrc = highlight(aPagePart.src, PythonLexer(), HtmlFormatter())
-    aPartList.appendChild(
+    aPartList.appendAChild(
       Text(['Source:', LongCode(pygmentedSrc)], textType=None)
     )
-    partsList.appendChild(aPartList)
+    partsList.appendAChild(aPartList)
   return HtmlPage(
     StdHeaders([
      '<link rel="stylesheet" href="/static/css/pygmentsSas.css" type="text/css" />'

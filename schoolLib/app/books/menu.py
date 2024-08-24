@@ -11,23 +11,23 @@ import schoolLib.app.menus
 def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
   theMenu = Menu([
     Button(
-      'Take out a book',
+      'Take a book out of the library',
       theId    = 'takeOut',
       hxGet    = '/menu/books/takeOut',
       hxTarget = '#level1div'
     ),
     Button(
-      'Return a book',
+      'Return books to the library',
       theId    = 'return',
       hxGet    = '/menu/books/return',
       hxTarget = '#level1div'
     ),
-    Button(
-      'Renew a book',
-      theId    = 'renew',
-      hxGet    = '/menu/books/renew',
-      hxTarget = '#level1div'
-    ),
+    #Button(
+    #  'Renew a book',
+    #  theId    = 'renew',
+    #  hxGet    = '/menu/books/renew',
+    #  hxTarget = '#level1div'
+    #),
     Button(
       'Find a book',
       theId    = 'findBook',
@@ -37,7 +37,7 @@ def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
   ], selectedId=selectedId, klassName='vertical')
 
   if pageData.user.is_authenticated :
-    theMenu.appendChild(
+    theMenu.appendAChild(
       Button(
         'Add a book',
         theId    = 'addBook',

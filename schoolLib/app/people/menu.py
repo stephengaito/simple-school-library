@@ -18,32 +18,26 @@ def secondLevelPeopleMenu(pageData, selectedId=None, **kwargs) :
   ], klassName='vertical')
 
   if pageData.user.is_authenticated :
-    theMenu.appendChild(
+    theMenu.appendChildren([
       Button(
         'Add a person',
         theId    = 'addBorrower',
         hxGet    = '/menu/people/addBorrower',
         hxTarget = '#level1div'
-      )
-    )
-
-    theMenu.appendChild(
+      ),
       Button(
         'List classes',
         theId    = 'listClasses',
         hxGet    = '/menu/people/listClasses',
         hxTarget = '#level1div'
-      )
-    )
-
-    theMenu.appendChild(
+      ),
       Button(
         'Add a class',
         theId    = 'addClass',
         hxGet    = '/menu/people/addClass',
         hxTarget = '#level1div'
       )
-    )
+    ])
 
   if selectedId : theMenu.select(selectedId)
 

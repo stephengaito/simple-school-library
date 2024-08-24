@@ -24,7 +24,7 @@ def cli() :
   selectSql = SelectSql(
   ).fields( 'version'
   ).tables('dbVersions'
-  ).orderBy('id')
+  ).orderAscBy('id')
   #print(selectSql.sql())
   dbVersions = selectSql.parseResults(db.execute(selectSql.sql()))
   for aRow in dbVersions :

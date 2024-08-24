@@ -8,6 +8,7 @@ borrowers.firstName: text
 borrowers.familyName: text
 borrowers.cohort: integer
 borrowers.classId: integer
+borrowers.cardNumber: text
 
 borrowersFTS.borrowersFTS: text
 itemsFTS.itemsFTS: text
@@ -25,6 +26,13 @@ itemsBorrowed.borrowersId: integer
 itemsBorrowed.itemsPhysicalId: integer
 itemsBorrowed.dateBorrowed: date
 itemsBorrowed.dateDue: date
+
+# items returned
+itemsReturned.id: integer
+itemsReturned.borrowersId: integer
+itemsReturned.itemsPhysicalId: integer
+itemsReturned.dateBorrowed: date
+itemsReturned.dateReturned: date
 
 # items info
 itemsInfo.id: integer
@@ -45,7 +53,9 @@ itemsPhysical.barCode: text
 itemsPhysical.dateAdded: date
 itemsPhysical.dateBorrowed: date
 itemsPhysical.dateLastSeen: date
+itemsPhysical.notes: text
 itemsPhysical.status: text
+itemsPhysical.location: text
 
 # helpPages
 helpPages.id: integer

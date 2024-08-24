@@ -30,7 +30,7 @@ DivClasses:
   default:
    - m-1
 
-SpacedEmptyDivClasses:
+SpacedDivClasses:
   default:
     - m-4
 

@@ -8,6 +8,11 @@ def cli() :
     dbPath = config['database']
     db = sqlite3.connect(dbPath)
 
+    print("Indexing HelpPagesPath")
+    db.execute("DROP INDEX IF EXISTS helpPagesPath")
+    db.execute("CREATE INDEX IF NOT EXISTS helpPagesPath ON helpPages ( path )")
+    db.commit()
+
     print("Indexing ISBN")
     db.execute("DROP INDEX IF EXISTS isbn")
     db.execute("CREATE INDEX IF NOT EXISTS isbn ON itemsInfo ( isbn )")

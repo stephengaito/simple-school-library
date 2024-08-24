@@ -42,7 +42,7 @@ class Div(HtmxChildrenBase) :
 class EmptyDiv(Div) :
   pass
 
-class SpacedEmptyDiv(EmptyDiv) :
+class SpacedDiv(EmptyDiv) :
   pass
 
 # we defined a set of level divs which each act as replacement points.
