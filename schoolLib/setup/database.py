@@ -168,7 +168,7 @@ class SelectSql(SqlBuilder) :
     return self
 
   def sql(self) :
-    cmd = "SELECT "
+    cmd = "SELECT DISTINCT "
     cmd += ", ".join(self.fieldsList)
     cmd += " FROM "
     cmd += ", ".join(self.tablesList)

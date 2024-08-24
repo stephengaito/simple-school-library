@@ -49,10 +49,13 @@ def postSearchForBorrower(pageData, **kwargs) :
     )
   print(selectSql.sql())
   results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
+  linkHyperscript=None
+  if len(results) == 1 : linkHyperscript = "init wait 250ms then trigger click on me"
   for aRow in results :
     nameRows.append(TableRow(TableEntry(Link(
       f'/borrowers/show/{aRow['borrowerId']}',
       f'{aRow['firstName']} {aRow['familyName']}',
+      hyperscript=linkHyperscript,
       hxTarget='#level1div'
     ))))
   return schoolLib.app.finders.findABorrower(
@@ -96,7 +99,7 @@ def postSearchForAnItem(pageData, **kwargs) :
   itemRows = []
   selectSql = SelectSql(
   ).fields(
-    'itemsInfoId', 'title'
+    'itemsInfoId', 'title', 'authors'
   ).tables(
     'itemsFTS'
   ).limitTo(10
@@ -107,10 +110,15 @@ def postSearchForAnItem(pageData, **kwargs) :
     )
   print(selectSql.sql())
   results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
+  linkHyperscript=None
+  if len(results) == 1 : linkHyperscript = "init wait 250ms then trigger click on me"
   for aRow in results :
+    linkText = aRow['title']
+    if aRow['authors'] : linkText += ' ; ' + aRow['authors']
     itemRows.append(TableRow(TableEntry(Link(
       f'/itemsInfo/show/{aRow['itemsInfoId']}',
-      aRow['title'],
+      linkText,
+      hyperscript=linkHyperscript,
       hxTarget='#level1div'
     ))))
   return schoolLib.app.finders.findAnItem(
