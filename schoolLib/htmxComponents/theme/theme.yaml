@@ -47,6 +47,13 @@ LinkClasses:
     - underline
     - decoration-sky-950
 
+TextClasses:
+  default: []
+  highlight:
+    - bg-yellow-200
+    - text-lg
+    - font-extrabold
+
 ListClasses:
   default:
    - m-2

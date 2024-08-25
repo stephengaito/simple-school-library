@@ -226,8 +226,8 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
       SpacedDiv([
         RawHtml('<hr/>'),
         Text(
-          'Books currently taken out',
-          klass=['bg-yellow-200', 'text-lg', 'font-extrabold']
+          'Books currently taken out of library',
+          klassName='highlight'
         ),
         RawHtml('<hr/>')
       ]),
@@ -239,8 +239,8 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
       SpacedDiv([
         RawHtml('<hr/>'),
         Text(
-          'Reading history',
-          klass=['bg-yellow-200', 'text-lg', 'font-extrabold']
+          'Borrowing history',
+          klassName='highlight'
         ),
         RawHtml('<hr/>')
       ]),

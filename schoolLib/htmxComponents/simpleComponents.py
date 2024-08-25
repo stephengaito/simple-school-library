@@ -150,6 +150,7 @@ class Text(HtmxChildrenBase) :
     oldKlassName = self.klassName
     if self.textType == 'button' and selected :
       self.klassName += '-selected'
+    #print(self.klassName)
     tAttrs = self.computeHtmxAttrs()
     self.klassName = oldKlassName
     if self.textType :
