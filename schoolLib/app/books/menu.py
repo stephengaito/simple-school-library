@@ -22,12 +22,6 @@ def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
       hxGet    = '/menu/books/return',
       hxTarget = '#level1div'
     ),
-    #Button(
-    #  'Renew a book',
-    #  theId    = 'renew',
-    #  hxGet    = '/menu/books/renew',
-    #  hxTarget = '#level1div'
-    #),
     Button(
       'Find a book',
       theId    = 'findBook',

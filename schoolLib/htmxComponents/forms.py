@@ -188,6 +188,15 @@ class SearchBox(FormInputs) :
     placeholder=None,
     **kwargs
   ) :
+    print(yaml.dump(kwargs))
+    if 'hxTrigger' not in kwargs :
+      kwargs['hxTrigger'] = "input changed delay:250ms"
+    #if 'hxTarget' not in kwargs :
+    #  kwargs['hxTarget'] = '#level2div'
+    if 'hxSwap' not in kwargs :
+      kwargs['hxSwap'] = "morph:{ignoreActiveValue:true}"
+    if 'attrs' not in kwargs :
+      kwargs['attrs'] = ['autocomplete="off"', 'autofocus']
     super().__init__(
       name,
       inputType='search',

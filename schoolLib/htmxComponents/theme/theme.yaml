@@ -153,14 +153,6 @@ SearchBoxClasses:
     - border-solid
     - rounded-lg
 
-SearchBoxAttrs:
-  default:
-    - autocomplete="off"
-    - autofocus
-    - hx-trigger="input changed delay:250ms"
-    - hx-target="#level2div"
-    - hx-swap="morph:{ignoreActiveValue:true}"
-
 HelpButtonClasses:
   default:
     - inline

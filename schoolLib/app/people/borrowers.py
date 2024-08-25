@@ -90,7 +90,7 @@ def getBorrowerInfo(db, borrowerId) :
   borrower = borrower[0]
   theClasses = getClasses(db)
   borrower['className'] = theClasses[borrower['classId']]['name']
-  return Table([
+  return (Table([
     TableRow([
       TableEntry(Text('First Name')),
       TableEntry(Text(borrower['firstName'], klass=['bg-yellow-200']))
@@ -107,7 +107,7 @@ def getBorrowerInfo(db, borrowerId) :
       TableEntry(Text('Class')),
       TableEntry(Text(borrower['className'], klass=['bg-yellow-200']))
     ]),
-  ], klass=['max-w-prose'])
+  ], klass=['max-w-prose']), borrower['className'])
 
 def getBorrowerBooksOut(db, borrowerId) :
   ibSelectSql = SelectSql(
@@ -213,13 +213,34 @@ def getBorrowerBooksHistory(db, borrowerId) :
 
 @pagePart
 def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
-  borrowerInfo = getBorrowerInfo(pageData.db, borrowerId)
+  borrowerInfo, className = getBorrowerInfo(pageData.db, borrowerId)
   if borrowerInfo :
+    itemsBorrowedRows = getBorrowerBooksOut(pageData.db, borrowerId)
+    borrowingHistoryRows = getBorrowerBooksHistory(pageData.db, borrowerId)
+    if className.lower() != 'staff' and 1 < len(itemsBorrowedRows) :
+      takeOutHtmx = Text("Sorry you must return your books before you can take out any more")
+    else :
+      takeOutHtmx = Text("Take a book out....")
+      #takeOutHtmx = Div([
+      #  SearchBox(
+      #    hxPost='/search/items',
+      #    name='search',
+      #    helpName='findBook',
+      #    value=probe,
+      #    placeholder='Type a book title...'
+      #  ),
+      #  Table(itemRows, theId='searchResults')
+      #], attrs={'hx-ext':'morph'})
+
     theComponent = Level1div([
       schoolLib.app.people.menu.secondLevelSinglePersonMenu(
         pageData, **kwargs
       ),
       borrowerInfo,
+      EmptyDiv([]),
+      SpacedDiv([]),
+      EmptyDiv([]),
+      SpacedDiv(takeOutHtmx),
       EmptyDiv([]),
       SpacedDiv([]),
       EmptyDiv([]),
@@ -232,7 +253,7 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         RawHtml('<hr/>')
       ]),
       EmptyDiv([]),
-      Table(getBorrowerBooksOut(pageData.db, borrowerId)),
+      Table(itemsBorrowedRows),
       EmptyDiv([]),
       SpacedDiv([]),
       EmptyDiv([]),
@@ -245,7 +266,7 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         RawHtml('<hr/>')
       ]),
       EmptyDiv([]),
-      Table(getBorrowerBooksHistory(pageData.db, borrowerId))
+      Table(borrowingHistoryRows)
     ])
     if level and '0' in level :
       theComponent = Level0div([

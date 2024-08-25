@@ -17,7 +17,8 @@ def findABorrower(pageData, probe=None, nameRows=[], **kwargs) :
       name='search',
       helpName='findBorrower',
       value=probe,
-      placeholder="Type a person's name"
+      placeholder="Type a person's name",
+      hxTarget="#level2div"
     ),
     Table(nameRows, theId='searchResults')
   ], attrs={'hx-ext':'morph'})
@@ -77,7 +78,8 @@ def findAnItem(pageData, probe=None, itemRows=[], **kwargs) :
       name='search',
       helpName='findBook',
       value=probe,
-      placeholder='Type a book title...'
+      placeholder='Type a book title...',
+      hxTarget="#level2div"
     ),
     Table(itemRows, theId='searchResults')
   ], attrs={'hx-ext':'morph'})
