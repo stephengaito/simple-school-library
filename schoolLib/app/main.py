@@ -22,11 +22,11 @@ loadedConfig('config.yaml', verbose=True)
 loadedTheme()
 
 # The ORDER here is important!
+import schoolLib.app.utils
 import schoolLib.app.home.menu
 import schoolLib.app.books
 import schoolLib.app.people
 import schoolLib.app.tasks
-import schoolLib.app.metaStructure
 import schoolLib.app.admin
 
 @pagePart

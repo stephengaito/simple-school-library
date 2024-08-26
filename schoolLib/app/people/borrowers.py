@@ -6,7 +6,6 @@ import yaml
 
 from schoolLib.setup import *
 from schoolLib.htmxComponents import *
-from schoolLib.app.finders import *
 import schoolLib.app.menus
 import schoolLib.app.people.menu
 
@@ -276,7 +275,13 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
     return theComponent
   return Level1div([
     schoolLib.app.people.menu.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
-    schoolLib.app.finders.findABorrower(pageData, **kwargs)
+    schoolLib.app.utils.finders.findAThing(
+      pageData,
+      theId='level2div', hxPost='/search/borrowers',
+      helpName='findBorrower', placeHolder="Type a person's name",
+      **kwargs
+    )
+
   ])
 
 

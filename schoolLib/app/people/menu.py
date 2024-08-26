@@ -77,3 +77,27 @@ def peopleMenu(pageData, **kwargs) :
   ], theId='level0div')
 
 getRoute('/menu/people', peopleMenu, anyUser=True)
+
+@pagePart
+def getFindBorrowerForm(pageData, **kwargs) :
+  return Level1div([
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='findBorrower'
+    ),
+    schoolLib.app.utils.finders.findAThing(
+      pageData,
+      theId='level2div', hxPost='/search/borrowers',
+      helpName='findBorrower', placeHolder="Type a person's name",
+      **kwargs
+    )
+  ])
+
+getRoute('/search/borrowers', getFindBorrowerForm, anyUser=True)
+
+@pagePart
+def postSearchForBorrower(pageData, **kwargs) :
+  return schoolLib.app.utils.finders.searchForABorrower(
+    pageData, hxTarget='#level1div', targetUrl='/borrowers/show', **kwargs
+  )
+
+postRoute('/search/borrowers', postSearchForBorrower, anyUser=True)

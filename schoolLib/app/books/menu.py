@@ -73,3 +73,27 @@ def booksMenu(pageData, **kwargs) :
 # routes
 
 getRoute('/menu/books', booksMenu, anyUser=True)
+
+@pagePart
+def getFindAnItemForm(pageData, **kwargs) :
+  return Level1div([
+    schoolLib.app.books.menu.secondLevelBooksMenu(
+      pageData, selectedId='findBook'
+    ),
+    schoolLib.app.utils.finders.findAThing(
+      pageData,
+      theId='level2div', hxPost='/search/items',
+      helpName='findBook', placeHolder='Type a book title...',
+      **kwargs
+    )
+  ])
+
+getRoute('/search/items', getFindAnItemForm, anyUser=True)
+
+@pagePart
+def postSearchForAnItem(pageData, **kwargs) :
+  return schoolLib.app.utils.finders.searchForAnItem(
+    pageData, hxTarget='#level1div', targetUrl='/itemsInfo/show', **kwargs
+  )
+
+postRoute('/search/items', postSearchForAnItem, anyUser=True)
