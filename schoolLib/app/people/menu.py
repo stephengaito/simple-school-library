@@ -94,10 +94,37 @@ def getFindBorrowerForm(pageData, **kwargs) :
 
 getRoute('/search/borrowers', getFindBorrowerForm, anyUser=True)
 
+class SearchForABorrowerIter(schoolLib.app.utils.finders.SearchIter) :
+  def __init__(self, targetUrl, theForm, db) :
+    selectSql = SelectSql(
+    ).fields(
+      'borrowerId', 'firstName', 'familyName'
+    ).tables('borrowersFTS'
+    ).limitTo(10
+    ).orderAscBy('rank')
+    if theForm['search'] :
+      selectSql.whereValue(
+        'borrowersFTS', theForm['search']+'*', operator='MATCH'
+      )
+    print(selectSql.sql())
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    super().__init__(results, targetUrl)
+
+  def next(self) :
+    curRow = self.nextRow()
+    return (
+      f'{self.targetUrl}/{curRow['borrowerId']}',
+      f'{curRow['firstName']} {curRow['familyName']}'
+    )
+
 @pagePart
 def postSearchForBorrower(pageData, **kwargs) :
-  return schoolLib.app.utils.finders.searchForABorrower(
-    pageData, hxTarget='#level1div', targetUrl='/borrowers/show', **kwargs
+  return schoolLib.app.utils.finders.searchForThings(
+    pageData, SearchForABorrowerIter,
+    hxTarget='#level1div', targetUrl='/borrowers/show',
+    theId='level2div', hxPost='/search/borrowers',
+    helpName='findBorrower', placeHolder="Type a person's name",
+    **kwargs
   )
 
 postRoute('/search/borrowers', postSearchForBorrower, anyUser=True)

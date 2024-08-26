@@ -90,10 +90,37 @@ def getFindAnItemForm(pageData, **kwargs) :
 
 getRoute('/search/items', getFindAnItemForm, anyUser=True)
 
+class SearchForAnItemIter(schoolLib.app.utils.finders.SearchIter) :
+  def __init__(self, targetUrl, theForm, db) :
+    selectSql = SelectSql(
+    ).fields(
+      'itemsInfoId', 'title', 'authors'
+    ).tables(
+      'itemsFTS'
+    ).limitTo(10
+    ).orderAscBy('rank')
+    if theForm['search'] :
+      selectSql.whereValue(
+        'itemsFTS', theForm['search']+'*', operator='MATCH'
+      )
+    print(selectSql.sql())
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    super().__init__(results, targetUrl)
+
+  def next(self) :
+    curRow = self.nextRow()
+    linkText = curRow['title']
+    if curRow['authors'] : linkText += ' ; ' + curRow['authors']
+    return (f'{self.targetUrl}/{curRow['itemsInfoId']}', linkText)
+
 @pagePart
 def postSearchForAnItem(pageData, **kwargs) :
-  return schoolLib.app.utils.finders.searchForAnItem(
-    pageData, hxTarget='#level1div', targetUrl='/itemsInfo/show', **kwargs
+  return schoolLib.app.utils.finders.searchForThings(
+    pageData, SearchForAnItemIter,
+    hxTarget='#level1div', targetUrl='/itemsInfo/show',
+    theId='level2div', hxPost='/search/items',
+    helpName='findBook', placeHolder='Type a book title...',
+    **kwargs
   )
 
 postRoute('/search/items', postSearchForAnItem, anyUser=True)

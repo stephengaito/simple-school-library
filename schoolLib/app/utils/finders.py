@@ -29,80 +29,57 @@ def findAThing(
   ], theId=theId, attrs={'hx-ext':'morph'})
 
 ##########################################################################
-# borrowers (post back end)
+# generic search results HTMX (post back end)
 
 @pagePart
-def searchForABorrower(
-  pageData, hxTarget='#level1div', targetUrl='/borrowers/show', **kwargs
+def searchForThings(
+  pageData, thingsIterClass,
+  hxTarget='#level1div', targetUrl='/borrowers/show',
+  theId='level2div', hxPost='/search/borrowers',
+  helpName='findBorrower', placeHolder="Type a person's name",
+  **kwargs
 ) :
   theForm = pageData.form
-  nameRows =[]
-  selectSql = SelectSql(
-  ).fields(
-    'borrowerId', 'firstName', 'familyName'
-  ).tables('borrowersFTS'
-  ).limitTo(10
-  ).orderAscBy('rank')
-  if theForm['search'] :
-    selectSql.whereValue(
-      'borrowersFTS', theForm['search']+'*', operator='MATCH'
-    )
-  print(selectSql.sql())
-  results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
+  thingsIter = thingsIterClass(targetUrl, theForm, pageData.db)
+
   linkHyperscript=None
-  if len(results) == 1 : linkHyperscript = "init wait 250ms then trigger click on me"
-  for aRow in results :
-    nameRows.append(TableRow(TableEntry(Link(
-      f'{targetUrl}/{aRow['borrowerId']}',
-      f'{aRow['firstName']} {aRow['familyName']}',
+  if thingsIter.numResults == 1 :
+    linkHyperscript = "init wait 250ms then trigger click on me"
+
+  thingRows =[]
+  for linkUrl, linkText in thingsIter :
+    thingRows.append(TableRow(TableEntry(Link(
+      linkUrl, linkText,
       hyperscript=linkHyperscript,
       hxTarget=hxTarget
     ))))
   return schoolLib.app.utils.finders.findAThing(
     pageData,
-    probe=theForm['search'], thingRows=nameRows,
-    theId='level2div', hxPost='/search/borrowers',
-    helpName='findBorrower', placeHolder="Type a person's name",
+    probe=theForm['search'], thingRows=thingRows,
+    theId=theId, hxPost=hxPost,
+    helpName=helpName, placeHolder=placeHolder,
     **kwargs
   )
 
 ##########################################################################
-# items (aka Books)
+# generic iterator (class)
 
-@pagePart
-def searchForAnItem(
-  pageData, hxTarget='#level1div', targetUrl='/itemsInfo/show', **kwargs
-) :
-  theForm = pageData.form
-  itemRows = []
-  selectSql = SelectSql(
-  ).fields(
-    'itemsInfoId', 'title', 'authors'
-  ).tables(
-    'itemsFTS'
-  ).limitTo(10
-  ).orderAscBy('rank')
-  if theForm['search'] :
-    selectSql.whereValue(
-      'itemsFTS', theForm['search']+'*', operator='MATCH'
-    )
-  print(selectSql.sql())
-  results = selectSql.parseResults(pageData.db.execute(selectSql.sql()))
-  linkHyperscript=None
-  if len(results) == 1 : linkHyperscript = "init wait 250ms then trigger click on me"
-  for aRow in results :
-    linkText = aRow['title']
-    if aRow['authors'] : linkText += ' ; ' + aRow['authors']
-    itemRows.append(TableRow(TableEntry(Link(
-      f'{targetUrl}/{aRow['itemsInfoId']}',
-      linkText,
-      hyperscript=linkHyperscript,
-      hxTarget=hxTarget
-    ))))
-  return schoolLib.app.utils.finders.findAThing(
-    pageData,
-    probe=theForm['search'], thingRows=itemRows,
-    theId='level2div', hxPost='/search/items',
-    helpName='findBook', placeHolder='Type a book title...',
-    **kwargs
-  )
+class SearchIter(object) :
+
+  def __init__(self, results, targetUrl) :
+    self.results = results
+    self.targetUrl = targetUrl
+    self.numResults = len(results)
+    self.curIter = 0
+
+  def __iter__(self) :
+    return self
+
+  def __next__(self) :
+    return self.next()
+
+  def nextRow(self) :
+    if self.numResults <= self.curIter : raise StopIteration()
+    curRow = self.results[self.curIter]
+    self.curIter += 1
+    return curRow
