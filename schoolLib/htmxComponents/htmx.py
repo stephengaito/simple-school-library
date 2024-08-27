@@ -62,6 +62,7 @@ class HtmxBase :
     hxTrigger=None,
     hxTarget=None,
     hxSwap=None,
+    hxSwapOob=None,
     hxHeaders={},
     hyperscript=None,
     **kwargs
@@ -79,6 +80,7 @@ class HtmxBase :
     self.hxTrigger   = hxTrigger
     self.hxTarget    = hxTarget
     self.hxSwap      = hxSwap
+    self.hxSwapOob   = hxSwapOob
     self.hxHeaders   = hxHeaders
     self.hyperscript = hyperscript
 
@@ -96,6 +98,7 @@ class HtmxBase :
     hxTrigger=None,
     hxTarget=None,
     hxSwap=None,
+    hxSwapOob=None,
     hxHeaders={},
     hyperscript=None,
     **kwargs
@@ -113,6 +116,7 @@ class HtmxBase :
     if hxTrigger   : self.hxTrigger   = hxTrigger
     if hxTarget    : self.hxTarget    = hxTarget
     if hxSwap      : self.hxSwap      = hxSwap
+    if hxSwapOob   : self.hxSwapOob   = hxSwapOob
     if hxHeaders   : self.hxHeaders.extend(hxHeaders)
     if hyperscript : self.hyperscript = hyperscript
 
@@ -175,6 +179,8 @@ class HtmxBase :
       if not self.hxSwap : self.hxSwap = 'outerHTML'
     if self.hxSwap :
       targetStr += f' hx-swap="{self.hxSwap}"'
+    if self.hxSwapOob :
+      targetStr += f' hx-swap-oob="{self.hxSwapOob}"'
     return targetStr
 
   def computeHeaders(self) :

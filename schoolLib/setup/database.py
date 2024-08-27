@@ -335,14 +335,30 @@ def findPhysicalBookInItemsBorrowed(db, itemsPhysicalId) :
   if results : return results[0]
   return None
 
-def returnABook(db, itemsPhysicalId) :
+def dbReturnABook(db, itemsBorrowedId) :
   # find the book in the itemsBorrowed table (to ensure it IS there)
-  itemBorrowedRow = findPhysicalBookInItemsBorrowed(db, itemsPhysicalId)
+  selectSql = SelectSql(
+  ).fields(
+    'itemsBorrowed.id', 'borrowersId', 'itemsPhysicalId', 'dateBorrowed'
+  ).tables('itemsBorrowed'
+  ).whereValue(
+    'itemsBorrowed.id', itemsBorrowedId
+  )
+  itemBorrowedRow = selectSql.parseResults(
+    db.execute(selectSql.sql()),
+    fetchAll=False
+  )
   if not itemBorrowedRow : return False
+  itemBorrowedRow = itemBorrowedRow[0]
+
+  print("Returned:")
+  print(yaml.dump(itemBorrowedRow))
+
+  return True
 
   # delete the book from the itemsBorrowed table
   db.execute(
-    DeleteSql().whereValue('id', itemsBorrowedRow['id']).sql('itemsBorrowed')
+    DeleteSql().whereValue('id', itemsBorrowedId).sql('itemsBorrowed')
   )
 
   # insert the book into the itemsReturned table

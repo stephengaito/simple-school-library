@@ -35,12 +35,19 @@ def findAThing(
 def searchForThings(
   pageData, thingsIterClass,
   targetUrl='/borrowers/show', targetLevel='level1div',
+  targetSwap='outerHTML', oobLevel=None, search=None,
   theId='level2div', hxPost='/search/borrowers', hxTarget=None,
   helpName='findBorrower', placeHolder="Type a person's name",
   **kwargs
 ) :
   if not hxTarget : hxTarget = '#'+targetLevel
   theForm = pageData.form
+
+  if search and 'search' not in theForm :
+    theForm['search'] = search
+  if oobLevel and 'search' in theForm :
+    search = theForm['search']
+
   thingsIter = thingsIterClass(targetUrl, theForm, pageData.db)
 
   linkHyperscript=None
@@ -52,8 +59,11 @@ def searchForThings(
     thingRows.append(TableRow(TableEntry(Link(
       linkUrl, linkText,
       level=targetLevel,
+      oobLevel=oobLevel,
+      search=search,
       hyperscript=linkHyperscript,
-      hxTarget=hxTarget
+      hxTarget=hxTarget,
+      hxSwap=targetSwap
     ))))
   return schoolLib.app.utils.finders.findAThing(
     pageData,
@@ -197,19 +207,21 @@ def postSearchForAnItem(pageData, **kwargs) :
 postRoute('/search/items', postSearchForAnItem, anyUser=True)
 
 ##########################################################################
-# search for a physical item using a barCode
+# search for a borrowed item using a barCode
 
-class SearchForAPhysicalItemIter(SearchIter) :
+class SearchForABorrowedItemIter(SearchIter) :
   def __init__(self, targetUrl, theForm, db) :
     selectSql = SelectSql(
     ).fields(
-      'itemsPhysicalId', 'barCode', 'title'
-    ).tables('itemsPhysical', 'itemsInfo'
-    ).where(
-
+      'itemsBorrowed.id', 'barCode', 'title'
+    ).tables('itemsBorrowed', 'itemsPhysical', 'itemsInfo'
+    ).whereField(
+      'itemsBorrowed.itemsPhysicalId', 'itemsPhysical.id'
+    ).whereField(
+      'itemsPhysical.itemsInfoId', 'itemsInfo.id'
     ).limitTo(10
     ).orderAscBy('barCode')
-    if theForm['search'] :
+    if 'search' in theForm :
       selectSql.whereValue(
         'barCode', theForm['search']+'%', operator='LIKE'
       )
@@ -219,13 +231,18 @@ class SearchForAPhysicalItemIter(SearchIter) :
 
   def next(self) :
     curRow = self.nextRow()
+    print(yaml.dump(curRow))
     return (
-      f'{self.targetUrl}/{curRow['itemsPhysicalId']}',
+      f'{self.targetUrl}/{curRow['itemsBorrowed_id']}',
       f'{curRow['barCode']} {curRow['title']}'
     )
 
+#########################################
+# return a book: from borrower form
+
+"""
 @pagePart
-def returnABookSearch(pageData, hxPost='/borrowers/', **kwargs) :
+def returnABorrowerBookSearch(pageData, hxPost='/borrowers/', **kwargs) :
   return schoolLib.app.utils.finders.findAThing(
     pageData,
     theId='returnABookSearch', hxPost=hxPost,
@@ -234,7 +251,7 @@ def returnABookSearch(pageData, hxPost='/borrowers/', **kwargs) :
   )
 
 @pagePart
-def postReturnABookSearch(pageData, **kwargs) :
+def postReturnABorrowerBookSearch(pageData, **kwargs) :
   return schoolLib.app.utils.finders.searchForThings(
     pageData, schoolLib.app.utils.finders.SearchForAPhysicalItemIter,
     targetUrl='/borrowers/returnABook', targetLevel=somewhere,
@@ -243,8 +260,7 @@ def postReturnABookSearch(pageData, **kwargs) :
     **kwargs
   )
 
-#? broken here.... postRoute('')
-# here be dragons!
+postRoute("/search/barCode/returnBooks", postReturnABorrowerBookSearch, anyUser=True)
 
 @pagePart
 def postReturnABook(pageData, borrowerId=None, itemsPhysicalId=None, **kwargs) :
@@ -262,7 +278,120 @@ postRoute(
   '/borrowers/returnABook/{borrowerId:int}/{itemsPhysicalId:int}',
   postReturnABook, anyUser=True
 )
+"""
 
+#########################################
+# return a book: from return a book form
+
+@pagePart
+def returnBooksSearch(pageData, hxPost='/search/barCode/returnBooks', **kwargs) :
+  return schoolLib.app.utils.finders.findAThing(
+    pageData,
+    theId='returnABookSearch', hxPost=hxPost,
+    helpName='findBarCode', placeHolder="Type a bar code...",
+    **kwargs
+  )
+
+@pagePart
+def postReturnBooksSearch(pageData, **kwargs) :
+  return schoolLib.app.utils.finders.searchForThings(
+    pageData, schoolLib.app.utils.finders.SearchForABorrowedItemIter,
+    targetUrl='/books/returnABook', targetLevel='returnABookSearch',
+    oobLevel='booksReturned',
+    theId='returnABookSearch', hxPost='/search/barCode/returnBooks',
+    helpName='findBarCode', placeHolder="Type a bar code...",
+    **kwargs
+  )
+
+postRoute("/search/barCode/returnBooks", postReturnBooksSearch, anyUser=True)
+
+@pagePart
+def getReturnABook(
+  pageData, itemsBorrowedId=None,
+  level=None, oobLevel=None, search=None,
+  **kwargs
+) :
+  if itemsBorrowedId :
+    dbReturnABook(pageData.db, itemsBorrowedId)
+    selectSql = SelectSql(
+    ).fields(
+      'itemsBorrowed.id', 'barCode', 'title', 'firstName', 'familyName'
+    ).tables('itemsBorrowed', 'borrowers',' itemsPhysical', 'itemsInfo'
+    ).whereField(
+      'itemsBorrowed.borrowersId', 'borrowers.id'
+    ).whereField(
+      'itemsBorrowed.itemsPhysicalId', 'itemsPhysical.id'
+    ).whereField(
+      'itemsPhysical.itemsInfoId', 'itemsInfo.id'
+    ).whereValue(
+      'itemsBorrowed.id', itemsBorrowedId
+    )
+    print(selectSql.sql())
+    results = selectSql.parseResults(
+      pageData.db.execute(selectSql.sql()),
+      fetchAll=False
+    )
+    if results :
+      results = results[0]
+      return OobCollection([
+        schoolLib.app.utils.finders.searchForThings(
+          pageData, schoolLib.app.utils.finders.SearchForABorrowedItemIter,
+          targetUrl='/books/returnABook', targetLevel='returnABookSearch',
+          oobLevel='booksReturned', search=search,
+          theId='returnABookSearch', hxPost='/search/barCode/returnBooks',
+          helpName='findBarCode', placeHolder="Type a bar code...",
+          **kwargs
+        ),
+        OobTemplate(
+          TableBody([
+            TableRow([
+              TableEntry(Text(results['barCode'])),
+              TableEntry(Text(results['title'])),
+              TableEntry(Text(results['firstName'])),
+              TableEntry(Text(results['familyName']))
+            ]),
+          ], hxSwapOob='beforeend:#booksReturned')
+        )
+      ])
+
+  return Text("hello")
+
+getRoute(
+  "/books/returnABook/{itemsBorrowedId:int}", getReturnABook, anyUser=True
+)
+
+##########################################################################
+# search for a physical item using a barCode
+
+class SearchForAPhysicalItemIter(SearchIter) :
+  def __init__(self, targetUrl, theForm, db) :
+    selectSql = SelectSql(
+    ).fields(
+      'itemsPhysicalId', 'barCode', 'title'
+    ).tables('itemsPhysical', 'itemsInfo'
+    ).whereField(
+      'itemsPhysical.itemsInfoId', 'itemsInfo.id'
+    ).limitTo(10
+    ).orderAscBy('barCode')
+    if theForm['search'] :
+      selectSql.whereValue(
+        'barCode', theForm['search']+'%', operator='LIKE'
+      )
+    print(selectSql.sql())
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    super().__init__(results, targetUrl)
+
+  def next(self) :
+    curRow = self.nextRow()
+    return (
+      f'{self.targetUrl}/{curRow['itemsPhysicalId']}',
+      f'{curRow['barCode']} {curRow['title']}'
+    )
+
+#########################################
+# Take out a book: from borrower form
+
+"""
 @pagePart
 def takeOutABookSearch(pageData, **kwargs) :
   return schoolLib.app.utils.finders.findAThing(
@@ -288,3 +417,4 @@ postRoute(
   '/borrowers/takeOutABook/{borrowerId:int}/{barCode:str}',
   postTakeOutABook, anyUser=True
 )
+"""

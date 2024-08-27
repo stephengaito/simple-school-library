@@ -39,6 +39,7 @@ class PageData :
 
   async def getRequestData(self, request) :
     self.form    = await request.form()
+    self.form    = dict(self.form)
     theHeaders = {}
     for aHeader, aValue in request.headers.items() :
       theHeaders[aHeader] = aValue

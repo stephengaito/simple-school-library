@@ -1,4 +1,6 @@
 
+import urllib
+
 from schoolLib.htmxComponents.htmx import *
 
 class ModalDialog(HtmxChildrenBase) :
@@ -130,6 +132,20 @@ class RawHtml(HtmxBase) :
   def collectHtml(self, htmlFragments, **kwargs) :
     htmlFragments.append(self.rawHtml)
 
+class OobTemplate(HtmxBase) :
+  def __init__(self, htmxComponent, **kwargs) :
+    super().__init__(**kwargs)
+    self.htmxComponent = htmxComponent
+
+  def collectHtml(self, htmlFragments, **kwargs) :
+    htmlFragments.append(f"<template {self.computeHtmxAttrs()}>")
+    self.htmxComponent.collectHtml(htmlFragments)
+    htmlFragments.append("</template>")
+
+class OobCollection(HtmxChildrenBase) :
+  def collectHtml(self, htmlFragments, **kwargs) :
+    self.collectChildrenHtml(htmlFragments)
+
 class Text(HtmxChildrenBase) :
   def __init__(self, someText, textType='p', **kwargs) :
     super().__init__(someText, **kwargs)
@@ -192,9 +208,15 @@ class Label(Text) :
 
 class Link(Text) :
   def __init__(
-    self, url, text, textType='a', level=None, target=None, **kwargs
+    self, url, text, textType='a',
+    level=None, oobLevel=None, target=None, search=None,
+    **kwargs
   ) :
-    if level : url += f'?level={level}'
+    parameters = {}
+    if level    : parameters['level']    = level
+    if oobLevel : parameters['oobLevel'] = oobLevel
+    if search   : parameters['search']   = search
+    if parameters : url += '?'+ urllib.parse.urlencode(parameters)
     if 'attrs' not in kwargs : kwargs['attrs'] = []
     if 'hxTarget' in kwargs :
       kwargs['hxGet'] = url
