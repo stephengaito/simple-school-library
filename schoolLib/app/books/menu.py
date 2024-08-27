@@ -75,6 +75,22 @@ def booksMenu(pageData, **kwargs) :
 getRoute('/menu/books', booksMenu, anyUser=True)
 
 @pagePart
+def getTakeOutABookForm(pageData, **kwargs) :
+  return Level1div([
+    schoolLib.app.books.menu.secondLevelBooksMenu(
+      pageData, selectedId='takeOut'
+    ),
+    schoolLib.app.utils.finders.findAThing(
+      pageData,
+      theId='level2div', hxPost='/search/borrowers?level=level0div',
+      helpName='findBorrower', placeHolder="Type a borrower's name",
+      **kwargs
+    )
+  ])
+
+getRoute('/menu/books/takeOut', getTakeOutABookForm, anyUser=True)
+
+@pagePart
 def getFindAnItemForm(pageData, **kwargs) :
   return Level1div([
     schoolLib.app.books.menu.secondLevelBooksMenu(
@@ -117,7 +133,7 @@ class SearchForAnItemIter(schoolLib.app.utils.finders.SearchIter) :
 def postSearchForAnItem(pageData, **kwargs) :
   return schoolLib.app.utils.finders.searchForThings(
     pageData, SearchForAnItemIter,
-    hxTarget='#level1div', targetUrl='/itemsInfo/show',
+    targetUrl='/itemsInfo/show', targetLeve='level1div',
     theId='level2div', hxPost='/search/items',
     helpName='findBook', placeHolder='Type a book title...',
     **kwargs

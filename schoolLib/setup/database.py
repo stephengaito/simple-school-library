@@ -5,6 +5,7 @@ A simple tool to access the database
 ## TODO need to protect from `'` used by user.
 
 from contextlib import contextmanager
+from datetime import date, timedelta
 import os
 import sqlite3
 import traceback
@@ -316,3 +317,62 @@ def getHelpPageHtml(db, aHelpPage) :
     print(yaml.dump(sqliteUnEscapeSingleQuotes(results[0]['content'])))
     return sqliteUnEscapeSingleQuotes(results[0]['content'])
   return None
+
+# book handling
+
+def findPhysicalBookInItemsBorrowed(db, itemsPhysicalId) :
+  selectSql = SelectSql(
+  ).fields( 'id', 'borrowersId', 'itemsPhysicalId',
+  ).tables( 'itemsBorrowed'
+  ).whereValue(
+    'itemsPhysicalId', itemsPhysicalId
+  )
+  print(selectSql.sql())
+  results = selectSql.parseResults(
+    db,execute(selectSql.sql()),
+    fetchAll=False
+  )
+  if results : return results[0]
+  return None
+
+def returnABook(db, itemsPhysicalId) :
+  # find the book in the itemsBorrowed table (to ensure it IS there)
+  itemBorrowedRow = findPhysicalBookInItemsBorrowed(db, itemsPhysicalId)
+  if not itemBorrowedRow : return False
+
+  # delete the book from the itemsBorrowed table
+  db.execute(
+    DeleteSql().whereValue('id', itemsBorrowedRow['id']).sql('itemsBorrowed')
+  )
+
+  # insert the book into the itemsReturned table
+  db.execute(*InsertSql().sql('itemsReturned', {
+    'borrowersId'     : itemsBorrowedRow['borrowersId'],
+    'itemsPhysicalId' : itemsBorrowedRow['itemsPhysicalId'],
+    'dateBorrowed'    : itemsBorrowedRow['dateBorrowed'],
+    'dateReturned'    : date.today()
+  }))
+
+  # commit these changes
+  db.commit()
+  return True
+
+def takeOutABook(db, borrowerId, itemsPhysicalId) :
+  # find the book in the itemsBorrowed table (to ensure it IS NOT there)
+  itemBorrowedRow = findPhysicalBookInItemsBorrowed(db, itemsPhysicalId)
+  if itemBorrowedRow : return False
+
+  # insert the book into the itemsBorrowed table
+  today = date.today()
+  loanPeriod = 7
+  if 'loanPeriod' in config : loanPeriod = config['loanPeriod']
+  db.execute(*InsertSql().sql('itemsReturned', {
+    'borrowersId'     : borrowerId,
+    'itemsPhysicalId' : itemsPhysicalId,
+    'dateBorrowed'    : today,
+    'dateDue'         : today + timedelta(days=loanPeriod)
+  }))
+
+  # commit these changes
+  db.commit()
+  return True

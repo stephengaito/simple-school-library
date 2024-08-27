@@ -34,11 +34,12 @@ def findAThing(
 @pagePart
 def searchForThings(
   pageData, thingsIterClass,
-  hxTarget='#level1div', targetUrl='/borrowers/show',
-  theId='level2div', hxPost='/search/borrowers',
+  targetUrl='/borrowers/show', targetLevel='level1div',
+  theId='level2div', hxPost='/search/borrowers', hxTarget=None,
   helpName='findBorrower', placeHolder="Type a person's name",
   **kwargs
 ) :
+  if not hxTarget : hxTarget = '#'+targetLevel
   theForm = pageData.form
   thingsIter = thingsIterClass(targetUrl, theForm, pageData.db)
 
@@ -50,6 +51,7 @@ def searchForThings(
   for linkUrl, linkText in thingsIter :
     thingRows.append(TableRow(TableEntry(Link(
       linkUrl, linkText,
+      level=targetLevel,
       hyperscript=linkHyperscript,
       hxTarget=hxTarget
     ))))
@@ -83,3 +85,31 @@ class SearchIter(object) :
     curRow = self.results[self.curIter]
     self.curIter += 1
     return curRow
+
+##########################################################################
+# search for a physical item (class)
+
+class SearchForAPhysicalItemIter(SearchIter) :
+  def __init__(self, targetUrl, theForm, db) :
+    selectSql = SelectSql(
+    ).fields(
+      'itemsPhysicalId', 'barCode', 'title'
+    ).tables('itemsPhysical', 'itemsInfo'
+    ).where(
+
+    ).limitTo(10
+    ).orderAscBy('barCode')
+    if theForm['search'] :
+      selectSql.whereValue(
+        'barCode', theForm['search']+'%', operator='LIKE'
+      )
+    print(selectSql.sql())
+    results = selectSql.parseResults(db.execute(selectSql.sql()))
+    super().__init__(results, targetUrl)
+
+  def next(self) :
+    curRow = self.nextRow()
+    return (
+      f'{self.targetUrl}/{curRow['itemsPhysicalId']}',
+      f'{curRow['barCode']} {curRow['title']}'
+    )

@@ -118,10 +118,12 @@ class SearchForABorrowerIter(schoolLib.app.utils.finders.SearchIter) :
     )
 
 @pagePart
-def postSearchForBorrower(pageData, **kwargs) :
+def postSearchForBorrower(pageData, level=None, **kwargs) :
+  if not level : level = 'level1div'
+  print(f"postSearchForBorrower: [{level}]")
   return schoolLib.app.utils.finders.searchForThings(
     pageData, SearchForABorrowerIter,
-    hxTarget='#level1div', targetUrl='/borrowers/show',
+    targetUrl='/borrowers/show', targetLevel=level,
     theId='level2div', hxPost='/search/borrowers',
     helpName='findBorrower', placeHolder="Type a person's name",
     **kwargs

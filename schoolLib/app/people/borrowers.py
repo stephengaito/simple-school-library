@@ -211,11 +211,78 @@ def getBorrowerBooksHistory(db, borrowerId) :
   return itemsReturnedRows
 
 @pagePart
+def returnABookSearch(pageData, hxPost='/borrowers/', **kwargs) :
+  return schoolLib.app.utils.finders.findAThing(
+    pageData,
+    theId='returnABookSearch', hxPost=hxPost,
+    helpName='findBarCode', placeHolder="Type a bar code...",
+    **kwargs
+  )
+
+@pagePart
+def postReturnABookSearch(pageData, **kwargs) :
+  return schoolLib.app.utils.finders.searchForThings(
+    pageData, schoolLib.app.utils.finders.SearchForAPhysicalItemIter,
+    targetUrl='/borrowers/returnABook', targetLevel=somewhere,
+    theId=somewhereElse, hxPost='/search/barCodes',
+    helpName='findBarCode', placeHolder="Type a bar code...",
+    **kwargs
+  )
+
+#? broken here.... postRoute('')
+# here be dragons!
+
+@pagePart
+def postReturnABook(pageData, borrowerId=None, itemsPhysicalId=None, **kwargs) :
+  if not borrowerId or not itemsPhysicalId :
+    # do nothing
+    if 'headers' not in kwargs : kwargs['headers'] = {}
+    kwargs['headers']['HX-Reswap'] = 'none'
+    return Div([])
+
+  returnABook( pageData.db, itemsPhysicalId)
+  itemsBorrowedRows = getBorrowerBooksOut(db, borrowerId)
+  return Table(itemsBorrowedRows, theId='itemsBorrowed')
+
+postRoute(
+  '/borrowers/returnABook/{borrowerId:int}/{itemsPhysicalId:int}',
+  postReturnABook, anyUser=True
+)
+
+@pagePart
+def takeOutABookSearch(pageData, **kwargs) :
+  return schoolLib.app.utils.finders.findAThing(
+    pageData,
+    theId='takeOutABookSearch', hxPost=somewhere,
+    helpName='findBarCode', placeHolder="Type a bar code...",
+    **kwargs
+  )
+
+@pagePart
+def postTakeOutABook(pageData, borrowerId=None, itemsPhysicalId=None, **kwargs) :
+  if not borrowerId or not itemsPhysicalId :
+    # do nothing
+    if 'headers' not in kwargs : kwargs['headers'] = {}
+    kwargs['headers']['HX-Reswap'] = 'none'
+    return Div([])
+
+  takeOutABook(pageData.db, borrowerId, itemsPhysicalId)
+  itemsBorrowedRows = getBorrowerBooksOut(db, borrowerId)
+  return Table(itemsBorrowedRows, theId='itemsBorrowed')
+
+postRoute(
+  '/borrowers/takeOutABook/{borrowerId:int}/{barCode:str}',
+  postTakeOutABook, anyUser=True
+)
+
+@pagePart
 def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
+  print(f"getShowBorrowerInfo: [{level}]")
   borrowerInfo, className = getBorrowerInfo(pageData.db, borrowerId)
   if borrowerInfo :
     itemsBorrowedRows = getBorrowerBooksOut(pageData.db, borrowerId)
     borrowingHistoryRows = getBorrowerBooksHistory(pageData.db, borrowerId)
+
     if className.lower() != 'staff' and 1 < len(itemsBorrowedRows) :
       takeOutHtmx = Text("Sorry you must return your books before you can take out any more")
     else :
@@ -252,7 +319,7 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         RawHtml('<hr/>')
       ]),
       EmptyDiv([]),
-      Table(itemsBorrowedRows),
+      Table(itemsBorrowedRows, theId='itemsBorrowed'),
       EmptyDiv([]),
       SpacedDiv([]),
       EmptyDiv([]),
