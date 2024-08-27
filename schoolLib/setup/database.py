@@ -69,9 +69,7 @@ class SqlBuilder :
 
   def whereValue(self, field, value, operator='=') :
     wrappedValue = str(value)
-    print(f"{field} := {value}")
-    print(schemaFields[field])
-    if field in schemaFields and schemaFields[field] != "integer" :
+    if field in schemaFields and schemaFields[field] == "text" :
       wrappedValue = f"'{sqliteEscapeSingleQuotes(value)}'"
     self.whereList.append(f"{field} {operator} {wrappedValue}")
     return self
@@ -215,7 +213,10 @@ class InsertSql(SqlBuilder) :
     for aKey, aValue in values.items() :
       if aKey == 'id' : continue
       keysList.append(aKey)
-      valuesList.append(f"{sqliteEscapeSingleQuotes(aValue)}")
+      escapedValue = str(aValue)
+      if aKey in schemaFields and schemaFields[aKey] == "text" :
+        escapedValue = f"{sqliteEscapeSingleQuotes(aValue)}"
+      valuesList.append(escapedValue)
 
     cmd = "INSERT INTO "
     cmd += table
@@ -354,8 +355,6 @@ def dbReturnABook(db, itemsBorrowedId) :
   print("Returned:")
   print(yaml.dump(itemBorrowedRow))
 
-  return True
-
   # delete the book from the itemsBorrowed table
   db.execute(
     DeleteSql().whereValue('id', itemsBorrowedId).sql('itemsBorrowed')
@@ -363,9 +362,9 @@ def dbReturnABook(db, itemsBorrowedId) :
 
   # insert the book into the itemsReturned table
   db.execute(*InsertSql().sql('itemsReturned', {
-    'borrowersId'     : itemsBorrowedRow['borrowersId'],
-    'itemsPhysicalId' : itemsBorrowedRow['itemsPhysicalId'],
-    'dateBorrowed'    : itemsBorrowedRow['dateBorrowed'],
+    'borrowersId'     : itemBorrowedRow['borrowersId'],
+    'itemsPhysicalId' : itemBorrowedRow['itemsPhysicalId'],
+    'dateBorrowed'    : itemBorrowedRow['dateBorrowed'],
     'dateReturned'    : date.today()
   }))
 

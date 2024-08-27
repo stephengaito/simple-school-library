@@ -312,7 +312,6 @@ def getReturnABook(
   **kwargs
 ) :
   if itemsBorrowedId :
-    dbReturnABook(pageData.db, itemsBorrowedId)
     selectSql = SelectSql(
     ).fields(
       'itemsBorrowed.id', 'barCode', 'title', 'firstName', 'familyName'
@@ -333,6 +332,7 @@ def getReturnABook(
     )
     if results :
       results = results[0]
+      dbReturnABook(pageData.db, itemsBorrowedId)
       return OobCollection([
         schoolLib.app.utils.finders.searchForThings(
           pageData, schoolLib.app.utils.finders.SearchForABorrowedItemIter,
