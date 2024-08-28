@@ -223,10 +223,11 @@ class SearchForABorrowedItemIter(SearchIter) :
     ).orderAscBy('barCode')
     if 'search' in theForm :
       selectSql.whereValue(
-        'barCode', theForm['search']+'%', operator='LIKE'
+        'barCode', theForm['search'] #+'%', operator='LIKE'
       )
     print(selectSql.sql())
     results = selectSql.parseResults(db.execute(selectSql.sql()))
+    print(len(results))
     super().__init__(results, targetUrl)
 
   def next(self) :
