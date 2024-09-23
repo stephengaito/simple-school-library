@@ -27,7 +27,7 @@ BIN_SCRIPT
   cat << BIN_SCRIPT > $cmdScript
 #!/bin/sh
 
-exec $uvicornBin schoolLib.app.main:app /etc/schoolLib/config.yaml
+exec $uvicornBin schoolLib.app.main:app
 
 BIN_SCRIPT
 
