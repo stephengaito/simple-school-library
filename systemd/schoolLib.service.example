@@ -3,7 +3,8 @@ Description=Run the All Saints Simple School Lirbary
 After=network.target
 
 [Service]
-ExecStart=/home/<aUser>/.local/bin/schoolLib
+WorkingDirectory=/home/<aUser>/<aPath>/simple-school-library
+ExecStart=/home/<aUser>/<aPath>/simple-school-library/.venv/bin/schoolLibSystemd
 
 [Install]
 WantedBy=default.target

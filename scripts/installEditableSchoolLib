@@ -5,9 +5,10 @@
 # workspace.
 
 createWebServer() {
-  scriptName=$1
   uvicornBin=$(pwd)/.venv/bin/uvicorn
-  cmdScript=$(pwd)/.venv/bin/$scriptName
+  scriptName=$1
+
+  cmdScript=$(pwd)/.venv/bin/${scriptName}
 
   cat << BIN_SCRIPT > $cmdScript
 #!/bin/sh
@@ -20,6 +21,18 @@ exec $uvicornBin \
 BIN_SCRIPT
 
   chmod a+x $cmdScript
+
+  cmdScript=$(pwd)/.venv/bin/${scriptName}Systemd
+
+  cat << BIN_SCRIPT > $cmdScript
+#!/bin/sh
+
+exec $uvicornBin schoolLib.app.main:app /etc/schoolLib/config.yaml
+
+BIN_SCRIPT
+
+  chmod a+x $cmdScript
+
 }
 
 installScript() {
