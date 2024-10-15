@@ -368,7 +368,7 @@ class SearchForAPhysicalItemIter(SearchIter) :
   def __init__(self, targetUrl, theForm, db) :
     selectSql = SelectSql(
     ).fields(
-      'itemsPhysicalId', 'barCode', 'title'
+      'itemsPhysical.id', 'barCode', 'title'
     ).tables('itemsPhysical', 'itemsInfo'
     ).whereField(
       'itemsPhysical.itemsInfoId', 'itemsInfo.id'
@@ -385,37 +385,66 @@ class SearchForAPhysicalItemIter(SearchIter) :
   def next(self) :
     curRow = self.nextRow()
     return (
-      f'{self.targetUrl}/{curRow['itemsPhysicalId']}',
+      f'{self.targetUrl}/{curRow['itemsPhysical_id']}',
       f'{curRow['barCode']} {curRow['title']}'
     )
 
 #########################################
 # Take out a book: from borrower form
 
-"""
 @pagePart
-def takeOutABookSearch(pageData, **kwargs) :
+def getTakeOutABookSearch(pageData, borrowerId, **kwargs) :
   return schoolLib.app.utils.finders.findAThing(
     pageData,
-    theId='takeOutABookSearch', hxPost=somewhere,
+    theId='takeOutABookSearch',
+    hxPost=f"/borrowers/takeOutABookSearch/{borrowerId}",
     helpName='findBarCode', placeHolder="Type a bar code...",
     **kwargs
   )
 
 @pagePart
-def postTakeOutABook(pageData, borrowerId=None, itemsPhysicalId=None, **kwargs) :
+def postTakeOutABookSearch(pageData, borrowerId=None, **kwargs) :
+  print("PostTakeOutABookSearch", borrowerId)
+  if not borrowerId :
+    # do nothing
+    if 'headers' not in kwargs : kwargs['headers'] = {}
+    kwargs['headers']['HX-Reswap'] = 'none'
+    return Div([])
+
+  return schoolLib.app.utils.finders.searchForThings(
+    pageData, SearchForAPhysicalItemIter,
+    targetUrl=f"/borrowers/takeOutABook/{borrowerId}",
+    targetLevel='level1div',
+    theId='takeOutABookSearch',
+    hxPost=f"/borrowers/takeOutABookSearch/{borrowerId}",
+    helpName='findBarCode', placeHolder="Type a bar code...",
+    **kwargs
+  )
+
+postRoute(
+  '/borrowers/takeOutABookSearch/{borrowerId}',
+  postTakeOutABookSearch, anyUser=True
+)
+
+@pagePart
+def getTakeOutABook(pageData, borrowerId=None, itemsPhysicalId=None, **kwargs) :
+  print("getTakeOutABook", borrowerId, itemsPhysicalId)
   if not borrowerId or not itemsPhysicalId :
     # do nothing
     if 'headers' not in kwargs : kwargs['headers'] = {}
     kwargs['headers']['HX-Reswap'] = 'none'
     return Div([])
 
-  takeOutABook(pageData.db, borrowerId, itemsPhysicalId)
-  itemsBorrowedRows = getBorrowerBooksOut(db, borrowerId)
-  return Table(itemsBorrowedRows, theId='itemsBorrowed')
+  if dbTakeOutABook(pageData.db, borrowerId, itemsPhysicalId) :
+    print("Book taken out")
+  else :
+    print("Book NOT taken out")
+  if 'level' in kwargs : del kwargs['level']
+  return schoolLib.app.people.borrowers.getShowBorrowerInfo(
+    pageData, borrowerId=borrowerId, level='level1div', **kwargs
+  )
 
-postRoute(
-  '/borrowers/takeOutABook/{borrowerId:int}/{barCode:str}',
-  postTakeOutABook, anyUser=True
+getRoute(
+  '/borrowers/takeOutABook/{borrowerId:int}/{itemsPhysicalId:int}',
+  getTakeOutABook, anyUser=True
 )
-"""

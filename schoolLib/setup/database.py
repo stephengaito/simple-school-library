@@ -330,7 +330,7 @@ def findPhysicalBookInItemsBorrowed(db, itemsPhysicalId) :
   )
   print(selectSql.sql())
   results = selectSql.parseResults(
-    db,execute(selectSql.sql()),
+    db.execute(selectSql.sql()),
     fetchAll=False
   )
   if results : return results[0]
@@ -372,7 +372,7 @@ def dbReturnABook(db, itemsBorrowedId) :
   db.commit()
   return True
 
-def takeOutABook(db, borrowerId, itemsPhysicalId) :
+def dbTakeOutABook(db, borrowerId, itemsPhysicalId) :
   # find the book in the itemsBorrowed table (to ensure it IS NOT there)
   itemBorrowedRow = findPhysicalBookInItemsBorrowed(db, itemsPhysicalId)
   if itemBorrowedRow : return False
@@ -381,7 +381,7 @@ def takeOutABook(db, borrowerId, itemsPhysicalId) :
   today = date.today()
   loanPeriod = 7
   if 'loanPeriod' in config : loanPeriod = config['loanPeriod']
-  db.execute(*InsertSql().sql('itemsReturned', {
+  db.execute(*InsertSql().sql('itemsBorrowed', {
     'borrowersId'     : borrowerId,
     'itemsPhysicalId' : itemsPhysicalId,
     'dateBorrowed'    : today,

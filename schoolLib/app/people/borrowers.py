@@ -134,6 +134,7 @@ def getBorrowerBooksOut(db, borrowerId) :
       TableHeader(Text('Dewey Decimal Code')),
       TableHeader(Text('Date Borrowed')),
       TableHeader(Text('Date Due')),
+      TableHeader(Text('Return')),
     ])
   )
   if itemsBorrowed :
@@ -155,6 +156,8 @@ def getBorrowerBooksOut(db, borrowerId) :
           TableEntry(Text(anItem['itemsInfo_dewey'])),
           TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
           TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
+          TableEntry(Text('Return me...')),
+
         ])
       )
   return itemsBorrowedRows
@@ -221,17 +224,10 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
     if className.lower() != 'staff' and 1 < len(itemsBorrowedRows) :
       takeOutHtmx = Text("Sorry you must return your books before you can take out any more")
     else :
-      takeOutHtmx = Text("Take a book out....")
-      #takeOutHtmx = Div([
-      #  SearchBox(
-      #    hxPost='/search/items',
-      #    name='search',
-      #    helpName='findBook',
-      #    value=probe,
-      #    placeholder='Type a book title...'
-      #  ),
-      #  Table(itemRows, theId='searchResults')
-      #], attrs={'hx-ext':'morph'})
+      #takeOutHtmx = Text("search for a book...")
+      takeOutHtmx = schoolLib.app.utils.finders.getTakeOutABookSearch(
+        pageData, borrowerId, **kwargs
+      )
 
     theComponent = Level1div([
       schoolLib.app.people.menu.secondLevelSinglePersonMenu(
