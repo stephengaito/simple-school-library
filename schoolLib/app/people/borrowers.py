@@ -108,7 +108,7 @@ def getBorrowerInfo(db, borrowerId) :
     ]),
   ], klass=['max-w-prose']), borrower['className'])
 
-def getBorrowerBooksOut(db, borrowerId) :
+def getBorrowerBooksOut(db, borrowerId, isAuthenticated=False) :
   ibSelectSql = SelectSql(
   ).fields(
     'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
@@ -126,40 +126,43 @@ def getBorrowerBooksOut(db, borrowerId) :
   itemsBorrowed = ibSelectSql.parseResults(
     db.execute(ibSelectSql.sql())
   )
-  itemsBorrowedRows = []
-  itemsBorrowedRows.append(
-    TableRow([
-      TableHeader(Text('Title')),
-      TableHeader(Text('Barcode')),
-      TableHeader(Text('Dewey Decimal Code')),
-      TableHeader(Text('Date Borrowed')),
-      TableHeader(Text('Date Due')),
+  itemsBorrowedHeader = TableRow([
+    TableHeader(Text('Title')),
+    TableHeader(Text('Barcode')),
+    TableHeader(Text('Dewey Decimal Code')),
+    TableHeader(Text('Date Borrowed')),
+    TableHeader(Text('Date Due')),
+  ])
+  if isAuthenticated :
+    itemsBorrowedHeader.appendAChild(
       TableHeader(Text('Return')),
-    ])
-  )
+    )
+  itemsBorrowedRows = []
+  itemsBorrowedRows.append(itemsBorrowedHeader)
   if itemsBorrowed :
     for anItem in itemsBorrowed :
-      itemsBorrowedRows.append(
-        TableRow([
-          TableEntry(Link(
-            f'/itemsInfo/show/{anItem['itemsInfo_id']}',
-            anItem['itemsInfo_title'],
-            level='level0div',
-            hxTarget='#level0div'
-          )),
-          TableEntry(Link(
-            f'/itemsInfo/show/{anItem['itemsInfo_id']}',
-            anItem['itemsPhysical_barCode'],
-            level='level0div',
-            hxTarget='#level0div'
-          )),
-          TableEntry(Text(anItem['itemsInfo_dewey'])),
-          TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
-          TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
-          TableEntry(Text('Return me...')),
-
+      itemsBorrowedRow = TableRow([
+        TableEntry(Link(
+          f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+          anItem['itemsInfo_title'],
+          level='level0div',
+          hxTarget='#level0div'
+        )),
+        TableEntry(Link(
+          f'/itemsInfo/show/{anItem['itemsInfo_id']}',
+          anItem['itemsPhysical_barCode'],
+          level='level0div',
+          hxTarget='#level0div'
+        )),
+        TableEntry(Text(anItem['itemsInfo_dewey'])),
+        TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
+        TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
         ])
-      )
+      if isAuthenticated :
+        itemsBorrowedRow.appendAChild(
+          TableEntry(Text('Return me...'))
+        )
+      itemsBorrowedRows.append(itemsBorrowedRow)
   return itemsBorrowedRows
 
 def getBorrowerBooksHistory(db, borrowerId) :
@@ -218,7 +221,9 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
   print(f"getShowBorrowerInfo: [{level}]")
   borrowerInfo, className = getBorrowerInfo(pageData.db, borrowerId)
   if borrowerInfo :
-    itemsBorrowedRows = getBorrowerBooksOut(pageData.db, borrowerId)
+    itemsBorrowedRows = getBorrowerBooksOut(
+      pageData.db, borrowerId, pageData.user.is_authenticated
+    )
     borrowingHistoryRows = getBorrowerBooksHistory(pageData.db, borrowerId)
 
     if className.lower() != 'staff' and 1 < len(itemsBorrowedRows) :

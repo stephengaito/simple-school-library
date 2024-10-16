@@ -131,6 +131,9 @@ async def serverError(request, theException) :
 
 # see: https://starlette-login.readthedocs.io/en/stable/usage/
 sessionSecretKey = config['secretKey']
+sessionMaxAge = 10 * 60 # 10 minutes
+if 'sessionMaxAge' in config :
+  sessionMaxAge    = config['sessionMaxAge']
 loginManagerConfig = LoginManagerConfig(
   protection_level=ProtectionLevel.Strong
 )
@@ -149,7 +152,11 @@ app = Starlette(
     500: serverError
   },
   middleware=[
-    Middleware(SessionMiddleware, secret_key=sessionSecretKey),
+    Middleware(
+      SessionMiddleware,
+      secret_key=sessionSecretKey,
+      max_age=sessionMaxAge
+    ),
     Middleware(
       AuthenticationMiddleware,
       backend=SessionAuthBackend(loginManager),

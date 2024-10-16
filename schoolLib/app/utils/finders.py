@@ -272,7 +272,7 @@ def postReturnABook(pageData, borrowerId=None, itemsPhysicalId=None, **kwargs) :
     return Div([])
 
   returnABook( pageData.db, itemsPhysicalId)
-  itemsBorrowedRows = getBorrowerBooksOut(db, borrowerId)
+  itemsBorrowedRows = getBorrowerBooksOut(db, borrowerId, pageData.user.is_authenticated)
   return Table(itemsBorrowedRows, theId='itemsBorrowed')
 
 postRoute(
