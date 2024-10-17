@@ -84,149 +84,178 @@ def editItemsInfoForm(
     theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
   )
 
+def getItemInfoTable(db, itemsInfoId) :
+  if not itemsInfoId : return None
+
+  infoSelectSql = SelectSql(
+  ).fields(
+    'title', 'authors',
+    'publisher', 'series',
+    'isbn', 'dewey',
+    'type', 'keywords', 'summary'
+  ).tables(
+    'itemsInfo'
+  ).whereValue(
+    'id', itemsInfoId
+  )
+  print(infoSelectSql.sql())
+  itemInfo = infoSelectSql.parseResults(
+    db.execute(infoSelectSql.sql()),
+    fetchAll=False
+  )
+  if not itemInfo : return None
+
+  itemInfo = itemInfo[0]
+  return Table([
+    TableRow([
+      TableEntry(Text("Title")),
+      TableEntry(Text(itemInfo['title'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Authors")),
+      TableEntry(Text(itemInfo['authors'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Publisher")),
+      TableEntry(Text(itemInfo['publisher'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Series")),
+      TableEntry(Text(itemInfo['series'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("ISBN")),
+      TableEntry(Text(itemInfo['isbn'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Dewey Decimal Code")),
+      TableEntry(Text(itemInfo['dewey'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Book type")),
+      TableEntry(Text(itemInfo['type'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Keywords")),
+      TableEntry(Text(itemInfo['keywords'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Summary")),
+      TableEntry(Text(itemInfo['summary'], klass=['bg-yellow-200']))
+    ])
+  ], klass=['max-w-prose'])
+
+def getItemInfoCopiesTable(db, itemsInfoId) :
+  if not itemsInfoId : return None
+
+  physicalSelectSql = SelectSql(
+  ).fields(
+    'itemsPhysical.barCode', 'itemsPhysical.dateAdded',
+    'itemsPhysical.dateLastSeen', 'itemsPhysical.status',
+    'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue',
+    'borrowers.firstName', 'borrowers.familyName',
+    'borrowers.classId', 'borrowers.id'
+  ).tables(
+    'itemsPhysical'
+  ).join(
+    'itemsBorrowed', 'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId',
+    joinType='LEFT'
+  ).join(
+    'borrowers', 'borrowers.id', 'itemsBorrowed.borrowersId',
+    joinType="LEFT"
+  ).whereValue(
+    'itemsPhysical.itemsInfoId', itemsInfoId
+  ).orderAscBy(
+    'barCode'
+  )
+  print(physicalSelectSql.sql())
+  physicalItems = physicalSelectSql.parseResults(
+    db.execute(physicalSelectSql.sql())
+  )
+  physicalItemRows = []
+  physicalItemRows.append(TableRow([
+    TableHeader(Text("Barcode")),
+    TableHeader(Text("Date added")),
+    TableHeader(Text("Date last seen")),
+    TableHeader(Text("Status")),
+    TableHeader(Text("Date borrowed")),
+    TableHeader(Text("Date due")),
+    TableHeader(Text("Borrower")),
+    TableHeader(Text("Class"))
+  ]))
+  if not physicalItems : return None
+
+  classes = getClasses(db)
+  for aBook in physicalItems :
+    print(yaml.dump(aBook))
+    borrowerName = ""
+    if aBook['borrowers_firstName'] and aBook['borrowers_familyName'] :
+      borrowerName = aBook['borrowers_firstName']+' '+aBook['borrowers_familyName']
+    borrowerClass = ""
+    if aBook['borrowers_classId'] :
+      borrowerClass = classes[aBook['borrowers_classId']]['name']
+    if not aBook['itemsBorrowed_dateBorrowed'] :
+      aBook['itemsBorrowed_dateBorrowed'] = ""
+    if not aBook['itemsBorrowed_dateDue'] :
+      aBook['itemsBorrowed_dateDue'] = ""
+    physicalItemRows.append(TableRow([
+      TableEntry(Text(aBook['itemsPhysical_barCode'])),
+      TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
+      TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),
+      TableEntry(Text(aBook['itemsPhysical_status'])),
+      TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),
+      TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
+      TableEntry(Link(
+        f'/borrowers/show/{aBook['borrowers_id']}',
+        borrowerName,
+        level='level0div',
+        hxTarget='#level0div'
+      )),
+      TableEntry(Text(borrowerClass))
+    ]))
+  return Table(physicalItemRows)
+
 ##########################################################################
 # routes
 
 @pagePart
 def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
-  if itemsInfoId :
-    infoSelectSql = SelectSql(
-    ).fields(
-      'title', 'authors',
-      'publisher', 'series',
-      'isbn', 'dewey',
-      'type', 'keywords', 'summary'
-    ).tables(
-      'itemsInfo'
-    ).whereValue(
-      'id', itemsInfoId
-    )
-    print(infoSelectSql.sql())
-    itemInfo = infoSelectSql.parseResults(
-      pageData.db.execute(infoSelectSql.sql()),
-      fetchAll=False
-    )
-    if itemInfo :
-      itemInfo = itemInfo[0]
-      physicalSelectSql = SelectSql(
-      ).fields(
-        'itemsPhysical.barCode', 'itemsPhysical.dateAdded',
-        'itemsPhysical.dateLastSeen', 'itemsPhysical.status',
-        'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue',
-        'borrowers.firstName', 'borrowers.familyName',
-        'borrowers.classId', 'borrowers.id'
-      ).tables(
-        'itemsPhysical'
-      ).join(
-        'itemsBorrowed', 'itemsPhysical.id', 'itemsBorrowed.itemsPhysicalId',
-        joinType='LEFT'
-      ).join(
-        'borrowers', 'borrowers.id', 'itemsBorrowed.borrowersId',
-        joinType="LEFT"
-      ).whereValue(
-        'itemsPhysical.itemsInfoId', itemsInfoId
-      ).orderAscBy(
-        'barCode'
-      )
-      print(physicalSelectSql.sql())
-      physicalItems = physicalSelectSql.parseResults(
-        pageData.db.execute(physicalSelectSql.sql())
-      )
-      physicalItemsRow = []
-      physicalItemsRow.append(TableRow([
-        TableHeader(Text("Barcode")),
-        TableHeader(Text("Date added")),
-        TableHeader(Text("Date last seen")),
-        TableHeader(Text("Status")),
-        TableHeader(Text("Date borrowed")),
-        TableHeader(Text("Date due")),
-        TableHeader(Text("Borrower")),
-        TableHeader(Text("Class"))
-      ]))
-      if physicalItems :
-        classes = getClasses(pageData.db)
-        for aBook in physicalItems :
-          print(yaml.dump(aBook))
-          borrowerName = ""
-          if aBook['borrowers_firstName'] and aBook['borrowers_familyName'] :
-            borrowerName = aBook['borrowers_firstName']+' '+aBook['borrowers_familyName']
-          borrowerClass = ""
-          if aBook['borrowers_classId'] :
-            borrowerClass = classes[aBook['borrowers_classId']]['name']
-          if not aBook['itemsBorrowed_dateBorrowed'] :
-            aBook['itemsBorrowed_dateBorrowed'] = ""
-          if not aBook['itemsBorrowed_dateDue'] :
-            aBook['itemsBorrowed_dateDue'] = ""
-          physicalItemsRow.append(TableRow([
-            TableEntry(Text(aBook['itemsPhysical_barCode'])),
-            TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
-            TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),
-            TableEntry(Text(aBook['itemsPhysical_status'])),
-            TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),
-            TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
-            TableEntry(Link(
-              f'/borrowers/show/{aBook['borrowers_id']}',
-              borrowerName,
-              level='level0div',
-              hxTarget='#level0div'
-            )),
-            TableEntry(Text(borrowerClass))
-          ]))
-        theComponent = Level1div([
-          schoolLib.app.books.menu.secondLevelSingleBookMenu(
-            pageData, **kwargs
+  itemInfoTable       = getItemInfoTable(      pageData.db, itemsInfoId)
+  itemInfoCopiesTable = getItemInfoCopiesTable(pageData.db, itemsInfoId)
+
+  if itemInfoTable and itemInfoCopiesTable :
+    theComponent = Level1div([
+      schoolLib.app.books.menu.secondLevelSingleBookMenu(
+        pageData, **kwargs
+      ),
+      itemInfoTable,
+      EmptyDiv([]),
+      SpacedDiv([]),
+      EmptyDiv([]),
+      itemInfoCopiesTable
+    ])
+    if pageData.user.is_authenticated :
+      theComponent.appendChildren([
+        EmptyDiv([]),
+        SpacedDiv([]),
+        EmptyDiv([]),
+        Div([
+          Button(
+            'Add new copy',
+            hxGet=f"/itemsPhysical/{itemsInfoId}/new",
+            hxTarget="#addPhysicalCopy"
           ),
-          Table([
-            TableRow([
-              TableEntry(Text("Title")),
-              TableEntry(Text(itemInfo['title']))
-            ]),
-            TableRow([
-              TableEntry(Text("Authors")),
-              TableEntry(Text(itemInfo['authors']))
-            ]),
-            TableRow([
-              TableEntry(Text("Publisher")),
-              TableEntry(Text(itemInfo['publisher']))
-            ]),
-            TableRow([
-              TableEntry(Text("Series")),
-              TableEntry(Text(itemInfo['series']))
-            ]),
-            TableRow([
-              TableEntry(Text("ISBN")),
-              TableEntry(Text(itemInfo['isbn']))
-            ]),
-            TableRow([
-              TableEntry(Text("Dewey Decimal Code")),
-              TableEntry(Text(itemInfo['dewey']))
-            ]),
-            TableRow([
-              TableEntry(Text("Book type")),
-              TableEntry(Text(itemInfo['type']))
-            ]),
-            TableRow([
-              TableEntry(Text("Keywords")),
-              TableEntry(Text(itemInfo['keywords']))
-            ]),
-            TableRow([
-              TableEntry(Text("Summary")),
-              TableEntry(Text(itemInfo['summary']))
-            ])
-          ]),
-          EmptyDiv([]),
-          SpacedDiv([]),
-          EmptyDiv([]),
-          Table(physicalItemsRow)
-        ])
-        if level and '0' in level :
-          theComponent = Level0div([
-            schoolLib.app.menus.topLevelMenu(
-              pageData, selectedId='books'
-            ),
-            theComponent
-          ])
-        return theComponent
+          HelpButton(hxGet="/help/addCopy/modal")
+        ], theId="addPhysicalCopy")
+      ])
+    if level and '0' in level :
+      theComponent = Level0div([
+        schoolLib.app.menus.topLevelMenu(
+          pageData, selectedId='books'
+        ),
+        theComponent
+      ])
+    return theComponent
   return MarkdownDiv("some thing about itemsInfo")
 
 getRoute(

@@ -10,6 +10,7 @@ import yaml
 
 from schoolLib.setup import *
 from schoolLib.app.books.itemsInfo import editItemsInfoForm
+import schoolLib
 
 ##########################################################################
 # content
@@ -79,19 +80,18 @@ def editItemsPhysicalForm(pageData,
       value=status,
       placeholder='The current status...'
     )
-  ], submitMessage,
-    theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
-  )
+  ], submitMsg=submitMessage, hxPost=hxPost, **kwargs)
 
 ##########################################################################
 # routes
 
 @pagePart
-def getNewItemsPhysicalForm(pagePart, itemsInfoId=None, **kwargs) :
+def getNewItemsPhysicalForm(pageData, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
     return schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
       pageData,
       hxPost=f'/itemsPhysical/{itemsInfoId}/new',
+      hxTarget="#level1div",
       submitMessage='Add new copy',
       **kwargs
     )
@@ -121,11 +121,8 @@ def postSaveNewItemsPhysical(pageData, itemsInfoId=None, **kwargs) :
       'status'       : theForm['status']
     }))
     pageData.db.commit()
-    return schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
-      pageData,
-      submitMessage='Add new copy',
-      hxPost=f'/itemsPhysical/{itemsInfoId}/new',
-      **kwargs
+    return schoolLib.app.books.itemsInfo.getShowItemsInfo(
+      pageData, itemsInfoId, **kwargs
     )
   return schoolLib.app.books.itemsInfo.editItemsInfoForm(
     pageData,
@@ -214,3 +211,4 @@ putRoute(
   '/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}',
   putUpdateAnItemsPhysical
 )
+

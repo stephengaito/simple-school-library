@@ -105,7 +105,7 @@ def getBorrowerInfo(db, borrowerId) :
     TableRow([
       TableEntry(Text('Class')),
       TableEntry(Text(borrower['className'], klass=['bg-yellow-200']))
-    ]),
+    ])
   ], klass=['max-w-prose']), borrower['className'])
 
 def getBorrowerBooksOut(db, borrowerId, isAuthenticated=False) :

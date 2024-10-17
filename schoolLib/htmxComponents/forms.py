@@ -167,7 +167,7 @@ class DateInput(FormInputs) :
     placeholder=None,
     **kwargs
   ) :
-    if not value : value = today
+    if not value : value = date.today()
     super().__init__(
       name,
       inputType='date',
