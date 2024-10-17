@@ -112,7 +112,7 @@ def getBorrowerBooksOut(db, borrowerId, isAuthenticated=False) :
   ibSelectSql = SelectSql(
   ).fields(
     'itemsInfo.id', 'itemsInfo.title', 'itemsInfo.dewey',
-    'itemsPhysical.barCode',
+    'itemsPhysical.barCode', 'itemsBorrowed.id',
     'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue'
   ).tables(
     'itemsBorrowed', 'itemsPhysical', 'itemsInfo'
@@ -160,7 +160,14 @@ def getBorrowerBooksOut(db, borrowerId, isAuthenticated=False) :
         ])
       if isAuthenticated :
         itemsBorrowedRow.appendAChild(
-          TableEntry(Text('Return me...'))
+          TableEntry(Div([
+            Button(
+              'Return',
+              hxGet=f"/borrowers/returnBook/{borrowerId}/{anItem['itemsBorrowed_id']}",
+              hxTarget='#level1div'
+            ),
+            HelpButton(hxGet=f"/help/returnBook/modal")
+          ]))
         )
       itemsBorrowedRows.append(itemsBorrowedRow)
   return itemsBorrowedRows
@@ -241,6 +248,15 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
       borrowerInfo,
       EmptyDiv([]),
       SpacedDiv([]),
+      EmptyDiv([]),
+      SpacedDiv([
+        RawHtml('<hr/>'),
+        Text(
+          'Take out a book',
+          klassName='highlight'
+        ),
+        RawHtml('<hr/>')
+      ]),
       EmptyDiv([]),
       SpacedDiv(takeOutHtmx),
       EmptyDiv([]),
@@ -361,3 +377,22 @@ def putUpdatedBorrower(pageData, borrowerId=None, **kwargs) :
 putRoute('/borrowers/edit/{borrowerId:int}', putUpdatedBorrower)
 
 getRoute('/borrowers/show/{borrowerId:int}', getShowBorrowerInfo, anyUser=True)
+
+@pagePart
+def getBorrowerReturnBook(
+  pageData, borrowerId=None, itemsBorrowedId=None, **kwargs
+) :
+  if itemsBorrowedId : dbReturnABook(pageData.db, itemsBorrowedId)
+  kwargs['hxTarget'] = '#level1div'
+  if borrowerId :
+    return schoolLib.app.people.borrowers.getShowBorrowerInfo(
+      pageData, borrowerId, **kwargs
+    )
+  return schoolLib.app.people.menu.secondLevelPeopleMenu(
+    pageData, selectedId='findBorrower', **kwargs
+  )
+
+getRoute(
+  '/borrowers/returnBook/{borrowerId:int}/{itemsBorrowedId}',
+  getBorrowerReturnBook
+)
