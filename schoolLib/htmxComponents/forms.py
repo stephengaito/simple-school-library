@@ -32,6 +32,7 @@ class FormInputsBase(HtmxBase) :
     defaultValue=None,
     placeholder=None,
     helpName=None,
+    readOnly=None,
     **kwargs
   ) :
     super().__init__(**kwargs)
@@ -48,6 +49,7 @@ class FormInputsBase(HtmxBase) :
     self.defaultValue = defaultValue
     self.placeholder  = placeholder
     self.label        = label
+    self.readOnly     = readOnly
 
     if not helpName : helpName = name
     self.helpName     = helpName
@@ -67,11 +69,14 @@ class FormInputs(FormInputsBase) :
       hxGet=f"/help/{self.helpName}/modal",
     ).collectHtml(someFragments)
     helpButtonStr = " ".join(someFragments)
+    readOnly = ""
+    if self.readOnly :
+      readOnly = "readonly"
     if self.label :
       htmlFragments.append(f"""
         <tr>
         <td><label>{self.label}</label></td>
-        <td><input type="{self.inputType}" {self.computeHtmxAttrs()}/>{helpButtonStr}</td>
+        <td><input type="{self.inputType}" {readOnly} {self.computeHtmxAttrs()}/>{helpButtonStr}</td>
         </tr>
       """)
     else :

@@ -44,16 +44,20 @@ def computeNewBarcode(db) :
 def editItemsPhysicalForm(pageData,
   barcode=None, status=None,
   dateAdded=None, dateBorrowed=None, dateLastSeen=None,
+  notes=None, location=None,
   submitMessage="Save changes", hxPost=None,
   **kwargs
 ) :
   if not hxPost : return "<!-- edit itemsPhysical form with NO hxPost -->"
+
+  if not barcode :  barcode = computeNewBarcode(pageData.db)
 
   return FormTable([
     TextInput(
       label='Barcode',
       name='barcode',
       value=barcode,
+      readOnly=True,
       placeholder='A barcode...'
     ),
     DateInput(
@@ -79,8 +83,72 @@ def editItemsPhysicalForm(pageData,
       name='status',
       value=status,
       placeholder='The current status...'
+    ),
+    TextInput(
+      label='Notes',
+      name='notes',
+      value=notes,
+      placeholder='Any additional notes...'
+    ),
+    TextInput(
+      label='Location',
+      name='location',
+      value=location,
+      placeholder='The shelf or box location...'
     )
   ], submitMsg=submitMessage, hxPost=hxPost, **kwargs)
+
+def getItemPhysicalTable(db, itemsPhysicalId) :
+  if not itemsPhysicalId : return (None, None)
+
+  physicalSelectSql = SelectSql(
+  ).fields(
+    'itemsInfoId',
+    'barCode', 'dateAdded', 'dateBorrowed', 'dateLastSeen',
+    'notes', 'status', 'location'
+  ).tables(
+    'itemsPhysical'
+  ).whereValue(
+    'id', itemsPhysicalId
+  )
+  print(physicalSelectSql.sql())
+  physicalItem = physicalSelectSql.parseResults(
+    db.execute(physicalSelectSql.sql()),
+    fetchAll=False
+  )
+  if not physicalItem : return (None, None)
+
+  physicalItem = physicalItem[0]
+  return (Table([
+    TableRow([
+      TableEntry(Text("Barcode")),
+      TableEntry(Text(physicalItem['barCode'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Date Added")),
+      TableEntry(Text(physicalItem['dateAdded'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Date Borrowed")),
+      TableEntry(Text(physicalItem['dateBorrowed'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Date last seen")),
+      TableEntry(Text(physicalItem['dateLastSeen'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Status")),
+      TableEntry(Text(physicalItem['status'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Notes")),
+      TableEntry(Text(physicalItem['notes'], klass=['bg-yellow-200']))
+    ]),
+    TableRow([
+      TableEntry(Text("Location")),
+      TableEntry(Text(physicalItem['location'], klass=['bg-yellow-200']))
+    ])
+  ], klass=['max-w-prose']), physicalItem['itemsInfoId'])
 
 ##########################################################################
 # routes
@@ -210,5 +278,34 @@ def putUpdateAnItemsPhysical(pageData,
 putRoute(
   '/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}',
   putUpdateAnItemsPhysical
+)
+
+@pagePart
+def getItemsPhysicalShow(pageData, itemsPhysicalId=None, **kwargs) :
+  physicalCopyTable, itemsInfoId = getItemPhysicalTable(
+    pageData.db, itemsPhysicalId
+  )
+  itemInfoTable = schoolLib.app.books.itemsInfo.getItemInfoTable(
+    pageData.db, itemsInfoId
+  )
+  if itemInfoTable and physicalCopyTable :
+    theComponent = Level1div([
+      schoolLib.app.books.menu.secondLevelSingleBookMenu(
+        pageData, **kwargs
+      ),
+      itemInfoTable,
+      EmptyDiv([]),
+      SpacedDiv([]),
+      EmptyDiv([]),
+      physicalCopyTable
+    ])
+    print("-----------component----------")
+    print(yaml.dump(theComponent))
+    return theComponent
+  return MarkdownDiv("some thing about itemsPhysical")
+
+getRoute(
+  '/itemsPhysical/show/{itemsPhysicalId:int}',
+  getItemsPhysicalShow, anyUser=True
 )
 

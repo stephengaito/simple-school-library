@@ -150,6 +150,7 @@ def getItemInfoCopiesTable(db, itemsInfoId) :
 
   physicalSelectSql = SelectSql(
   ).fields(
+    'itemsPhysical.id',
     'itemsPhysical.barCode', 'itemsPhysical.dateAdded',
     'itemsPhysical.dateLastSeen', 'itemsPhysical.status',
     'itemsBorrowed.dateBorrowed', 'itemsBorrowed.dateDue',
@@ -199,7 +200,12 @@ def getItemInfoCopiesTable(db, itemsInfoId) :
     if not aBook['itemsBorrowed_dateDue'] :
       aBook['itemsBorrowed_dateDue'] = ""
     physicalItemRows.append(TableRow([
-      TableEntry(Text(aBook['itemsPhysical_barCode'])),
+      TableEntry(Link(
+        f'/itemsPhysical/show/{aBook["itemsPhysical_id"]}',
+        aBook['itemsPhysical_barCode'],
+        hxTarget='#level1div'
+        )
+      ),
       TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
       TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),
       TableEntry(Text(aBook['itemsPhysical_status'])),
