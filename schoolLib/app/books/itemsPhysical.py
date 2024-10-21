@@ -202,32 +202,46 @@ def postSaveNewItemsPhysical(pageData, itemsInfoId=None, **kwargs) :
 postRoute('/itemsPhysical/{itemsInfoId:int}/new', postSaveNewItemsPhysical)
 
 @pagePart
-def getEditItemsPhysicalForm(pageData,
-  itemsInfoId=None, itemsPhysicalId=None,
-  **kwargs
-) :
-  if itemsInfoId and itemsPhysicalId :
+def getEditItemsPhysicalForm(pageData, itemsPhysicalId=None, **kwargs) :
+  if itemsPhysicalId :
     selectSql = SelectSql().fields(
-      'barcode', 'dateAdded', 'dateBorrowed', 'dateLastSeen', 'status'
+      'barcode', 'dateAdded', 'dateBorrowed', 'dateLastSeen',
+      'status', 'notes', 'location', 'itemsInfoId'
     ).tables('itemsPhysical'
-    ).whereValue('id', itemsPhysicalId
-    ).whereValue('itemsInfoId', itemsInfoId)
+    ).whereValue('id', itemsPhysicalId)
     itemsPhysical = selectSql.parseResults(
       pageData.db.execute(selectSql.sql()),
       fetchAll=False
     )
     if itemsPhysical :
-      return schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
+      copyForm = schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
         pageData,
-        hxPost=f'/itemsPhysical/{itemsInfoId}/edit/{itemsPhysicalId}',
+        hxPost=f'/itemsPhysical/edit/{itemsPhysicalId}',
         barcode=itemsPhysical[0]['barcode'],
         dateAdded=itemsPhysical[0]['dateAdded'],
         dateBorrowed=itemsPhysical[0]['dateBorrowed'],
         dateLastSeen=itemsPhysical[0]['dateLastSeen'],
         status=itemsPhysical[0]['status'],
+        notes=itemsPhysical[0]['notes'],
+        location=itemsPhysical[0]['location'],
         submitMessage='Save changes',
+        hxTarget='#level1div',
         **kwargs
       )
+      itemsInfoTable = schoolLib.app.books.itemsInfo.getItemInfoTable(
+        pageData.db, itemsPhysical[0]['itemsInfoId']
+      )
+      if itemsInfoTable :
+        return Level1div([
+          schoolLib.app.books.menu.secondLevelSingleBookMenu(
+            pageData, **kwargs
+          ),
+          itemsInfoTable,
+          EmptyDiv([]),
+          SpacedDiv([]),
+          EmptyDiv([]),
+          copyForm
+        ])
   return schoolLib.app.books.itemsInfo.editItemsInfoForm(
     pageData,
     submitMessage='Add new book',
@@ -236,16 +250,13 @@ def getEditItemsPhysicalForm(pageData,
   )
 
 getRoute(
-  '/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}',
+  '/itemsPhysical/edit/{itemsPhysicalId:int}',
   getEditItemsPhysicalForm
 )
 
 @pagePart
-def putUpdateAnItemsPhysical(pageData,
-  itemsInfoId=None, itemsPhysicalId=None,
-  **kwargs
-) :
-  if itemsInfoId and itemsPhysicalId :
+def putUpdateAnItemsPhysical(pageData, itemsPhysicalId=None, **kwargs) :
+  if itemsPhysicalId :
     theForm = pageData.form
     if 'barcode' not in theForm or not theForm['barcode'] :
       barcode = computeNewBarcode(pageData.db)
@@ -253,7 +264,6 @@ def putUpdateAnItemsPhysical(pageData,
       barcode = theForm['barcode']
     pageData.db.execute(UpdateSql(
     ).whereValue('id', itemsPhysicalId
-    ).whereValue('itemsInfoId', itemsInfoId
     ).sql('itemsPhysical', {
       'barcode'      : barcode,
       'dateAdded'    : theForm['dateAdded'],
@@ -262,12 +272,22 @@ def putUpdateAnItemsPhysical(pageData,
       'status'       : theForm['status']
     }))
     pageData.db.commit()
-    return schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
-      pageData,
-      submitMessage='Add new copy',
-      hxPost=f'/itemsPhysical/{itemsInfoId}/new',
-      **kwargs
+    physicalSelectSql = SelectSql(
+    ).fields('itemsInfoId'
+    ).tables('itemsPhysical'
+    ).whereValue('id', itemsPhysicalId)
+    print(physicalSelectSql.sql())
+    itemsPhysicalData = physicalSelectSql.parseResults(
+      pageData.db.execute(physicalSelectSql.sql()),
+      fetchAll=False
     )
+    if itemsPhysicalData :
+      itemsInfoId = itemsPhysicalData[0]['itemsInfoId']
+      print(type(itemsInfoId))
+      print(itemsInfoId)
+      return schoolLib.app.books.itemsInfo.getShowItemsInfo(
+        pageData, itemsInfoId, **kwargs
+      )
   return schoolLib.app.books.itemsInfo.editItemsInfoForm(
     pageData,
     submitMessage='Add new book',
@@ -276,7 +296,7 @@ def putUpdateAnItemsPhysical(pageData,
   )
 
 putRoute(
-  '/itemsPhysical/{itemsInfoId:int}/edit/{itemsPhysicalId:int}',
+  '/itemsPhysical/edit/{itemsPhysicalId:int}',
   putUpdateAnItemsPhysical
 )
 

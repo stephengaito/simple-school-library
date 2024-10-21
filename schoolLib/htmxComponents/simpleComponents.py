@@ -96,8 +96,11 @@ class List(HtmxChildrenBase) :
       htmlFragments.append('<li>')
       if isinstance(aChild, str) :
         htmlFragments.append(aChild)
-      else :
+      elif aChild :
         aChild.collectHtml(htmlFragments)
+      else :
+        print(repr(self))
+        print("Contains a None child")
       htmlFragments.append('</li>')
     htmlFragments.append(f'</{self.listType}>')
 
@@ -121,7 +124,11 @@ class Menu(HtmxChildrenBase) :
       selected = None
       if self.selectedId and aChild.theId == self.selectedId :
         selected = "selected"
-      aChild.collectHtml(htmlFragments, selected=selected)
+      if aChild :
+        aChild.collectHtml(htmlFragments, selected=selected)
+      else :
+        print(repr(self))
+        print("Contains a None child")
     htmlFragments.append('</div>')
 
 class RawHtml(HtmxBase) :
@@ -148,6 +155,7 @@ class OobCollection(HtmxChildrenBase) :
 
 class Text(HtmxChildrenBase) :
   def __init__(self, someText, textType='p', **kwargs) :
+    if not someText : someText = ""
     super().__init__(someText, **kwargs)
     # sanitize textType
     if not textType                : textType = None
@@ -174,8 +182,11 @@ class Text(HtmxChildrenBase) :
     for aChild in self.children :
       if isinstance(aChild, str) :
         htmlFragments.append(aChild)
-      else :
+      elif aChild :
         aChild.collectHtml(htmlFragments)
+      else :
+        print(repr(self))
+        print("Contains a None child")
     if self.textType :
       htmlFragments.append(f"</{self.textType}>")
 

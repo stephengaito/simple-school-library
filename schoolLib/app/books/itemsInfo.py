@@ -145,7 +145,7 @@ def getItemInfoTable(db, itemsInfoId) :
     ])
   ], klass=['max-w-prose'])
 
-def getItemInfoCopiesTable(db, itemsInfoId) :
+def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
   if not itemsInfoId : return None
 
   physicalSelectSql = SelectSql(
@@ -199,9 +199,12 @@ def getItemInfoCopiesTable(db, itemsInfoId) :
       aBook['itemsBorrowed_dateBorrowed'] = ""
     if not aBook['itemsBorrowed_dateDue'] :
       aBook['itemsBorrowed_dateDue'] = ""
+    linkAction = "show"
+    if isAuthenticated :
+      linkAction = "edit"
     physicalItemRows.append(TableRow([
       TableEntry(Link(
-        f'/itemsPhysical/show/{aBook["itemsPhysical_id"]}',
+        f'/itemsPhysical/{linkAction}/{aBook["itemsPhysical_id"]}',
         aBook['itemsPhysical_barCode'],
         hxTarget='#level1div'
         )
@@ -226,8 +229,10 @@ def getItemInfoCopiesTable(db, itemsInfoId) :
 
 @pagePart
 def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
-  itemInfoTable       = getItemInfoTable(      pageData.db, itemsInfoId)
-  itemInfoCopiesTable = getItemInfoCopiesTable(pageData.db, itemsInfoId)
+  itemInfoTable       = getItemInfoTable(pageData.db, itemsInfoId)
+  itemInfoCopiesTable = getItemInfoCopiesTable(
+    pageData.db, itemsInfoId, pageData.user.is_authenticated
+  )
 
   if itemInfoTable and itemInfoCopiesTable :
     theComponent = Level1div([

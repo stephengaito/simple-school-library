@@ -247,5 +247,8 @@ class HtmxChildrenBase(HtmxBase) :
     for aChild in self.children :
       if isinstance(aChild, str) :
         htmlFragments.append(aChild)
-      else:
+      elif aChild :
         aChild.collectHtml(htmlFragments)
+      else:
+        print(repr(self))
+        print("contains a None child")
