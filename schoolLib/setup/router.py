@@ -97,6 +97,10 @@ def registerHomePage(aHomePageFunc) :
   homePageFunc = aHomePageFunc
 
 def goToHomePage(pageData, **kwargs) :
+  headers = { 'HX-Redirect' : '/'}
+  return RawHtml("<h1>Hello</h1>", headers=headers)
+
+"""
   if not homePageFunc :
     raise HTTPException(
       404,
@@ -106,6 +110,7 @@ def goToHomePage(pageData, **kwargs) :
   if 'headers' not in kwargs : kwargs['headers'] = {}
   kwargs['headers']['HX-Retarget'] = '#level0div'
   return homePageFunc(pageData, **kwargs)
+"""
 
 async def callWithParameters(request, func, anyUser=False) :
   params = {}
@@ -132,7 +137,8 @@ async def callWithParameters(request, func, anyUser=False) :
         message += f" ({request.url.path})"
       htmxComponent = WithFooterMessage(
         WarnFooterMessage(Text(message)),
-        homePageFunc(pageData)
+        homePageFunc(pageData),
+        headers={'HX-Retarget' : '#level0div'}
       )
     else :
       raise HTTPException(
