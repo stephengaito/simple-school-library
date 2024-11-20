@@ -67,6 +67,19 @@ def authenticateSlibUser(password, db) :
     print(repr(err))
   return False
 
+def passwordCliUsage() :
+  print("""
+usage: sPasswordHello [new|help]
+
+  With no arguments slPassword will check the user 'slib's password.
+
+  With an argument of 'new' slPassword will assign the user 'slib'
+    the given password.
+
+  With any other argument (or 'help') slPassword will print this help.
+""")
+  sys.exit(1)
+
 def passwordCli() :
 
   # load the School Library configuration (to get location of database)
@@ -77,6 +90,7 @@ def passwordCli() :
   createNewPassword     = False
   if 1 < len(sys.argv) :
     if sys.argv[1].startswith('new') : createNewPassword = True
+    else : passwordCliUsage()
 
   if createNewPassword :
     # Ask the user for the password
