@@ -332,6 +332,26 @@ def postSaveNewBorrower(pageData, **kwargs) :
     'cohort'     : theForm['cohort'],
     'classId'    : theForm['assignedClass']
   }))
+  selectSql = SelectSql().fields(
+    'borrowers.id'
+  ).tables(
+    'borrowers'
+  ).whereValue(
+    'firstName', theForm['firstName']
+  ).whereValue(
+    'familyName', theFor['familyName']
+  )
+  itemsReturned = selectSql.parseResults(
+    pageData.db.execute(selectSql.sql()),
+    fetchAll=False
+  )
+  if itemsReturned :
+    borrowerId = itemsReturned[0]['borrowers_id']
+    pageData.db.execute(*InsertSql().sql('borrowersFTS', {
+      'borrowerId' : borrowerId,
+      'firstName'  : theForm['firstName'],
+      'familyName' : theForm['familyName']
+    }))
   pageData.db.commit()
   return schoolLib.app.people.borrowers.editBorrowerForm(
     pageData,
@@ -365,6 +385,12 @@ def putUpdatedBorrower(pageData, borrowerId=None, **kwargs) :
       'familyName' : theForm['familyName'],
       'cohort'     : theForm['cohort'],
       'classId'    : theForm['assignedClass']
+    }))
+    pageData.db.execute(UpdateSql(
+    ).whereValue('id', borrowerId
+    ).sql('borrowersFTS', {
+      'firstName'  : theForm['firstName'],
+      'familyName' : theForm['familyName']
     }))
     pageData.db.commit()
   return schoolLib.app.people.borrowers.editBorrowerForm(

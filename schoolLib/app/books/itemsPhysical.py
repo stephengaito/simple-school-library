@@ -188,6 +188,33 @@ def postSaveNewItemsPhysical(pageData, itemsInfoId=None, **kwargs) :
       'dateLastSeen' : theForm['dateLastSeen'],
       'status'       : theForm['status']
     }))
+    selectSql = SelectSql().fields(
+      'itemsInfo.id', 'title', 'authors', 'keywords', 'summary',
+      'type', 'publisher', 'series'
+    ).tables(
+      'itemsInfo', 'itemsPhysical'
+    ).whereValue(
+      'itemsInfo.id', 'itemsInfoId'
+    ).whereValue(
+      'barCode', barcode
+    )
+    itemsReturned = selectSql.parseResults(
+      pageData.db.execute(selectSql.sql()),
+      fetchAll=False
+    )
+    if itemsReturned :
+      itemsRequrned = itemsReturned[0]
+      pageData.db.execute(*InsertSql().sql('itemsFTS', {
+        'itemsInfoId'  : itemsInfoId,
+        'title'        : itemsReturned['title'],
+        'authors'      : itemsReturned['authors'],
+        'keywords'     : itemsReturned['keywords'],
+        'summary'      : itemsReturned['summary'],
+        'type'         : itemsReturned['type'],
+        'publisher'    : itemsReturned['publisher'],
+        'series'       : itemsReturned['series'],
+        'barcode'      : barcode
+      }))
     pageData.db.commit()
     return schoolLib.app.books.itemsInfo.getShowItemsInfo(
       pageData, itemsInfoId, **kwargs
@@ -271,6 +298,33 @@ def putUpdateAnItemsPhysical(pageData, itemsPhysicalId=None, **kwargs) :
       'dateLastSeen' : theForm['dateLastSeen'],
       'status'       : theForm['status']
     }))
+    selectSql = SelectSql().fields(
+      'itemsInfo.id', 'title', 'authors', 'keywords', 'summary',
+      'type', 'publisher', 'series'
+    ).tables(
+      'itemsInfo', 'itemsPhysical'
+    ).whereValue(
+      'itemsInfo.id', 'itemsInfoId'
+    ).whereValue(
+      'barCode', barcode
+    )
+    itemsReturned = selectSql.parseResults(
+      pageData.db.execute(selectSql.sql()),
+      fetchAll=False
+    )
+    if itemsReturned :
+      itemsRequrned = itemsReturned[0]
+      pageData.db.execute(*InsertSql().sql('itemsFTS', {
+        'itemsInfoId'  : itemsInfoId,
+        'title'        : itemsReturned['title'],
+        'authors'      : itemsReturned['authors'],
+        'keywords'     : itemsReturned['keywords'],
+        'summary'      : itemsReturned['summary'],
+        'type'         : itemsReturned['type'],
+        'publisher'    : itemsReturned['publisher'],
+        'series'       : itemsReturned['series'],
+        'barcode'      : barcode
+      }))
     pageData.db.commit()
     physicalSelectSql = SelectSql(
     ).fields('itemsInfoId'
