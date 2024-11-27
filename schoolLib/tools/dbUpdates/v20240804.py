@@ -1,17 +1,16 @@
 
-from schoolLib.setup import *
-from schoolLib.tools.dbUpdates.utils import addDbVersion
+from schoolLib.tools.dbUpdates.utils import addDbVersion, \
+  createATable, reCreateIndex
 
 def update(db) :
 
   print("  Adding HelpPages table ")
-  createSql = CreateSql().sql('helpPages')
-  if not createSql :
-    raise Exception("Could not add helpPages table")
-  db.execute(createSql)
+  createATable(db, 'helpPages')
 
   print("  Adding shelf to itemsPhysical table")
   sqlCmd = "ALTER TABLE itemsPhysical ADD shelf TEXT DEFAULT ''"
   db.execute(sqlCmd)
+
+  reCreateIndex(db, 'helpPagesPath', 'helpPages', 'path')
 
 addDbVersion('v20240804', update)

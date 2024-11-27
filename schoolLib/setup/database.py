@@ -121,27 +121,6 @@ class SqlBuilder :
       subCmd += ', '.join(self.groupByList)
     return subCmd
 
-class CreateSql(SqlBuilder) :
-
-  def sql(self, table) :
-    if table not in schemaTables :
-      print("CAN NOT CREATE a table if it is not in the schema.yaml")
-      return
-
-    fieldList = []
-    for aField, aType in schemaTables[table].items() :
-      aFieldStmt = f"{aField} {aType.upper()}"
-      if aField == "id" :
-        aFieldStmt += " PRIMARY KEY AUTOINCREMENT"
-      fieldList.append(aFieldStmt)
-
-    cmd = "CREATE TABLE IF NOT EXISTS "
-    cmd += table
-    cmd += " ( "
-    cmd += ", ".join(fieldList)
-    cmd += " ) "
-    return cmd
-
 class IndexSql(SqlBuilder) :
 
   def sql(self, indexName, tableName, *fields) :
@@ -227,9 +206,9 @@ class InsertSql(SqlBuilder) :
     cmd += " ) VALUES ( "
     cmd += ", ".join(['?'] * len(valuesList))
     cmd += ")"
-    print(f"InsertSql cmd: [{cmd}]")
+    # print(f"InsertSql cmd: [{cmd}]")
     values = tuple(valuesList)
-    print(f"InsertSql values: [{values}]")
+    # print(f"InsertSql values: [{values}]")
 
     return (cmd, values)
 

@@ -1,10 +1,11 @@
 
-import yaml
+import sqlite3
+# import yaml
 
-from schoolLib.setup import *
+from schoolLib.setup import loadedConfig, config, SelectSql, InsertSql
 
-import schoolLib.tools.dbUpdates
-from   schoolLib.tools.dbUpdates.utils import knownDbVersions
+# import schoolLib.tools.dbUpdates
+from  schoolLib.tools.dbUpdates.utils import knownDbVersions
 
 def cli() :
 
@@ -22,10 +23,10 @@ def cli() :
   """)
 
   selectSql = SelectSql(
-  ).fields( 'version'
+  ).fields('version'
   ).tables('dbVersions'
   ).orderAscBy('id')
-  #print(selectSql.sql())
+  # print(selectSql.sql())
   dbVersions = selectSql.parseResults(db.execute(selectSql.sql()))
   for aRow in dbVersions :
     aVersion = aRow['version']
