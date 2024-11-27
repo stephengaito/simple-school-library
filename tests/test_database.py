@@ -1,11 +1,13 @@
 
+import sqlite3
 import yaml
 
-import pytest
+# import pytest
 
-from schoolLib.setup.database import *
+from schoolLib.setup.database import schemaTables, schemaFields, SelectSql, \
+  InsertSql, UpdateSql, DeleteSql, CreateSql, getClasses, getSortedClasses
 
-from utils import *
+# from utils import getResponseBody
 
 def test_loadSchema() :
   assert 'borrowers'     in schemaTables
@@ -61,12 +63,12 @@ def test_selectWhere() :
   assert 'stephen'   in cmd
   assert "id = 2"    in cmd
 
-def test_selectOrderBy() :
+def test_selectOrderAscBy() :
   cmd = SelectSql().fields(
     "id", "firstName", "familyName"
   ).tables(
     "borrowers"
-  ).orderBy('familyName'
+  ).orderAscBy('familyName'
   ).sql()
   print(cmd)
   assert 'SELECT' in cmd
@@ -74,15 +76,31 @@ def test_selectOrderBy() :
   assert 'borrowers' in cmd
   assert 'WHERE' not in cmd
   assert 'ORDER BY familyName' in cmd
+  assert 'DESC'  not in cmd
 
-def test_selectWhereOrderBy() :
+def test_selectOrderDescBy() :
+  cmd = SelectSql().fields(
+    "id", "firstName", "familyName"
+  ).tables(
+    "borrowers"
+  ).orderDescBy('familyName'
+  ).sql()
+  print(cmd)
+  assert 'SELECT' in cmd
+  assert 'firstName' in cmd
+  assert 'borrowers' in cmd
+  assert 'WHERE' not in cmd
+  assert 'ORDER BY familyName' in cmd
+  assert 'DESC'      in cmd
+
+def test_selectWhereOrderAscBy() :
   cmd = SelectSql().fields(
     "id", "firstName", "familyName"
   ).tables(
     "borrowers"
   ).whereValue('id', 2
   ).whereValue('firstName', 'stephen'
-  ).orderBy('familyName'
+  ).orderAscBy('familyName'
   ).sql()
   print(cmd)
   assert 'SELECT' in cmd
@@ -93,7 +111,27 @@ def test_selectWhereOrderBy() :
   assert 'stephen'   in cmd
   assert "id = 2"    in cmd
   assert 'ORDER BY familyName' in cmd
+  assert 'DESC'  not in cmd
 
+def test_selectWhereOrderDescBy() :
+  cmd = SelectSql().fields(
+    "id", "firstName", "familyName"
+  ).tables(
+    "borrowers"
+  ).whereValue('id', 2
+  ).whereValue('firstName', 'stephen'
+  ).orderDescBy('familyName'
+  ).sql()
+  print(cmd)
+  assert 'SELECT' in cmd
+  assert 'firstName' in cmd
+  assert 'borrowers' in cmd
+  assert 'WHERE'     in cmd
+  assert '='         in cmd
+  assert 'stephen'   in cmd
+  assert "id = 2"    in cmd
+  assert 'ORDER BY familyName' in cmd
+  assert 'DESC'      in cmd
 
 def test_parseResults() :
   results = SelectSql().fields(
@@ -102,7 +140,7 @@ def test_parseResults() :
     [1, 'Stephen', 'Gaito'],
     [2, 'Maureen', 'Greyson']
   ])
-  #print(yaml.dump(results))
+  # print(yaml.dump(results))
   firstResult = results[0]
   assert 'familyName' in firstResult
   assert firstResult['familyName'] == 'Gaito'
@@ -117,13 +155,13 @@ def test_insert() :
     "familyName" : 'Gaito'
   })
   print(cmd)
-  assert 'INSERT INTO' in cmd
-  assert 'borrowers'   in cmd
-  assert 'firstName'   in cmd
-  assert 'WHERE'   not in cmd
-  assert 'VALUES'      in cmd
-  assert 'Stephen'     in cmd
-  assert 'Gaito'       in cmd
+  assert 'INSERT INTO' in cmd[0]
+  assert 'borrowers'   in cmd[0]
+  assert 'firstName'   in cmd[0]
+  assert 'WHERE'   not in cmd[0]
+  assert 'VALUES'      in cmd[0]
+  assert 'Stephen'     in cmd[1]
+  assert 'Gaito'       in cmd[1]
 
 def test_update() :
   cmd = UpdateSql(
@@ -165,12 +203,13 @@ def test_create() :
   assert 'INTEGER PRIMARY KEY AUTOINCREMENT' in cmd
   assert 'TEXT'                              in cmd
 
+
 def test_getDatabase() :
   results = []
   # we set the path explicitly so we do not use a local database.
-  with getDatabase(path=':memory:') as db :
+  with sqlite3.connect(':memory:') as db :
     db.execute(CreateSql().sql("borrowers"))
-    db.execute(InsertSql().sql('borrowers', {
+    db.execute(*InsertSql().sql('borrowers', {
       "firstName" : 'Stephen',
       "familyName" : 'Gaito'
     }))
@@ -193,15 +232,15 @@ def test_classes() :
   theClasses = {}
   sortedClasses = []
   # we set the path explicitly so we do not use a local database.
-  with getDatabase(path=':memory:') as db :
+  with sqlite3.connect(':memory:') as db :
     db.execute(CreateSql().sql('classes'))
-    db.execute(InsertSql().sql('classes', {
+    db.execute(*InsertSql().sql('classes', {
       'name' : 'Oak class',
       'classOrder' : 10,
       'desc' : '',
       'colour' : '#000000'
     }))
-    db.execute(InsertSql().sql('classes', {
+    db.execute(*InsertSql().sql('classes', {
       'name' : 'Wise class',
       'classOrder' : 1,
       'desc' : '',
@@ -238,3 +277,4 @@ def test_classes() :
   assert sortedClasses[1]['classOrder'] == theClasses[1]['classOrder']
   assert sortedClasses[0]['name']       == theClasses[2]['name']
   assert sortedClasses[1]['name']       == theClasses[1]['name']
+

@@ -1,11 +1,11 @@
 
-import os
-import yaml
+# import os
+# import yaml
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import PlainTextResponse
+# from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
 
 from starlette_login.backends import SessionAuthBackend
@@ -14,8 +14,14 @@ from starlette_login.login_manager import LoginManager
 from starlette_login.login_manager import ProtectionLevel
 from starlette_login.middleware import AuthenticationMiddleware
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, loadedConfig, getRoute, getHelpPage, \
+  getHelpPageHtml, postRoute, PageData, htmlResponseFromHtmx, loadUsers,   \
+  config, routes
+
+from schoolLib.htmxComponents import loadedTheme, HtmlPage, StdHeaders, \
+  StdBody, InitialOuterDiv, HelpEditorModalDialog, HelpEditorForm,      \
+  postHelpPage, Level0div, Level1div, Text
+
 import schoolLib.app.menus
 
 loadedConfig('config.yaml', verbose=True)
@@ -41,7 +47,8 @@ getRoute('/', homePage, anyUser=True)
 
 @pagePart
 def helpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
-  if not aHelpPage : aHelpPage = 'uknownPage'
+  if not aHelpPage :
+    aHelpPage = 'uknownPage'
   print(f"HelpPages: [{aHelpPage}]")
   print(f"isModal: [{isModal}]")
   modal = True
@@ -60,7 +67,8 @@ getRoute('/help/{aHelpPage:str}/{isModal:str}', helpPages, anyUser=True)
 
 @pagePart
 def editHelpPage(pageData, aHelpPage=None, isModal='yes', **kwargs) :
-  if not aHelpPage : aHelpPage = 'unknownPage'
+  if not aHelpPage :
+    aHelpPage = 'unknownPage'
   helpPageHtml = getHelpPageHtml(pageData.db, aHelpPage)
   print(helpPageHtml)
   modal = True
@@ -83,7 +91,8 @@ getRoute('/editHelp/{aHelpPage:str}/{isModal:str}', editHelpPage)
 
 @pagePart
 def postHelpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
-  if not aHelpPage : aHelpPage = 'unknownPage'
+  if not aHelpPage :
+    aHelpPage = 'unknownPage'
   modal = True
   modalStr = 'modal'
   if isModal.startswith('no') :
@@ -131,7 +140,7 @@ async def serverError(request, theException) :
 
 # see: https://starlette-login.readthedocs.io/en/stable/usage/
 sessionSecretKey = config['secretKey']
-sessionMaxAge = 10 * 60 # 10 minutes
+sessionMaxAge = 10 * 60  # 10 minutes
 if 'sessionMaxAge' in config :
   sessionMaxAge    = config['sessionMaxAge']
 loginManagerConfig = LoginManagerConfig(

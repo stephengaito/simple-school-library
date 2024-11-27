@@ -1,21 +1,19 @@
 
 import yaml
 
-import pytest
+# import pytest
 
-from schoolLib.setup.configuration import *
+from schoolLib.setup.configuration import loadedConfig, config
 
-from utils import *
+# from utils import getResponseBody
 
 def test_config() :
-  assert loadedConfig('testConfig.yaml')
+  assert loadedConfig('tests/testConfig.yaml')
 
   print(yaml.dump(config))
 
   assert 'database'     in config
-  assert 'templatesDir' in config
   assert 'markdownDir'  in config
 
   assert config['database'] == 'tmp/sslDb.sqlite'
-  assert config['templatesDir'].endswith('schoolLib/templates')
   assert config['markdownDir'].endswith('schoolLib/markdown')

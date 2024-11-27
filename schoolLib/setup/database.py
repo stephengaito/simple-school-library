@@ -2,13 +2,13 @@
 A simple tool to access the database
 """
 
-## TODO need to protect from `'` used by user.
+# # TODO need to protect from `'` used by user.
 
-from contextlib import contextmanager
+# from contextlib import contextmanager
 from datetime import date, timedelta
 import os
-import sqlite3
-import traceback
+# import sqlite3
+# import traceback
 import yaml
 
 from schoolLib.setup.configuration import config
@@ -26,9 +26,9 @@ schemaTables = {}
 
 def loadSchema() :
   schemaPath = os.path.join(
-      os.path.dirname(__file__),
-      'schema.yaml'
-    )
+    os.path.dirname(__file__),
+    'schema.yaml'
+  )
   schemaDict = {}
   with open(schemaPath) as schemaFile :
     schemaDict = yaml.safe_load(schemaFile.read())
@@ -39,7 +39,7 @@ def loadSchema() :
     schemaTables[aTable][aField] = aType
     schemaFields[aTableField]    = aType
     schemaFields[aField]         = aType
-  #print(yaml.dump(schemaFields))
+  # print(yaml.dump(schemaFields))
 loadSchema()
 
 ###############################################################
@@ -147,11 +147,11 @@ class IndexSql(SqlBuilder) :
   def sql(self, indexName, tableName, *fields) :
     return ""
 
-#class FullTextSearchIndexSql(SqlBuilder) :
+# class FullTextSearchIndexSql(SqlBuilder) :
 #
-#  def sql(self, indexName, tableName, *fields) :
-#    # see: https://sqlite.org/fts5.html
-#    return ""
+#   def sql(self, indexName, tableName, *fields) :
+#     # see: https://sqlite.org/fts5.html
+#     return ""
 
 class SelectSql(SqlBuilder) :
 
@@ -201,7 +201,8 @@ class SelectSql(SqlBuilder) :
         for aFieldNum in range(len(self.fieldsList)) :
           newRow[fixedFields[aFieldNum]] = aRow[aFieldNum]
         newResults.append(newRow)
-        if not fetchAll : break
+        if not fetchAll :
+          break
     return newResults
 
 class InsertSql(SqlBuilder) :
@@ -211,7 +212,8 @@ class InsertSql(SqlBuilder) :
     keysList = []
     valuesList = []
     for aKey, aValue in values.items() :
-      if aKey == 'id' : continue
+      if aKey == 'id' :
+        continue
       keysList.append(aKey)
       escapedValue = str(aValue)
       if aKey in schemaFields and schemaFields[aKey] == "text" :
@@ -223,7 +225,7 @@ class InsertSql(SqlBuilder) :
     cmd += " ( "
     cmd += ", ".join(keysList)
     cmd += " ) VALUES ( "
-    cmd += ", ".join(['?'] *len(valuesList))
+    cmd += ", ".join(['?'] * len(valuesList))
     cmd += ")"
     print(f"InsertSql cmd: [{cmd}]")
     values = tuple(valuesList)
@@ -237,7 +239,8 @@ class UpdateSql(SqlBuilder) :
 
     setList = []
     for aKey, aValue in values.items() :
-      if aKey == 'id' : continue
+      if aKey == 'id' :
+        continue
       setList.append(f"{aKey} = '{sqliteEscapeSingleQuotes(aValue)}'")
 
     cmd = "UPDATE "
@@ -323,8 +326,8 @@ def getHelpPageHtml(db, aHelpPage) :
 
 def findPhysicalBookInItemsBorrowed(db, itemsPhysicalId) :
   selectSql = SelectSql(
-  ).fields( 'id', 'borrowersId', 'itemsPhysicalId',
-  ).tables( 'itemsBorrowed'
+  ).fields('id', 'borrowersId', 'itemsPhysicalId',
+  ).tables('itemsBorrowed'
   ).whereValue(
     'itemsPhysicalId', itemsPhysicalId
   )
@@ -333,7 +336,8 @@ def findPhysicalBookInItemsBorrowed(db, itemsPhysicalId) :
     db.execute(selectSql.sql()),
     fetchAll=False
   )
-  if results : return results[0]
+  if results :
+    return results[0]
   return None
 
 def dbReturnABook(db, itemsBorrowedId) :
@@ -349,7 +353,8 @@ def dbReturnABook(db, itemsBorrowedId) :
     db.execute(selectSql.sql()),
     fetchAll=False
   )
-  if not itemBorrowedRow : return False
+  if not itemBorrowedRow :
+    return False
   itemBorrowedRow = itemBorrowedRow[0]
 
   print("Returned:")
@@ -375,12 +380,14 @@ def dbReturnABook(db, itemsBorrowedId) :
 def dbTakeOutABook(db, borrowerId, itemsPhysicalId) :
   # find the book in the itemsBorrowed table (to ensure it IS NOT there)
   itemBorrowedRow = findPhysicalBookInItemsBorrowed(db, itemsPhysicalId)
-  if itemBorrowedRow : return False
+  if itemBorrowedRow :
+    return False
 
   # insert the book into the itemsBorrowed table
   today = date.today()
   loanPeriod = 7
-  if 'loanPeriod' in config : loanPeriod = config['loanPeriod']
+  if 'loanPeriod' in config :
+    loanPeriod = config['loanPeriod']
   db.execute(*InsertSql().sql('itemsBorrowed', {
     'borrowersId'     : borrowerId,
     'itemsPhysicalId' : itemsPhysicalId,
