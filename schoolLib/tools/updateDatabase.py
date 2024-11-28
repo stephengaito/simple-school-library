@@ -2,17 +2,13 @@
 import sqlite3
 # import yaml
 
-from schoolLib.setup import loadedConfig, config, SelectSql, InsertSql
+from schoolLib.setup import SelectSql, InsertSql
 
 # import schoolLib.tools.dbUpdates
-from  schoolLib.tools.dbUpdates.utils import knownDbVersions
+from schoolLib.tools.dbUpdates.utils import knownDbVersions
+from schoolLib.tools.utils import getDatabasePath
 
-def cli() :
-
-  # load the School Library configuration (to get location of database)
-  loadedConfig('config.yaml')
-  dbPath = config['database']
-  db = sqlite3.connect(dbPath)
+def updateDatabase(db) :
 
   # start by ensuring the dbVersion table exists
   db.execute("""
@@ -22,6 +18,7 @@ def cli() :
     )
   """)
 
+  # remove all update-version which have already been applied
   selectSql = SelectSql(
   ).fields('version'
   ).tables('dbVersions'
@@ -33,10 +30,11 @@ def cli() :
     if aVersion in knownDbVersions :
       del knownDbVersions[aVersion]
 
+  # apply any update-version which have not already been applied
   sortedDbVersions = sorted(knownDbVersions.keys())
   for anUpdateVersion in sortedDbVersions :
     try :
-      print(f"Running update: {anUpdateVersion}")
+      print(f"\nRunning update: {anUpdateVersion}")
       knownDbVersions[anUpdateVersion](db)
       db.execute(*InsertSql().sql('dbVersions', {
         'version' : anUpdateVersion
@@ -47,4 +45,13 @@ def cli() :
       print(repr(err))
       return 1
 
+  print("\nAll updates applied")
   return 0
+
+def cli() :
+
+  # load the School Library configuration (to get location of database)
+  db = sqlite3.connect(
+    getDatabasePath('slUpdateDatabase')
+  )
+  return updateDatabase(db)
