@@ -16,3 +16,16 @@ stack for our app.
 
 We could either use a ":memory:" SQLite3 database, or load a simple
 database from YAML, or dumped SQL to test our app against.
+
+## ToDo
+
+Use the `routes`, `pageParts` as computed by `computePagePartUsers` from
+`schools.setup.router` to obtain both the entry points as well as those
+pageParts which call them. Then make sure all such entry points actually exist.
+
+Then slowly work through the "most important" pageParts ensuring they return
+what is expected.
+
+Then slowly work through each python file correcting any pycodestyle problems.
+
+

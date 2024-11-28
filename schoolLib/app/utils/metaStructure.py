@@ -1,22 +1,31 @@
-
+import os
 import yaml
 
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
-from schoolLib.setup          import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, routes, config, \
+  getRoute, computePagePartUsers, pageParts
+
+from schoolLib.htmxComponents import Div, List, Text, Link, \
+  LongCode, RawHtml, HtmlPage, StdHeaders
 
 devUser = True
 
+###############################################################################
+# provide a list based GUI overview of entry points
+
 @pagePart
 def listRoutes(pageData, aPath=None, **kwargs) :
-  if aPath : aPath = '/'+aPath
+  if aPath :
+    aPath = '/' + aPath
   routesList = Div([])
   for aRoute in routes :
-    if aPath and not aRoute.path.startswith(aPath) : continue
-    anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
+    if aPath and not aRoute.path.startswith(aPath) :
+      continue
+    anEndpoint = str(aRoute.endpoint.__module__) + \
+      '.' + str(aRoute.endpoint.__name__)
     anEndpoint = anEndpoint.lstrip('schoolLib.')
     aList = List([])
     aList.appendChildren([
@@ -32,7 +41,7 @@ def listRoutes(pageData, aPath=None, **kwargs) :
       )
     ])
     routesList.appendAChild(aList)
-  return HtmlPage( StdHeaders(), routesList )
+  return HtmlPage(StdHeaders(), routesList)
 
 getRoute('/routes/{aPath:path}', listRoutes, anyUser=devUser)
 
@@ -44,7 +53,8 @@ def listPageParts(pageData, aPath=None, **kwargs) :
   for aPagePartKey in pagePartKeys :
     aPartList = List([])
     aPagePart = pageParts[aPagePartKey]
-    if not aPagePart.name.startswith(aPath) : continue
+    if not aPagePart.name.startswith(aPath) :
+      continue
     aPartList.appendChildren([
       Text(aPagePart.name, textType='none'),
       Text(aPagePart.sig, textType='none'),
@@ -53,9 +63,9 @@ def listPageParts(pageData, aPath=None, **kwargs) :
     usersList = List([])
     for aUser in sorted(aPagePart.users) :
       if '/' in aUser :
-        usersList.appendAChild(Link(f'/routes{aUser}', aUser ))
+        usersList.appendAChild(Link(f'/routes{aUser}', aUser))
       else :
-        usersList.appendAChild(Link(f'/pageParts/{aUser}', aUser ))
+        usersList.appendAChild(Link(f'/pageParts/{aUser}', aUser))
     aPartList.appendAChild(
       Text(['Used by:', usersList], textType=None)
     )
@@ -63,19 +73,22 @@ def listPageParts(pageData, aPath=None, **kwargs) :
     for aMetaData in aPagePart.metaData :
       for aKey, aValue in aMetaData.items() :
         if aValue :
-          if '{' in aValue : aValue = aValue.split('{')[0].rstrip('/')
+          if '{' in aValue :
+            aValue = aValue.split('{')[0].rstrip('/')
           if aKey in ['pagePart'] :
             metaDataList.appendAChild(Text([
-              Text(aKey+':', textType='none'),
+              Text(aKey + ':', textType='none'),
               Link(f'/pageParts/{aValue}', aValue, target='_blank')
             ], textType='none'))
           elif aKey in ['hxGet', 'hxPost', 'link'] :
             metaDataList.appendAChild(Text([
-              Text(aKey+':', textType='none'),
+              Text(aKey + ':', textType='none'),
               Link(f'/routes{aValue}', aValue, target='_blank')
             ], textType=None))
           else :
-            metaDataList.appendAChild(Text(f"{aKey}: {aValue}", textType='none'))
+            metaDataList.appendAChild(
+              Text(f"{aKey}: {aValue}", textType='none')
+            )
     aPartList.appendAChild(
       Text(['Meta-Structure:', metaDataList], textType='none')
     )
@@ -86,32 +99,22 @@ def listPageParts(pageData, aPath=None, **kwargs) :
     partsList.appendAChild(aPartList)
   return HtmlPage(
     StdHeaders([
-     '<link rel="stylesheet" href="/static/css/pygmentsSas.css" type="text/css" />'
+     '<link rel="stylesheet" href="/static/css/pygmentsSas.css" type="text/css" />'  # noqa
     ]),
      partsList
   )
 
 getRoute('/pageParts/{aPath:path}', listPageParts, anyUser=devUser)
 
-@pagePart
-def provideUIOverview(pageData, aPath=None, **kwargs) :
-  savePath = None
-  showPath = ""
-  if aPath :
-    if aPath.startswith('save/') :
-      savePath = aPath.removeprefix('save/')
-    elif aPath.startswith('show/') :
-      showPath = aPath.removeprefix('show/')
 
-  computePagePartUsers()
+###############################################################################
+# provide a D3 based GUI overview
 
-  nodes = []
-  nodesSeen = set()
-  links = []
-
+def computeLinksNodesSeen(routes, nodes, links, nodesSeen, showPath) :
   for aRoute in routes :
     aPath = aRoute.path
-    if '{' in aPath : aPath = aPath.split('{')[0].rstrip('/')
+    if '{' in aPath :
+      aPath = aPath.split('{')[0].rstrip('/')
     if aPath not in nodesSeen :
       # add the nodes
       radius = 2.5
@@ -128,7 +131,8 @@ def provideUIOverview(pageData, aPath=None, **kwargs) :
       nodesSeen.add(aPath)
 
     # add the links
-    anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
+    anEndpoint = str(aRoute.endpoint.__module__) + \
+      '.' + str(aRoute.endpoint.__name)
     anEndpoint = anEndpoint.lstrip('schoolLib.')
     if anEndpoint not in pageParts :
       print(f"Could not find the endpoint: {anEndpoint} for {aPath}")
@@ -140,6 +144,7 @@ def provideUIOverview(pageData, aPath=None, **kwargs) :
       'color'    : "green"
     })
 
+def updateNodesLinks(nodes, links, nodesSeen, showPath) :
   for aPagePartName, aPagePart in pageParts.items() :
     if aPagePartName not in nodesSeen :
       # add the nodes
@@ -172,10 +177,12 @@ def provideUIOverview(pageData, aPath=None, **kwargs) :
 
     for someMetaData in aPagePart.metaData :
       for aKey, aValue in someMetaData.items() :
-        if not aValue : continue
+        if not aValue :
+          continue
         if aKey in ['hxGet', 'hxPost', 'link'] :
-          if '{' in aValue : aValue = aValue.split('{')[0].rstrip('/')
-          if not aValue in nodesSeen :
+          if '{' in aValue :
+            aValue = aValue.split('{')[0].rstrip('/')
+          if aValue not in nodesSeen :
             print(f"Could not find the url {aValue} in {aPagePartName}")
             continue
 
@@ -186,7 +193,27 @@ def provideUIOverview(pageData, aPath=None, **kwargs) :
             'color'    : "blue"
           })
 
-  jsonData = { "nodes": nodes, "links": links }
+@pagePart
+def provideUIOverview(pageData, aPath=None, **kwargs) :
+  savePath = None
+  showPath = ""
+  if aPath :
+    if aPath.startswith('save/') :
+      savePath = aPath.removeprefix('save/')
+    elif aPath.startswith('show/') :
+      showPath = aPath.removeprefix('show/')
+
+  computePagePartUsers()
+
+  nodes = []
+  nodesSeen = set()
+  links = []
+
+  computeLinksNodesSeen(routes, nodes, links, nodesSeen, showPath)
+
+  updateNodesLinks(nodes, links, nodesSeen, showPath)
+
+  jsonData = {"nodes": nodes, "links": links}
 
   if savePath :
       savePath = os.path.abspath(os.path.expanduser(savePath))
@@ -199,13 +226,13 @@ def provideUIOverview(pageData, aPath=None, **kwargs) :
         print(f"Could not save ui overview data in {savePath}")
         print(repr(err))
 
-  svgHeight=800
+  svgHeight = 800
   if 'develop' in config and 'svgHeight' in config['develop'] :
-    svgHeight=config['develop']['svgHeight']
+    svgHeight = config['develop']['svgHeight']
 
-  svgWidth=800
+  svgWidth = 800
   if 'develop' in config and 'svgWidth' in config['develop'] :
-    svgWidth=config['develop']['svgWidth']
+    svgWidth = config['develop']['svgWidth']
 
   return HtmlPage(
     StdHeaders([

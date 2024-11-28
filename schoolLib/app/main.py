@@ -14,13 +14,13 @@ from starlette_login.login_manager import LoginManager
 from starlette_login.login_manager import ProtectionLevel
 from starlette_login.middleware import AuthenticationMiddleware
 
-from schoolLib.setup import pagePart, loadedConfig, getRoute, getHelpPage, \
+from schoolLib.setup import pagePart, loadedConfig, getRoute, \
   getHelpPageHtml, postRoute, PageData, htmlResponseFromHtmx, loadUsers,   \
   config, routes
 
 from schoolLib.htmxComponents import loadedTheme, HtmlPage, StdHeaders, \
   StdBody, InitialOuterDiv, HelpEditorModalDialog, HelpEditorForm,      \
-  postHelpPage, Level0div, Level1div, Text
+  postHelpPage, Level0div, Level1div, Text, getHelpPage
 
 import schoolLib.app.menus
 

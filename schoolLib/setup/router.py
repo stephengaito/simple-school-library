@@ -1,21 +1,22 @@
 
 from functools import wraps
-from inspect import signature, getdoc, getsource, iscoroutinefunction
+from inspect import signature, getdoc, getsource
 import re
 import sqlite3
-import yaml
+# import yaml
 
 from starlette.exceptions import HTTPException
 from starlette.responses import HTMLResponse
-from starlette.routing   import Route #, Mount, WebSocketRoute
+from starlette.routing   import Route  # , Mount, WebSocketRoute
 
 from starlette_login.utils import login_user, logout_user
 
 from schoolLib.setup.configuration   import config
 from schoolLib.setup.authenticate    import OtherUser
 
-#from schoolLib.htmxComponents.layout import *
-from schoolLib.htmxComponents import *
+# from schoolLib.htmxComponents.layout import *
+from schoolLib.htmxComponents import HtmlPage, StdHeaders, StdBody, \
+  RawHtml, WithFooterMessage, WarnFooterMessage, Text
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -68,7 +69,7 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
     htmxComponent.collectHtml(htmlFragments)
     url = pageData.path
     if url != '/' and not url.startswith('/routes') \
-      and not url.startswith('/pageParts') and 'develop' in config :
+        and not url.startswith('/pageParts') and 'develop' in config :
       htmlFragments.append(f"""
         <div hx-swap-oob="innerHTML:#developerMessages">
           <a href="/routes{url}" target="_blank">/routes{url}</a>
@@ -86,9 +87,9 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
       )
       htmxComponent.collectHtml(htmlFragments)
   kwargs = htmxComponent.kwargs
-  #print("-------------------------------------------------")
-  #print('\n'.join(htmlFragments))
-  #print("-------------------------------------------------")
+  # print("-------------------------------------------------")
+  # print('\n'.join(htmlFragments))
+  # print("-------------------------------------------------")
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
 homePageFunc = None
@@ -97,14 +98,14 @@ def registerHomePage(aHomePageFunc) :
   homePageFunc = aHomePageFunc
 
 def goToHomePage(pageData, **kwargs) :
-  headers = { 'HX-Redirect' : '/'}
+  headers = {'HX-Redirect' : '/'}
   return RawHtml("<h1>Hello</h1>", headers=headers)
 
 """
   if not homePageFunc :
     raise HTTPException(
       404,
-      detail=f"No home page registered while trying to serve {request.url.path}"
+      detail=f"No home page registered while trying to serve {request.url.path}"  # noqa
     )
 
   if 'headers' not in kwargs : kwargs['headers'] = {}
@@ -118,9 +119,9 @@ async def callWithParameters(request, func, anyUser=False) :
     params.update(request.query_params)
   if request.path_params :
     params.update(request.path_params)
-  #print("----------------------------")
-  #print(yaml.dump(params))
-  #print("----------------------------")
+  # print("----------------------------")
+  # print(yaml.dump(params))
+  # print("----------------------------")
 
   dbPath = ":memory:"
   if 'database' in config :
@@ -143,7 +144,7 @@ async def callWithParameters(request, func, anyUser=False) :
     else :
       raise HTTPException(
         404,
-        detail=f"No home page registered while trying to serve {request.url.path}"
+        detail=f"No home page registered while trying to serve {request.url.path}"  # noqa
       )
 
     if pageData.login :
@@ -193,7 +194,8 @@ def deleteRoute(aRoute, deleteFunc, anyUser=False, name=None) :
   async def deleteWrapper(request) :
     return await callWithParameters(request, deleteFunc, anyUser=anyUser)
   routes.append(SSLRoute(
-    aRoute, deleteWrapper, anyUser=anyUser, name=name, methods=["GET", "DELETE"]
+    aRoute, deleteWrapper, anyUser=anyUser,
+    name=name, methods=["GET", "DELETE"]
   ))
 
 ###############################################################
@@ -212,12 +214,13 @@ regExps = [
   r"callPagePart\(\s*\'(?P<callPagePart>[^\']*)\'"
 ]
 metaDataRegExp = re.compile('|'.join(regExps))
+# '
 
 class PagePart :
   def __init__(self, func) :
     self.users = set()
     self.func  = func
-    name       = str(func.__module__)+'.'+str(func.__name__)
+    name       = str(func.__module__) + '.' + str(func.__name__)
     self.name  = name.lstrip('schoolLib.')
     pageParts[self.name] = self
 
@@ -227,7 +230,8 @@ class PagePart :
   def collectMetaData(self) :
     self.sig  = str(signature(self.func))
     self.doc  = getdoc(self.func)
-    if not self.doc : self.doc = "No doc string"
+    if not self.doc :
+      self.doc = "No doc string"
     src  = getsource(self.func)
     metaData = []
     for aMatch in metaDataRegExp.finditer(src) :
@@ -244,7 +248,8 @@ def computePagePartUsers() :
   # compute the users from each route
   for aRoute in routes :
     aPath = aRoute.path
-    anEndpoint = str(aRoute.endpoint.__module__)+'.'+str(aRoute.endpoint.__name__)
+    anEndpoint = str(aRoute.endpoint.__module__) + \
+      '.' + str(aRoute.endpoint.__name__)
     anEndpoint = anEndpoint.lstrip('schoolLib.')
     if anEndpoint not in pageParts :
       print(f"Could not find the endpoint {anEndpoint} in {aRoute}")
@@ -258,6 +263,6 @@ def computePagePartUsers() :
     for someMetaData in pagePart.metaData :
       if 'callPagePart' in someMetaData and someMetaData['callPagePart'] :
         if someMetaData['callPagePart'] not in pageParts :
-          print(f"Could not find page part {someMetaData['callPagePart']} in {pagePartName}")
+          print(f"Could not find page part {someMetaData['callPagePart']} in {pagePartName}")  # noqa
           continue
         pageParts[someMetaData['callPagePart']].addUser(pagePartName)

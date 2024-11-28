@@ -5,7 +5,9 @@ import yaml
 # import pytest
 
 from schoolLib.setup.database import schemaTables, schemaFields, SelectSql, \
-  InsertSql, UpdateSql, DeleteSql, CreateSql, getClasses, getSortedClasses
+  InsertSql, UpdateSql, DeleteSql, getClasses, getSortedClasses
+
+from schoolLib.tools.dbUpdates.utils import CreateSql
 
 # from utils import getResponseBody
 
