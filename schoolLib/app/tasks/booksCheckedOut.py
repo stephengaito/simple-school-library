@@ -1,6 +1,8 @@
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import getRoute, pagePart, SelectSql, getClasses, \
+  addEmojiColour
+from schoolLib.htmxComponents import TableRow, TableHeader, Text, \
+  TableEntry, Link, Level1div, Table
 import schoolLib.app.tasks.menu
 
 ##########################################################################
@@ -40,7 +42,7 @@ def booksCheckedOut(pageData, **kwargs) :
     'borrowers.classId', 'itemsBorrowed.dateDue',
     'borrowers.firstName', 'borrowers.familyName'
   )
-  #print(selectSql.sql())
+  # print(selectSql.sql())
   booksCheckedOut = selectSql.parseResults(
     pageData.db.execute(selectSql.sql())
   )
@@ -56,7 +58,7 @@ def booksCheckedOut(pageData, **kwargs) :
         )),
         TableEntry(Link(
           f'/borrowers/show/{aBook['borrowers_id']}',
-          aBook['borrowers_firstName']+' '+aBook['borrowers_familyName'],
+          aBook['borrowers_firstName'] + ' ' + aBook['borrowers_familyName'],
           level='level0div',
           hxTarget='#level0div'
         )),

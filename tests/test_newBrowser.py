@@ -5,8 +5,6 @@ from starlette.testclient import TestClient
 
 from schoolLib.app.main import app
 
-# from utils import getResponseBody
-
 def test_newBorrower() :
   pytest.skip('not yet')
   client = TestClient(app)

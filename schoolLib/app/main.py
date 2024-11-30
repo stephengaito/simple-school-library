@@ -176,3 +176,5 @@ app = Starlette(
 app.state.login_manager = loginManager
 app.mount('/static', StaticFiles(packages=['schoolLib']), name='static')
 
+def setupApp() :
+  pass

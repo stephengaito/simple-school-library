@@ -36,7 +36,8 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = [ "tests" ]
+testpaths = "tests"
+norecursedirs = "tests/utils"
 
 [tool.pdm.scripts]
 post_install = { call = "schoolLib.tools.postInstall:patches" }
