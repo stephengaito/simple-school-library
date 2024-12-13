@@ -1,7 +1,7 @@
 
 import os
 import sys
-import yaml
+# import yaml
 
 from schoolLib.app.main import setupApp
 from schoolLib.setup.router import pageParts, \
@@ -24,12 +24,8 @@ def sanitizeUrl(hxUrl) :
   hxName = hxPrefix.replace('/', '_').lstrip('_')
   return (hxUrl, hxPrefix, hxName)
 
-def runSanityChecks() :
-  print("Running sanity tests...")
-
-  setupApp()
-  computePagePartUsers()
-
+def checkRoutes() :
+  print("  Checking routes")
   knownRoutes = set()
   for aRoute in routes :
     _, routePrefix, _ = sanitizeUrl(aRoute.path)
@@ -55,6 +51,15 @@ def runSanityChecks() :
           print(f"\nCheck PagePart: {aPagePartName}")
           print(" For the following errors:")
           print(f"  hxPost: {hxPostPrefix} {hxPostName} [{hxPost}]")
+  return problemFound
+
+def runSanityChecks() :
+  print("Running sanity tests...")
+
+  setupApp()
+  computePagePartUsers()
+  problemFound = False
+  problemFound |= checkRoutes()
 
   if problemFound :
     print("Please fix the above problems")
