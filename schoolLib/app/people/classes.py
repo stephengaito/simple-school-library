@@ -12,8 +12,12 @@ description of each class.
 
 """
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, getClasses, getSortedClasses,     \
+  addEmojiColour, getRoute, InsertSql, postRoute, UpdateSql, putRoute,  \
+  SelectSql, DeleteSql, deleteRoute
+from schoolLib.htmxComponents import FormTable, TextInput, NumberInput, \
+  EmojiColourSelector, TableRow, TableHeader, Text, TableEntry, Div,    \
+  Button, HelpButton, Level1div, Table, getHelpPage
 import schoolLib.app.menus
 import schoolLib.app.people.menu
 
@@ -21,13 +25,16 @@ import schoolLib.app.people.menu
 # content
 
 @pagePart
-def editClassForm(pageData,
-  className=None, classDesc=None, classOrder=None, classColour=None,
-  submitMessage="Save changes", hxPost=None,
+def editClassForm(
+  pageData,
+  className=None,
+  classDesc=None,
+  classOrder=None,
+  classColour=None,
+  submitMessage="Save changes",
+  hxPost=None,
   **kwargs
 ) :
-  if not hxPost : return "<!-- htmx form with NO hxPost -->"
-
   return FormTable([
     TextInput(
       label='Class name',
@@ -72,30 +79,32 @@ def listClasses(pageData, **kwargs) :
     tableRows.append(TableRow([
       TableEntry(Text(aClass['name'])),
       TableEntry(Text(aClass['desc'])),
-      TableEntry(Text(addEmojiColour(aClass['colour'],aClass['colour']))),
+      TableEntry(Text(addEmojiColour(aClass['colour'], aClass['colour']))),
       TableEntry(Div([
         Button(
           'List', hxGet=f'/classes/list/{aClass['id']}', hxTarget='#level1div'
         ),
-        HelpButton(hxGet=f"/help/listClass/modal")
+        HelpButton(hxGet="/help/listClass/modal")
       ])),
       TableEntry(Div([
         Button(
-          'Update', hxGet=f'/classes/update/{aClass['id']}', hxTarget='#level1div'
+          'Update', hxGet=f'/classes/update/{aClass['id']}',
+          hxTarget='#level1div'
         ),
-        HelpButton(hxGet=f"/help/updateClass/modal")
+        HelpButton(hxGet="/help/updateClass/modal")
       ])),
       TableEntry(Div([
         Button(
           'Edit', hxGet=f'/classes/edit/{aClass['id']}', hxTarget='#level1div'
         ),
-        HelpButton(hxGet=f"/help/editClass/modal")
+        HelpButton(hxGet="/help/editClass/modal")
       ])),
       TableEntry(Div([
         Button(
-          'Delete', hxGet=f'/classes/delete/{aClass['id']}', hxTarget='#level1div'
+          'Delete', hxGet=f'/classes/delete/{aClass['id']}',
+          hxTarget='#level1div'
         ),
-        HelpButton(hxGet=f"/help/deleteClass/modal")
+        HelpButton(hxGet="/help/deleteClass/modal")
       ])),
     ]))
 
@@ -139,12 +148,12 @@ def addAClass(pageData, **kwargs) :
 ##########################################################################
 # routes
 
-getRoute('/menu/people/addClass',addAClass)
+getRoute('/menu/people/addClass', addAClass)
 
-getRoute('/menu/people/listClasses',listClasses)
+getRoute('/menu/people/listClasses', listClasses)
 
 @pagePart
-def postSaveNewClass(pageData, db, **kwargs) :
+def postSaveNewClass(pageData, **kwargs) :
   theForm = pageData.form
   pageData.db.execute(*InsertSql().sql('classes', {
     'name'       : theForm['className'],

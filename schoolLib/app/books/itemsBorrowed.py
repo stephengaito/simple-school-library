@@ -5,8 +5,9 @@ Work with itemsBorrowed
   - edit an itemsPhysical
 """
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, getRoute, InsertSql, postRoute, \
+  SelectSql, UpdateSql, putRoute
+from schoolLib.htmxComponents import FormTable, DateInput, Level0div
 import schoolLib.app.menus
 
 ##########################################################################
@@ -15,12 +16,12 @@ import schoolLib.app.menus
 @pagePart
 def editItemsBorrowedForm(
   pageData,
-  dateBorrowed=None, dateDue=None,
-  submitMessage="Save changes", hxPost=None,
+  dateBorrowed=None,
+  dateDue=None,
+  submitMessage="Save changes",
+  hxPost=None,
   **kwargs
 ) :
-  if not hxPost : return "<!-- edit itemsBorrowed form with NO hxPost -->"
-
   return FormTable([
     DateInput(
       label='Date borrowed',
@@ -42,8 +43,10 @@ def editItemsBorrowedForm(
 # routes
 
 @pagePart
-def getNewItemsBorrowedForm(pageData,
-  itemsPhysicalId=None, borrowerId=None,
+def getNewItemsBorrowedForm(
+  pageData,
+  itemsPhysicalId=None,
+  borrowersId=None,
   **kwargs
 ) :
   if itemsPhysicalId and borrowersId :
@@ -63,11 +66,13 @@ getRoute(
 )
 
 @pagePart
-def postSaveNewItemsBorrowed(pageData,
-  itemsPhysicalId=None, borrowersId=None,
+def postSaveNewItemsBorrowed(
+  pageData,
+  itemsPhysicalId=None,
+  borrowersId=None,
   **kwargs
 ) :
-  if itemsPhysicalId and borrowerId :
+  if itemsPhysicalId and borrowersId :
     theForm = pageData.form
     pageData.db.execute(*InsertSql().sql('itemsBorrowed', {
       'borrowersId'     : borrowersId,
@@ -86,8 +91,11 @@ postRoute(
 )
 
 @pagePart
-def getEditItemsBorrowedForm(pageData,
-  itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None,
+def getEditItemsBorrowedForm(
+  pageData,
+  itemsPhysicalId=None,
+  borrowersId=None,
+  itemsBorrowedId=None,
   **kwargs
 ) :
   if itemsPhysicalId and borrowersId and itemsBorrowedId :
@@ -108,7 +116,7 @@ def getEditItemsBorrowedForm(pageData,
         dateBorrowed=itemsBorrowed[0]['dateBorrowed'],
         dateDue=itemsBorrowed[0]['dateDue'],
         submitMessage='Save changes',
-        hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',
+        hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',  # noqa
         **kwargs
       )
   return Level0div(
@@ -116,20 +124,23 @@ def getEditItemsBorrowedForm(pageData,
   )
 
 getRoute(
-  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',
+  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',  # noqa
   getEditItemsBorrowedForm
 )
 
 @pagePart
-def putUpdateAnItemsBorrowed(pageData,
-  itemsPhysicalId=None, borrowersId=None, itemsBorrowedId=None,
+def putUpdateAnItemsBorrowed(
+  pageData,
+  itemsPhysicalId=None,
+  borrowersId=None,
+  itemsBorrowedId=None,
   **kwargs
 ) :
   if itemsPhysicalId and borrowersId and itemsBorrowedId :
     theForm = pageData.form
     pageData.db.execute(UpdateSql(
     ).whereValue('id', itemsBorrowedId
-    ).whereValue('borrowersId', itemsBorrowersId
+    ).whereValue('borrowersId', borrowersId
     ).whereValue('itemsPhysicalId', itemsPhysicalId
     ).sql('itemsBorrowed', {
       'dateBorrowed' : theForm['dateBorrowed'],
@@ -141,6 +152,6 @@ def putUpdateAnItemsBorrowed(pageData,
   )
 
 putRoute(
-  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',
+  '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',  # noqa
   putUpdateAnItemsBorrowed
 )

@@ -1,1 +1,9 @@
-.venv/bin/pytest
+#!/bin/sh
+
+.venv/bin/python ./tests/utils/preTests.py
+
+echo ""
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo ""
+
+.venv/bin/pytest $@

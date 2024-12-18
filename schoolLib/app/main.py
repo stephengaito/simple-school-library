@@ -14,13 +14,10 @@ from starlette_login.login_manager import LoginManager
 from starlette_login.login_manager import ProtectionLevel
 from starlette_login.middleware import AuthenticationMiddleware
 
-from schoolLib.setup import pagePart, loadedConfig, getRoute, \
-  getHelpPageHtml, postRoute, PageData, htmlResponseFromHtmx, loadUsers,   \
-  config, routes
+from schoolLib.setup import loadedConfig, PageData, htmlResponseFromHtmx, \
+  loadUsers, config, routes
 
-from schoolLib.htmxComponents import loadedTheme, HtmlPage, StdHeaders, \
-  StdBody, InitialOuterDiv, HelpEditorModalDialog, HelpEditorForm,      \
-  postHelpPage, Level0div, Level1div, Text, getHelpPage
+from schoolLib.htmxComponents import loadedTheme, Level0div, Level1div, Text
 
 import schoolLib.app.menus
 
@@ -29,82 +26,11 @@ loadedTheme()
 
 # The ORDER here is important!
 import schoolLib.app.utils
-import schoolLib.app.home.menu
+import schoolLib.app.home
 import schoolLib.app.books
 import schoolLib.app.people
 import schoolLib.app.tasks
 import schoolLib.app.admin
-
-@pagePart
-def homePage(pageData, **kwargs):
-  """ The Home Page """
-  return HtmlPage(
-    StdHeaders(),
-    StdBody(InitialOuterDiv())
-  )
-
-getRoute('/', homePage, anyUser=True)
-
-@pagePart
-def helpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
-  if not aHelpPage :
-    aHelpPage = 'uknownPage'
-  print(f"HelpPages: [{aHelpPage}]")
-  print(f"isModal: [{isModal}]")
-  modal = True
-  modalStr = 'modal'
-  if isModal.startswith('no') :
-    modal = False
-    modalStr = 'nonModal'
-  print(f"modalStr: [{modalStr}]")
-  return getHelpPage(
-    pageData, aHelpPage,
-    hxPost=f'/editHelp/{aHelpPage}/{modalStr}',
-    modal=modal
-  )
-
-getRoute('/help/{aHelpPage:str}/{isModal:str}', helpPages, anyUser=True)
-
-@pagePart
-def editHelpPage(pageData, aHelpPage=None, isModal='yes', **kwargs) :
-  if not aHelpPage :
-    aHelpPage = 'unknownPage'
-  helpPageHtml = getHelpPageHtml(pageData.db, aHelpPage)
-  print(helpPageHtml)
-  modal = True
-  modalStr = 'modal'
-  if isModal.startswith('no') :
-    modal = False
-    modalStr = 'nonModal'
-  # see: https://stackoverflow.com/a/33794114
-  return HelpEditorModalDialog([
-    HelpEditorForm(
-      helpPageHtml, aHelpPage,
-      f'/editHelp/{aHelpPage}/{modalStr}',
-      hxTarget='#helpPage',
-      hxSwap='outerHTML',
-      modal=modal
-    )
-  ])
-
-getRoute('/editHelp/{aHelpPage:str}/{isModal:str}', editHelpPage)
-
-@pagePart
-def postHelpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
-  if not aHelpPage :
-    aHelpPage = 'unknownPage'
-  modal = True
-  modalStr = 'modal'
-  if isModal.startswith('no') :
-    modal = False
-    modalStr = 'nonModal'
-  return postHelpPage(
-    pageData, aHelpPage, modal=modal,
-    hxPost=f'/editHelp/{aHelpPage}/{modalStr}',
-    **kwargs
-  )
-
-postRoute('/editHelp/{aHelpPage:str}/{isModal:str}', postHelpPages)
 
 async def notFound(request, theException) :
   print("-------------")

@@ -53,15 +53,37 @@ def sanitizeConfig(config, verbose=False) :
     print("----------------------------------------")
   # config['templates'] = templates
 
-def loadedConfig(aConfigPath, reportErrors=False, verbose=False) :
+def loadedConfigFromStr(aConfigStr, reportErrors=False, verbose=False) :
+  if config :
+    # do not try to load the configuration twice
+    return True
+
   if verbose :
     reportErrors = True
   try :
-    with open(aConfigPath) as configFile :
-      config.update(yaml.safe_load(configFile.read()))
+    config.update(yaml.safe_load(aConfigStr))
     sanitizeConfig(config, verbose=verbose)
     return True
   except Exception as err :
     if reportErrors :
       print(repr(err))
   return False
+
+def loadedConfig(aConfigPath, reportErrors=False, verbose=False) :
+  if config :
+    # do not try to load the configuration twice
+    return True
+
+  if verbose :
+    reportErrors = True
+  try :
+    with open(aConfigPath) as configFile :
+      return loadedConfigFromStr(
+        configFile.read(), reportErrors=reportErrors, verbose=verbose
+      )
+  except Exception as err :
+    if reportErrors :
+      print(repr(err))
+  return False
+
+

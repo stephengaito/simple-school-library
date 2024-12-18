@@ -1,5 +1,25 @@
 # Testing
 
+## Strategy
+
+The bulk of the testing will be done by calling appropriate `pageParts`
+with fabricated `pageData` objects. By doing this we will essentially be
+integration testing using the application's "front-end" to manipulate the
+underlying database.
+
+Since we are using an SQLite3 database, we can ensure that, for testing,
+we are using an in-memory database. To do this, however, we need to
+reliably (re)populate the database with reasonably valid data.
+
+This means that we need to make extensive use `pytest`'s `fixtures` and in
+particular `pytest`'s fixture dependencies system. This will ensure we can
+have a large number of small "fixtures" which add known data to the
+database in an appropriate order.
+
+By using `pageParts`, the returned values will be `HtmxComponent`
+structures, which can be directly tested to ensure we are presenting to
+the user a known UI.
+
 ## Testing the HTML
 
 We can use [xml.etree.ElementTree — The ElementTree XML API — Python
@@ -21,11 +41,13 @@ database from YAML, or dumped SQL to test our app against.
 
 Use the `routes`, `pageParts` as computed by `computePagePartUsers` from
 `schools.setup.router` to obtain both the entry points as well as those
-pageParts which call them. Then make sure all such entry points actually exist.
+pageParts which call them. Then make sure all such entry points actually
+exist.
 
-Then slowly work through the "most important" pageParts ensuring they return
-what is expected.
+Then slowly work through the "most important" pageParts ensuring they
+return what is expected.
 
-Then slowly work through each python file correcting any pycodestyle problems.
+Then slowly work through each python file correcting any pycodestyle
+problems.
 
 

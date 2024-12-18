@@ -8,7 +8,7 @@ from schoolLib.setup import SelectSql, InsertSql
 from schoolLib.tools.dbUpdates.utils import knownDbVersions
 from schoolLib.tools.utils import getDatabasePath
 
-def updateDatabase(db) :
+def updateDatabase(db, knownDbVersions, verbose=False) :
 
   # start by ensuring the dbVersion table exists
   db.execute("""
@@ -34,18 +34,21 @@ def updateDatabase(db) :
   sortedDbVersions = sorted(knownDbVersions.keys())
   for anUpdateVersion in sortedDbVersions :
     try :
-      print(f"\nRunning update: {anUpdateVersion}")
+      if verbose:
+        print(f"\nRunning update: {anUpdateVersion}")
       knownDbVersions[anUpdateVersion](db)
       db.execute(*InsertSql().sql('dbVersions', {
         'version' : anUpdateVersion
       }))
       db.commit()
     except Exception as err :
-      print(f"Could not update database to version {anUpdateVersion}")
-      print(repr(err))
+      if verbose :
+        print(f"Could not update database to version {anUpdateVersion}")
+        print(repr(err))
       return 1
 
-  print("\nAll updates applied")
+  if verbose:
+    print("\nAll updates applied")
   return 0
 
 def cli() :
@@ -54,4 +57,4 @@ def cli() :
   db = sqlite3.connect(
     getDatabasePath('slUpdateDatabase')
   )
-  return updateDatabase(db)
+  return updateDatabase(db, knownDbVersions, verbose=True)
