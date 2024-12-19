@@ -7,8 +7,11 @@ Work with itemsInfo
 """
 import yaml
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, SelectSql, getClasses, getRoute, \
+  InsertSql, postRoute, UpdateSql, putRoute
+from schoolLib.htmxComponents import FormTable, TextInput, TextAreaInput, \
+  Table, TableRow, TableEntry, Text, TableHeader, Link, Level1div, EmptyDiv, \
+  SpacedDiv, Div, Button, HelpButton, Level0div, MarkdownDiv
 import schoolLib.app.books.menu
 
 ##########################################################################
@@ -191,7 +194,8 @@ def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
     print(yaml.dump(aBook))
     borrowerName = ""
     if aBook['borrowers_firstName'] and aBook['borrowers_familyName'] :
-      borrowerName = aBook['borrowers_firstName']+' '+aBook['borrowers_familyName']
+      borrowerName = aBook['borrowers_firstName'] + ' ' + \
+        aBook['borrowers_familyName']
     borrowerClass = ""
     if aBook['borrowers_classId'] :
       borrowerClass = classes[aBook['borrowers_classId']]['name']
@@ -207,8 +211,7 @@ def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
         f'/itemsPhysical/{linkAction}/{aBook["itemsPhysical_id"]}',
         aBook['itemsPhysical_barCode'],
         hxTarget='#level1div'
-        )
-      ),
+      )),
       TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
       TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),
       TableEntry(Text(aBook['itemsPhysical_status'])),

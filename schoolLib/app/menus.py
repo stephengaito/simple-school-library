@@ -1,7 +1,7 @@
 
 # We need to be VERY careful with ANY imports
 from schoolLib.setup.router   import pagePart
-from schoolLib.htmxComponents import *
+from schoolLib.htmxComponents import Menu, Button
 
 @pagePart
 def topLevelMenu(pageData, selectedId=None, **kwargs) :

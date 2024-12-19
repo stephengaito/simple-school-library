@@ -1,10 +1,10 @@
 
 from datetime import date
 
-from schoolLib.setup.configuration import *
-from schoolLib.htmxComponents.htmx import *
-from schoolLib.htmxComponents.tables import *
-from schoolLib.htmxComponents.simpleComponents import *
+from schoolLib.setup.configuration import emojiColours, addEmojiColour
+from schoolLib.htmxComponents.htmx import HtmxBase, HtmxChildrenBase
+from schoolLib.htmxComponents.tables import Table
+from schoolLib.htmxComponents.simpleComponents import Button, HelpButton
 
 class Form(HtmxChildrenBase) :
   def __init__(self, aComponent, submitMsg, buttonHyperscript=None, **kwargs) :
@@ -15,7 +15,7 @@ class Form(HtmxChildrenBase) :
     htmlFragments.append(f'<form {self.computeHtmxAttrs()}>')
     self.collectChildrenHtml(htmlFragments)
     self.submitButton.collectHtml(htmlFragments)
-    htmlFragments.append(f'</form>')
+    htmlFragments.append('</form>')
 
 class FormTable(Form) :
   def __init__(self, someInputs, submitMsg, tableKWArgs={}, **kwargs) :
@@ -78,9 +78,11 @@ class FormInputs(FormInputsBase) :
         <td><label>{self.label}</label></td>
         <td><input type="{self.inputType}" {readOnly} {self.computeHtmxAttrs()}/>{helpButtonStr}</td>
         </tr>
-      """)
+      """)  # noqa
     else :
-      htmlFragments.append(f'<input type="{self.inputType}" {self.computeHtmxAttrs()}/>{helpButtonStr}')
+      htmlFragments.append(
+        f'<input type="{self.inputType}" {self.computeHtmxAttrs()}/>{helpButtonStr}'  # noqa
+      )
 
 class TextInput(FormInputs) :
   def __init__(
@@ -193,11 +195,11 @@ class SearchBox(FormInputs) :
     placeholder=None,
     **kwargs
   ) :
-    print(yaml.dump(kwargs))
+    # print(yaml.dump(kwargs))
     if 'hxTrigger' not in kwargs :
       kwargs['hxTrigger'] = "input changed delay:250ms"
-    #if 'hxTarget' not in kwargs :
-    #  kwargs['hxTarget'] = '#level2div'
+    # if 'hxTarget' not in kwargs :
+    #   kwargs['hxTarget'] = '#level2div'
     if 'hxSwap' not in kwargs :
       kwargs['hxSwap'] = "morph:{ignoreActiveValue:true}"
     if 'attrs' not in kwargs :
@@ -234,10 +236,10 @@ class TextAreaInput(FormInputsBase) :
         <td><label>{self.label}</label></td>
         <td><textarea {self.computeHtmxAttrs()}>{taValue}</textarea>{helpButtonStr}</td>
         </tr>
-      """)
+      """)  # noqa
     else :
       htmlFragments.append(
-        f'<textarea {self.computeHtmxAttrs()}>{taValue}</textarea>{helpButtonStr}'
+        f'<textarea {self.computeHtmxAttrs()}>{taValue}</textarea>{helpButtonStr}'  # noqa
       )
 
 class ClassesSelector(HtmxBase) :
@@ -270,7 +272,7 @@ class ClassesSelector(HtmxBase) :
     htmlFragments.append(f'<select {csAttrs}>')
     for aClass in self.sortedClasses :
       htmlFragments.append(
-        f'<option value="{self.name}-{aClass['id']}" {aClass['selected']} >{addEmojiColour(aClass['colour'],aClass['name'])}</option>'
+        f'<option value="{self.name}-{aClass['id']}" {aClass['selected']} >{addEmojiColour(aClass['colour'], aClass['name'])}</option>'  # noqa
       )
     htmlFragments.append('</select>')
     HelpButton(
@@ -317,7 +319,7 @@ class EmojiColourSelector(HtmxBase) :
       if aColourName == self.selectedColourName :
         selected = "selected"
       htmlFragments.append(
-        f'<option value="{aColourName}" {selected} >{aCodePoint} {aColourName} {aCodePoint}</option>'
+        f'<option value="{aColourName}" {selected} >{aCodePoint} {aColourName} {aCodePoint}</option>'  # noqa
       )
     htmlFragments.append('</select>')
     HelpButton(

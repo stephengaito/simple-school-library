@@ -1,12 +1,13 @@
 
 import urllib
 
-from schoolLib.htmxComponents.htmx import *
+from schoolLib.htmxComponents.htmx import HtmxBase, HtmxChildrenBase, theme
 
 class ModalDialog(HtmxChildrenBase) :
-  def __init__(self, modalChildren, modalType='Help',
-     additionalHyperscript=None, underlayDismisses=True,
-     **kwargs
+  def __init__(
+    self, modalChildren, modalType='Help',
+    additionalHyperscript=None, underlayDismisses=True,
+    **kwargs
   ) :
     super().__init__(modalChildren, **kwargs)
     self.modalType             = modalType
@@ -18,17 +19,23 @@ class ModalDialog(HtmxChildrenBase) :
   # see: https://htmx.org/examples/modal-custom/
   #
   def collectHtml(self, htmlFragments) :
-    hyperscript = f"on close{self.modalType}Modal add .closing then wait for animationend"
+    hyperscript = \
+      f"on close{self.modalType}Modal add .closing then wait for animationend"
     if self.additionalHyperscript :
       hyperscript += f" then {self.additionalHyperscript}"
-    hyperscript +=" then remove me"
+    hyperscript += " then remove me"
 
     underlayCondition = ""
     if self.underlayDismisses :
-      underlayCondition = f'script="on click trigger close{self.modalType}Modal"'
+      underlayCondition = \
+        f'script="on click trigger close{self.modalType}Modal"'
 
-    htmlFragments.append(f'<div id="{self.modalTypeLower}-modal" script="{hyperscript}">')
-    htmlFragments.append(f'<div class="{self.modalTypeLower}-modal-underlay" {underlayCondition}></div>')
+    htmlFragments.append(
+      f'<div id="{self.modalTypeLower}-modal" script="{hyperscript}">'
+    )
+    htmlFragments.append(
+      f'<div class="{self.modalTypeLower}-modal-underlay" {underlayCondition}></div>'  # noqa
+    )
     htmlFragments.append(f'<div class="{self.modalTypeLower}-modal-content">')
     self.collectChildrenHtml(htmlFragments)
     htmlFragments.append("</div>")
@@ -112,10 +119,10 @@ class Menu(HtmxChildrenBase) :
     **kwargs
   ) :
     super().__init__(someChildren, **kwargs)
-    self.selectedId=selectedId
+    self.selectedId = selectedId
 
   def select(self, selectedId) :
-    self.selectedId=selectedId
+    self.selectedId = selectedId
     return self
 
   def collectHtml(self, htmlFragments) :
@@ -174,7 +181,7 @@ class Text(HtmxChildrenBase) :
     oldKlassName = self.klassName
     if self.textType == 'button' and selected :
       self.klassName += '-selected'
-    #print(self.klassName)
+    # print(self.klassName)
     tAttrs = self.computeHtmxAttrs()
     self.klassName = oldKlassName
     if self.textType :
@@ -227,7 +234,7 @@ class Link(Text) :
     if level    : parameters['level']    = level
     if oobLevel : parameters['oobLevel'] = oobLevel
     if search   : parameters['search']   = search
-    if parameters : url += '?'+ urllib.parse.urlencode(parameters)
+    if parameters : url += '?' + urllib.parse.urlencode(parameters)
     if 'attrs' not in kwargs : kwargs['attrs'] = []
     if 'hxTarget' in kwargs :
       kwargs['hxGet'] = url
@@ -243,7 +250,7 @@ class ImgButton(HtmxBase) :
 
   def collectHtml(self, htmlFragments, **kwargs) :
     htmlFragments.append(
-      f'<img src="/static/svg/bootstrap/{self.imgName}.svg" {self.computeHtmxAttrs()}>'
+      f'<img src="/static/svg/bootstrap/{self.imgName}.svg" {self.computeHtmxAttrs()}>'  # noqa
     )
 
 class HelpButton(ImgButton) :
@@ -273,7 +280,9 @@ class WithFooterMessage(HtmxBase) :
 
   def collectHtml(self, htmlFragments, **kwargs) :
     self.main.collectHtml(htmlFragments)
-    htmlFragments.append(f'<div hx-swap-oob="innerHTML:#footerMessages" class="fixed bottom-0 w-screen" script="init wait {self.footerMessageDelay} then remove me">')
+    htmlFragments.append(
+      '<div hx-swap-oob="innerHTML:#footerMessages" class="fixed bottom-0 w-screen" script="init wait {self.footerMessageDelay} then remove me">'  # noqa
+    )
     self.footer.collectHtml(htmlFragments)
     htmlFragments.append('</div>')
 

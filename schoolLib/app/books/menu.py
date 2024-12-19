@@ -1,7 +1,8 @@
 
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, getRoute
+from schoolLib.htmxComponents import Menu, Button, Level0div, Level1div, \
+  getHelpPage
 import schoolLib.app.menus
 
 ##########################################################################

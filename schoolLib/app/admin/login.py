@@ -1,6 +1,9 @@
 
-from schoolLib.setup          import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup          import pagePart, getRoute, postRoute, \
+  OtherUser, authenticateSlibUser, SLibUser, goToHomePage
+
+from schoolLib.htmxComponents import Level0div, Level1div, Div, Text, \
+  FormTable, TextInput, PasswordInput
 import schoolLib.app.main
 import schoolLib.app.menus
 import schoolLib.app.admin.menu
@@ -10,7 +13,9 @@ def getLoginForm(pageData, message="Please login", **kwargs) :
   return Level0div([
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
     Level1div([
-      schoolLib.app.admin.menu.secondLevelAdminMenu(pageData, selectedId='login'),
+      schoolLib.app.admin.menu.secondLevelAdminMenu(
+        pageData, selectedId='login'
+      ),
       Div([
         Text(message),
         FormTable([

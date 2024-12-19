@@ -29,7 +29,7 @@ def structureHasKeyValue(aStruc, aKey, aValue) :
 #   `schoolLib.setup.router:htmlResponseFromHtmx` method
 #   which we do not usually use in our testing.
 
-class TestPageData(PageData) :
+class MockPageData(PageData) :
 
   def __init__(
     self, db, urlPath="/", headers={}, theForm={}, authenticated=True
@@ -41,10 +41,10 @@ class TestPageData(PageData) :
     if authenticated :
       self.user = SLibUser()
 
-def getTestPageDataFrom(db, pageDictYamlStr) :
+def getMockPageDataFrom(db, pageDictYamlStr) :
   pageDict = {}
   try :
     pageDict = yaml.safe_load(pageDictYamlStr)
   except Exception as err :
     print(repr(err))
-  return TestPageData(db, **pageDict)
+  return MockPageData(db, **pageDict)

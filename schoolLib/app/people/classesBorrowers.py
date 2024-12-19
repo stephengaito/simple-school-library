@@ -10,8 +10,12 @@ Provide a listing of Borrowers in each class.
 
 """
 
-from schoolLib.setup          import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup          import pagePart, SelectSql, addEmojiColour, \
+  getClasses, getSortedClasses, getRoute, UpdateSql, putRoute
+from schoolLib.htmxComponents import TableRow, TableHeader, Text, \
+  TableEntry, Button, Table, ClassesSelector, FormTable
+
+import schoolLib
 
 ##########################################################################
 # content

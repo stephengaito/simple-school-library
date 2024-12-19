@@ -33,11 +33,11 @@ def sanitizeConfig(config, verbose=False) :
   if 'database' not in config :
     config['database'] = 'db.sqlite'
 
-  if 'makrdownDir' not in config :
-    config['markdownDir'] = os.path.join(
-      os.path.dirname(os.path.dirname(__file__)),
-      'markdown'
-    )
+  # if 'makrdownDir' not in config :
+  #   config['markdownDir'] = os.path.join(
+  #     os.path.dirname(os.path.dirname(__file__)),
+  #     'markdown'
+  #   )
 
   if 'themeDir' not in config :
     config['themeDir'] = os.path.join(

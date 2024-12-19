@@ -1,5 +1,5 @@
 
-from schoolLib.htmxComponents.htmx import *
+from schoolLib.htmxComponents.htmx import HtmxBase, HtmxChildrenBase
 
 class Table(HtmxChildrenBase) :
   def collectHtml(self, htmlFragments) :
@@ -47,4 +47,6 @@ class TableEntry(HtmxBase) :
 
 class TableHeader(TableEntry) :
   def __init__(self, aComponent, tableCode='th', colspan=None, **kwargs) :
-    super().__init__(aComponent, tableCode=tableCode, colspan=colspan, **kwargs)
+    super().__init__(
+      aComponent, tableCode=tableCode, colspan=colspan, **kwargs
+    )

@@ -1,5 +1,6 @@
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, getRoute
+from schoolLib.htmxComponents import Level1div, Div, Level2div, EmptyDiv, \
+  Table, TableHead, TableRow, TableHeader, TableBody, SpacedDiv, Text
 import schoolLib.app.menus
 
 ##########################################################################
@@ -8,7 +9,7 @@ import schoolLib.app.menus
 @pagePart
 def getReturnBooksPage(pageData, **kwargs) :
   return Level1div([
-    Div([]), # no menu
+    Div([]),  # no menu
     Level2div([
       schoolLib.app.utils.finders.returnBooksSearch(pageData, **kwargs),
     ]),
@@ -22,9 +23,9 @@ def getReturnBooksPage(pageData, **kwargs) :
           TableHeader(Text("Title")),
           TableHeader(Text("First name")),
           TableHeader(Text("Family name"))
-        ]),
+        ])
+      ]),
       TableBody([], theId='booksReturned')
-      ])
     ])
   ])
 

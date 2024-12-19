@@ -1,8 +1,13 @@
 
-from schoolLib.setup.database                  import *
-from schoolLib.htmxComponents.htmx            import *
-from schoolLib.htmxComponents.simpleComponents import *
-from schoolLib.htmxComponents.forms            import *
+from schoolLib.setup.database import getHelpPageHtml, SelectSql, \
+  UpdateSql, InsertSql
+
+# from schoolLib.htmxComponents.htmx import *
+
+from schoolLib.htmxComponents.simpleComponents import ModalDialog, RawHtml, \
+  EditorButton, CancelButton
+
+from schoolLib.htmxComponents.forms import Form, TextAreaInput, Label
 
 class HelpModalDialog(ModalDialog) :
   # just use the ModalDialog defaults as they are!
@@ -16,7 +21,8 @@ class HelpEditorModalDialog(ModalDialog) :
     super().__init__(modalChildren, **kwargs)
 
 class HelpPage(RawHtml) :
-  def __init__(self,
+  def __init__(
+    self,
     helpPageHtml, helpPagePath, isAdmin=False, modal='yes', **kwargs
   ) :
     if isinstance(modal, bool)  : pass
@@ -63,7 +69,9 @@ class HelpEditor(TextAreaInput) :
     """)
 
 class HelpEditorForm(Form) :
-  def __init__(self, helpPageHtml, helpPagePath, hxPost, modal=True, **kwargs) :
+  def __init__(
+    self, helpPageHtml, helpPagePath, hxPost, modal=True, **kwargs
+  ) :
     if 'buttonHyperscript' not in kwargs : kwargs['buttonHyperscript'] = \
       "on click trigger closeEditorModal"
     super().__init__([], submitMsg="Save changes", hxPost=hxPost, **kwargs)
@@ -85,7 +93,8 @@ def getHelpPage(pageData, helpPagePath, modal=True, hxPost=None, **kwargs) :
   helpPageHtml = getHelpPageHtml(pageData.db, helpPagePath)
   if not helpPageHtml :
     if not pageData.user.is_authenticated :
-      helpPageHtml = f"<p>Please ask the administrator to add this help page ({helpPagePath})</p>"
+      helpPageHtml = \
+        f"<p>Please ask the administrator to add this help page ({helpPagePath})</p>"  # noqa
     elif not hxPost :
       helpPageHtml = f"<p>No hxPost supplied for {helpPagePath}</p>"
     else :
@@ -96,11 +105,11 @@ def getHelpPage(pageData, helpPagePath, modal=True, hxPost=None, **kwargs) :
       ])
 
   helpComponent = HelpPage(
-      helpPageHtml, helpPagePath,
-      isAdmin=pageData.user.is_authenticated,
-      modal=modal,
-      **kwargs
-    )
+    helpPageHtml, helpPagePath,
+    isAdmin=pageData.user.is_authenticated,
+    modal=modal,
+    **kwargs
+  )
   if modal : helpComponent = HelpModalDialog([ helpComponent ])
   return helpComponent
 

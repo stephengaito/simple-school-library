@@ -2,10 +2,15 @@
 This "module" manages the collection of borrowers.
 
 """
-import yaml
+# import yaml
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, SelectSql, getOrderedClassList, \
+  getClasses, getRoute, InsertSql, postRoute, UpdateSql, putRoute, \
+  dbReturnABook
+from schoolLib.htmxComponents import FormTable, TextInput, NumberInput, \
+  Text, ClassesSelector, Table, TableRow, TableEntry, TableHeader, Link, \
+  Div, Button, HelpButton, Level1div, EmptyDiv, SpacedDiv, RawHtml, \
+  Level0div
 import schoolLib.app.menus
 import schoolLib.app.people.menu
 
@@ -13,7 +18,8 @@ import schoolLib.app.people.menu
 # content
 
 @pagePart
-def editBorrowerForm(pageData,
+def editBorrowerForm(
+  pageData,
   borrowerId=None, submitMessage='Save changes', hxPost=None,
   **kwargs
 ) :
@@ -157,16 +163,16 @@ def getBorrowerBooksOut(db, borrowerId, isAuthenticated=False) :
         TableEntry(Text(anItem['itemsInfo_dewey'])),
         TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
         TableEntry(Text(anItem['itemsBorrowed_dateDue'])),
-        ])
+      ])
       if isAuthenticated :
         itemsBorrowedRow.appendAChild(
           TableEntry(Div([
             Button(
               'Return',
-              hxGet=f"/borrowers/returnBook/{borrowerId}/{anItem['itemsBorrowed_id']}",
+              hxGet=f"/borrowers/returnBook/{borrowerId}/{anItem['itemsBorrowed_id']}",  # noqa
               hxTarget='#level1div'
             ),
-            HelpButton(hxGet=f"/help/returnBook/modal")
+            HelpButton(hxGet="/help/returnBook/modal")
           ]))
         )
       itemsBorrowedRows.append(itemsBorrowedRow)
@@ -234,9 +240,11 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
     borrowingHistoryRows = getBorrowerBooksHistory(pageData.db, borrowerId)
 
     if className.lower() != 'staff' and 1 < len(itemsBorrowedRows) :
-      takeOutHtmx = Text("Sorry you must return your books before you can take out any more")
+      takeOutHtmx = Text(
+        "Sorry you must return your books before you can take out any more"
+      )
     else :
-      #takeOutHtmx = Text("search for a book...")
+      # takeOutHtmx = Text("search for a book...")
       takeOutHtmx = schoolLib.app.utils.finders.getTakeOutABookSearch(
         pageData, borrowerId, **kwargs
       )
@@ -293,7 +301,9 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
       ])
     return theComponent
   return Level1div([
-    schoolLib.app.people.menu.secondLevelPeopleMenu(pageData, selectedId='findBorrower'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='findBorrower'
+    ),
     schoolLib.app.utils.finders.findAThing(
       pageData,
       theId='level2div', hxPost='/search/borrowers',
@@ -339,7 +349,7 @@ def postSaveNewBorrower(pageData, **kwargs) :
   ).whereValue(
     'firstName', theForm['firstName']
   ).whereValue(
-    'familyName', theFor['familyName']
+    'familyName', theForm['familyName']
   )
   itemsReturned = selectSql.parseResults(
     pageData.db.execute(selectSql.sql()),

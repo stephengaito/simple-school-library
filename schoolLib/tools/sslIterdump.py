@@ -23,7 +23,7 @@ def ssl_iterdump(connection, tableList=None):
 
     writeable_schema = False
     cu = connection.cursor()
-    yield('BEGIN TRANSACTION;')
+    yield ('BEGIN TRANSACTION;')
 
     # sqlite_master table contains the SQL CREATE statements for the database.
     q = """
@@ -41,12 +41,12 @@ def ssl_iterdump(connection, tableList=None):
             rows = cu.execute('SELECT * FROM "sqlite_sequence";').fetchall()
             sqlite_sequence = ['DELETE FROM "sqlite_sequence"']
             sqlite_sequence += [
-                f'INSERT INTO "sqlite_sequence" VALUES(\'{row[0]}\',{row[1]})'
-                for row in rows
+              f'INSERT INTO "sqlite_sequence" VALUES(\'{row[0]}\',{row[1]})'
+              for row in rows
             ]
             continue
         elif table_name == 'sqlite_stat1':
-            yield('ANALYZE "sqlite_master";')
+            yield ('ANALYZE "sqlite_master";')
         elif table_name.startswith('sqlite_'):
             continue
         elif 'FTS' in table_name :
@@ -56,17 +56,18 @@ def ssl_iterdump(connection, tableList=None):
         elif sql.startswith('CREATE VIRTUAL TABLE'):
             if not writeable_schema:
                 writeable_schema = True
-                yield('PRAGMA writable_schema=ON;')
-            yield("INSERT INTO sqlite_master(type,name,tbl_name,rootpage,sql)"
-                  "VALUES('table','{0}','{0}',0,'{1}');".format(
-                      table_name.replace("'", "''"),
-                      sql.replace("'", "''"),
-                  ))
+                yield ('PRAGMA writable_schema=ON;')
+            yield ("INSERT INTO sqlite_master(type,name,tbl_name,rootpage,sql)"
+                   "VALUES('table','{0}','{0}',0,'{1}');".format(
+                     table_name.replace("'", "''"),
+                     sql.replace("'", "''"),
+                   )
+                )
         else:
             # Simple-School-Library : we explicitly drop any tables
             # before recreating them....
-            yield('DROP TABLE {0};'.format(table_name))
-            yield('{0};'.format(sql))
+            yield ('DROP TABLE {0};'.format(table_name))
+            yield ('{0};'.format(sql))
 
         # Build the insert statement for each row of the current table
         table_name_ident = table_name.replace('"', '""')
@@ -74,30 +75,30 @@ def ssl_iterdump(connection, tableList=None):
         column_names = [str(table_info[1]) for table_info in res.fetchall()]
         q = """SELECT 'INSERT INTO "{0}" VALUES({1})' FROM "{0}";""".format(
             table_name_ident,
-            ",".join("""'||quote("{0}")||'""".format(col.replace('"', '""')) for col in column_names))
+            ",".join("""'||quote("{0}")||'""".format(col.replace('"', '""')) for col in column_names))  # noqa
         query_res = cu.execute(q)
         for row in query_res:
-            yield("{0};".format(row[0]))
+            yield ("{0};".format(row[0]))
 
     # Simple-School-Library: we ignore indexes as we actively rebuild them
 
     # Now when the type is 'index', 'trigger', or 'view'
-    #q = """
+    # q = """
     #    SELECT "name", "type", "sql"
     #    FROM "sqlite_master"
     #        WHERE "sql" NOT NULL AND
     #        "type" IN ('index', 'trigger', 'view')
     #    """
-    #schema_res = cu.execute(q)
-    #for name, type, sql in schema_res.fetchall():
+    # schema_res = cu.execute(q)
+    # for name, type, sql in schema_res.fetchall():
     #    yield('{0};'.format(sql))
 
     if writeable_schema:
-        yield('PRAGMA writable_schema=OFF;')
+        yield ('PRAGMA writable_schema=OFF;')
 
     # gh-79009: Yield statements concerning the sqlite_sequence table at the
     # end of the transaction.
     for row in sqlite_sequence:
-        yield('{0};'.format(row))
+        yield ('{0};'.format(row))
 
-    yield('COMMIT;')
+    yield ('COMMIT;')

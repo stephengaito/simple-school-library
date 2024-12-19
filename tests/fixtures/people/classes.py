@@ -3,7 +3,7 @@
 import pytest
 
 import schoolLib
-from tests.utils.utils import getTestPageDataFrom
+from tests.utils.utils import getMockPageDataFrom
 
 # add some known classes to the database
 
@@ -39,5 +39,5 @@ someClasses = [badgers, squirrels, owls]
 @pytest.fixture
 def addSomeClasses(database) :
   for aClassYaml in someClasses :
-    pageData = getTestPageDataFrom(database, aClassYaml)
+    pageData = getMockPageDataFrom(database, aClassYaml)
     schoolLib.app.people.classes.postSaveNewClass(pageData)

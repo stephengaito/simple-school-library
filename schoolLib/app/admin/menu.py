@@ -1,6 +1,7 @@
 
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, getRoute
+from schoolLib.htmxComponents import Menu, Button, Level0div, Level1div, \
+  getHelpPage
 import schoolLib.app.menus
 
 ##########################################################################
@@ -32,8 +33,6 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
 
 @pagePart
 def adminMenu(pageData, **kwargs) :
-  tasksMarkdown = "somthing about **admin**"
-
   return Level0div([
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
     Level1div([

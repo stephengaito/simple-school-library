@@ -1,7 +1,10 @@
 
 import yaml
-from schoolLib.setup import *
-from schoolLib.htmxComponents import *
+from schoolLib.setup import pagePart, getRoute, SelectSql, postRoute, \
+  dbReturnABook, dbTakeOutABook
+from schoolLib.htmxComponents import Div, SearchBox, Table, TableRow, \
+  TableEntry, Link, Level1div, OobCollection, OobTemplate, TableBody, \
+  Text
 
 import schoolLib
 
@@ -15,7 +18,7 @@ def findAThing(
   helpName='findBorrower', placeHolder="Type a person's name",
   **kwargs
 ) :
-  hxTarget = '#'+theId
+  hxTarget = '#' + theId
   return Div([
     SearchBox(
       hxPost=hxPost,
@@ -26,7 +29,7 @@ def findAThing(
       hxTarget=hxTarget
     ),
     Table(thingRows, theId='searchResults')
-  ], theId=theId, attrs={'hx-ext':'morph'})
+  ], theId=theId, attrs={'hx-ext': 'morph'})
 
 ##########################################################################
 # generic search results HTMX (post back end)
@@ -40,7 +43,7 @@ def searchForThings(
   helpName='findBorrower', placeHolder="Type a person's name",
   **kwargs
 ) :
-  if not hxTarget : hxTarget = '#'+targetLevel
+  if not hxTarget : hxTarget = '#' + targetLevel
   theForm = pageData.form
 
   if search and 'search' not in theForm :
@@ -50,11 +53,11 @@ def searchForThings(
 
   thingsIter = thingsIterClass(targetUrl, theForm, pageData.db)
 
-  linkHyperscript=None
+  linkHyperscript = None
   if thingsIter.numResults == 1 :
     linkHyperscript = "init wait 250ms then trigger click on me"
 
-  thingRows =[]
+  thingRows = []
   for linkUrl, linkText in thingsIter :
     thingRows.append(TableRow(TableEntry(Link(
       linkUrl, linkText,
@@ -125,7 +128,7 @@ class SearchForABorrowerIter(SearchIter) :
     ).orderAscBy('rank')
     if theForm['search'] :
       selectSql.whereValue(
-        'borrowersFTS', theForm['search']+'*', operator='MATCH'
+        'borrowersFTS', theForm['search'] + '*', operator='MATCH'
       )
     print(selectSql.sql())
     results = selectSql.parseResults(db.execute(selectSql.sql()))
@@ -182,7 +185,7 @@ class SearchForAnItemIter(SearchIter) :
     ).orderAscBy('rank')
     if theForm['search'] :
       selectSql.whereValue(
-        'itemsFTS', theForm['search']+'*', operator='MATCH'
+        'itemsFTS', theForm['search'] + '*', operator='MATCH'
       )
     print(selectSql.sql())
     results = selectSql.parseResults(db.execute(selectSql.sql()))
@@ -223,7 +226,7 @@ class SearchForABorrowedItemIter(SearchIter) :
     ).orderAscBy('barCode')
     if 'search' in theForm :
       selectSql.whereValue(
-        'barCode', theForm['search'] #+'%', operator='LIKE'
+        'barCode', theForm['search']  # +'%', operator='LIKE'
       )
     print(selectSql.sql())
     results = selectSql.parseResults(db.execute(selectSql.sql()))
@@ -279,13 +282,15 @@ postRoute(
   '/borrowers/returnABook/{borrowerId:int}/{itemsPhysicalId:int}',
   postReturnABook, anyUser=True
 )
-"""
+"""  # noqa
 
 #########################################
 # return a book: from return a book form
 
 @pagePart
-def returnBooksSearch(pageData, hxPost='/search/barCode/returnBooks', **kwargs) :
+def returnBooksSearch(
+  pageData, hxPost='/search/barCode/returnBooks', **kwargs
+) :
   return schoolLib.app.utils.finders.findAThing(
     pageData,
     theId='returnABookSearch', hxPost=hxPost,
@@ -316,7 +321,7 @@ def getReturnABook(
     selectSql = SelectSql(
     ).fields(
       'itemsBorrowed.id', 'barCode', 'title', 'firstName', 'familyName'
-    ).tables('itemsBorrowed', 'borrowers',' itemsPhysical', 'itemsInfo'
+    ).tables('itemsBorrowed', 'borrowers', ' itemsPhysical', 'itemsInfo'
     ).whereField(
       'itemsBorrowed.borrowersId', 'borrowers.id'
     ).whereField(
@@ -376,7 +381,7 @@ class SearchForAPhysicalItemIter(SearchIter) :
     ).orderAscBy('barCode')
     if theForm['search'] :
       selectSql.whereValue(
-        'barCode', theForm['search']+'%', operator='LIKE'
+        'barCode', theForm['search'] + '%', operator='LIKE'
       )
     print(selectSql.sql())
     results = selectSql.parseResults(db.execute(selectSql.sql()))
@@ -427,7 +432,9 @@ postRoute(
 )
 
 @pagePart
-def getTakeOutABook(pageData, borrowerId=None, itemsPhysicalId=None, **kwargs) :
+def getTakeOutABook(
+  pageData, borrowerId=None, itemsPhysicalId=None, **kwargs
+) :
   print("getTakeOutABook", borrowerId, itemsPhysicalId)
   if not borrowerId or not itemsPhysicalId :
     # do nothing

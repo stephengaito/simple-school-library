@@ -3,7 +3,7 @@
 # see: https://hidde.blog/accessible-page-titles-in-a-single-page-app/
 
 from schoolLib.setup.configuration import config
-from schoolLib.htmxComponents.htmx import *
+from schoolLib.htmxComponents.htmx import HtmxBase
 
 class StdHeaders(HtmxBase) :
   def __init__(self, additionalHeaders=[], **kwargs) :
@@ -33,7 +33,7 @@ class StdHeaders(HtmxBase) :
       <script src="/static/js/htmx.min.js"></script>
       <script src="/static/js/idiomorph-ext.min.js"></script>
       <script src="/static/js/hyperscript.min.js"></script>
-    """)
+    """)  # noqa
     htmlFragments.extend(self.additionalHeaders)
 
 class InitialOuterDiv(HtmxBase) :

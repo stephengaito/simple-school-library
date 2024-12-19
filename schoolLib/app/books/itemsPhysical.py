@@ -8,8 +8,10 @@ Work with itemsPhysical
 from datetime import datetime, date
 import yaml
 
-from schoolLib.setup import *
-from schoolLib.app.books.itemsInfo import editItemsInfoForm
+from schoolLib.setup import SelectSql, pagePart, getRoute, InsertSql, \
+  postRoute, UpdateSql, putRoute
+from schoolLib.htmxComponents import FormTable, TextInput, DateInput, Table, \
+  TableRow, TableEntry, Text, Level1div, EmptyDiv, SpacedDiv, MarkdownDiv
 import schoolLib
 
 ##########################################################################
@@ -41,7 +43,8 @@ def computeNewBarcode(db) :
   return datetime.strftime("%Y-%m%d%H%M%S")
 
 @pagePart
-def editItemsPhysicalForm(pageData,
+def editItemsPhysicalForm(
+  pageData,
   barcode=None, status=None,
   dateAdded=None, dateBorrowed=None, dateLastSeen=None,
   notes=None, location=None,
@@ -203,7 +206,7 @@ def postSaveNewItemsPhysical(pageData, itemsInfoId=None, **kwargs) :
       fetchAll=False
     )
     if itemsReturned :
-      itemsRequrned = itemsReturned[0]
+      itemsReturned = itemsReturned[0]
       pageData.db.execute(*InsertSql().sql('itemsFTS', {
         'itemsInfoId'  : itemsInfoId,
         'title'        : itemsReturned['title'],
@@ -313,9 +316,9 @@ def putUpdateAnItemsPhysical(pageData, itemsPhysicalId=None, **kwargs) :
       fetchAll=False
     )
     if itemsReturned :
-      itemsRequrned = itemsReturned[0]
+      itemsReturned = itemsReturned[0]
       pageData.db.execute(*InsertSql().sql('itemsFTS', {
-        'itemsInfoId'  : itemsInfoId,
+        'itemsInfoId'  : itemsReturned['itemsInfo_id'],
         'title'        : itemsReturned['title'],
         'authors'      : itemsReturned['authors'],
         'keywords'     : itemsReturned['keywords'],

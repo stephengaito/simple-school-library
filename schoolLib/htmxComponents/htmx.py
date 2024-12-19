@@ -26,8 +26,8 @@ def loadedTheme() :
   try :
     for aYamlPath in glob.iglob(themeGlob) :
       with open(aYamlPath) as yamlFile :
-         theme.update(yaml.safe_load(yamlFile.read()))
-    #print(yaml.dump(theme))
+        theme.update(yaml.safe_load(yamlFile.read()))
+    # print(yaml.dump(theme))
     return True
   except Exception as err :
     print(f"Could not load theme from [{config['themeDir']}]")
@@ -39,10 +39,12 @@ def loadedTheme() :
 def mergeLists(origList, additionalList) :
   newList = []
   for anItem in origList :
-    if anItem not in newList : newList.append(anItem)
+    if anItem not in newList :
+      newList.append(anItem)
 
   for anItem in additionalList :
-    if anItem not in newList : newList.append(anItem)
+    if anItem not in newList :
+      newList.append(anItem)
 
   return newList
 
@@ -202,13 +204,13 @@ class HtmxBase :
 
   def computeHtmxAttrs(self) :
     className = self.__class__.__name__
-    classDict = className+'Classes'
+    classDict = className + 'Classes'
     if classDict not in theme : theme[classDict] = {}
     classDict = theme[classDict]
-    styleDict = className+'Styles'
+    styleDict = className + 'Styles'
     if styleDict not in theme : theme[styleDict] = {}
     styleDict = theme[styleDict]
-    attrsDict = className+'Attrs'
+    attrsDict = className + 'Attrs'
     if attrsDict not in theme : theme[attrsDict] = {}
     attrsDict = theme[attrsDict]
 

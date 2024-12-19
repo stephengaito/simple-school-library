@@ -1,9 +1,8 @@
 
-import inspect
 import sqlite3
 
-from schoolLib.setup import *
-from schoolLib.tools.sslIterdump import *
+from schoolLib.setup import config, loadedConfig
+from schoolLib.tools.sslIterdump import ssl_iterdump
 
 loadedConfig('config.yaml')
 
