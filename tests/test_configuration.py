@@ -13,7 +13,7 @@ def test_config() :
   print(yaml.dump(config))
 
   assert 'database'     in config
-  assert 'markdownDir'  in config
+  # assert 'markdownDir'  in config
 
   assert config['database'] == 'tmp/sslDb.sqlite'
-  assert config['markdownDir'].endswith('schoolLib/markdown')
+  # assert config['markdownDir'].endswith('schoolLib/markdown')

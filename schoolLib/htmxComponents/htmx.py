@@ -86,6 +86,14 @@ class HtmxBase :
     self.hxHeaders   = hxHeaders
     self.hyperscript = hyperscript
 
+  def isA(self, klass) :
+    print("HTMX.isA")
+    print(klass)
+    print(type(self))
+    print(type(self).__name__)
+    # return type(self) is klass
+    return isinstance(self, klass)
+
   def addKwargs(
     self,
     theId=None,

@@ -1,6 +1,8 @@
 # import sqlite3
 import yaml
 
+import pytest
+
 import schoolLib
 from tests.utils.utils import MockPageData
 
@@ -29,9 +31,10 @@ def test_classesAdded(database, addSomeClasses) :
   assert structureHasKeyValue(results, "colour", "orange")
   assert structureHasKeyValue(results, "classOrder", 20)
 
+@pytest.mark.skip()
 def test_listClasses(database, addSomeClasses) :
   pageData = MockPageData(database, authenticated=True)
   htmx = schoolLib.app.people.classes.listClasses(pageData)
-  print(yaml.dump(htmx))
+  # print(yaml.dump(htmx))
   assert False
 

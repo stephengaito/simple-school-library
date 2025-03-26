@@ -5,9 +5,9 @@ from schoolLib.setup.database import getHelpPageHtml, SelectSql, \
 # from schoolLib.htmxComponents.htmx import *
 
 from schoolLib.htmxComponents.simpleComponents import ModalDialog, RawHtml, \
-  EditorButton, CancelButton
+  EditorButton, CancelButton, Label
 
-from schoolLib.htmxComponents.forms import Form, TextAreaInput, Label
+from schoolLib.htmxComponents.forms import Form, TextAreaInput
 
 class HelpModalDialog(ModalDialog) :
   # just use the ModalDialog defaults as they are!
