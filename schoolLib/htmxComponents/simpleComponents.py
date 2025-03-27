@@ -54,6 +54,71 @@ class EmptyDiv(Div) :
 class SpacedDiv(EmptyDiv) :
   pass
 
+# we defined a set of semantic Html elements which each act as replacement
+# points. Together these elements provide a simple layout:
+
+# ----------------------
+# |       header       |
+# |--------------------|
+# |      mainMenu      |
+# |--------------------|
+# |         |          |
+# | subMenu | content  |
+# |         |          |
+# |--------------------|
+# |       footer       |
+# ----------------------
+
+class HtmlElement(HtmxChildrenBase) :
+  def __init__(self, someChildren, elementTyle='Div', **kwargs) :
+    self.elementType = elementTyle
+    super().__init(someChildren, **kwargs)
+
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append(f'<{self.elementType} {self.computeHtmxAttrs()}>')
+    self.collectChildrenHtml(htmlFragments)
+    htmlFragments.append(f'</{self.elementType}>')
+
+class Header(HtmlElement) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'header'
+    kwargs['elementType'] = 'header'
+    super().__init__(someChildren, **kwargs)
+
+class MainMenu(HtmlElement) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'mainMenu'
+    kwargs['elementType'] = 'nav'
+    super().__init__(someChildren, **kwargs)
+
+class SubMenu(HtmlElement) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'subMenu'
+    kwargs['elementType'] = 'aside'
+    super().__init__(someChildren, **kwargs)
+
+class Content(HtmlElement) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'content'
+    kwargs['elementType'] = 'section'
+    super().__init__(someChildren, **kwargs)
+
+class MainBody(HtmlElement) :
+  def __init__(self, subMenu, theContent, **kwargs) :
+    if not isinstance(subMenu, SubMenu) :
+      subMenu = SubMenu(subMenu)
+    if not isinstance(theContent, Content) :
+      theContent = Content(theContent)
+    if 'theId' not in kwargs : kwargs['theId'] = 'mainBody'
+    kwargs['elementType'] = 'main'
+    super().__init__([ subMenu, theContent], **kwargs)
+
+class Footer(HtmlElement) :
+  def __init__(self, someChildren, **kwargs) :
+    if 'theId' not in kwargs : kwargs['theId'] = 'footer'
+    kwargs['elementType'] = 'footer'
+    super().__init__(someChildren, **kwargs)
+
 # we defined a set of level divs which each act as replacement points.
 
 # The intent is that each larger number should be nested inside the lower
