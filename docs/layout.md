@@ -54,3 +54,16 @@ classes.
 - [</> htmx ~ Examples ~ Updating Other Content](https://htmx.org/examples/update-other-content/)
 - [How to update 2 target with htmx? - Stack Overflow](https://stackoverflow.com/questions/76451723/how-to-update-2-target-with-htmx)
 
+## ToDo
+
+We would have to update the htmlPage to the new style, and then all
+responses could oob-swap mainMenu or subMenu in addition to changing the
+content.
+
+This will take a lot of work hunting down old LevelXdiv's 
+
+Alternatively we *could* simple change the current `grid` to `flex`.....
+
+The semantic layout and oob-swap is probably the correct long term
+solution.
+
