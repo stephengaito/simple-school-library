@@ -87,12 +87,12 @@ class HtmxBase :
     self.hyperscript = hyperscript
 
   def isA(self, klass) :
-    print("HTMX.isA")
-    print(klass)
-    print(type(self))
-    print(type(self).__name__)
-    # return type(self) is klass
     return isinstance(self, klass)
+
+  def collectHtmlStr(self) :
+    htmlFragments = []
+    self.collectHtml(htmlFragments)
+    return ' '.join(htmlFragments)
 
   def addKwargs(
     self,
