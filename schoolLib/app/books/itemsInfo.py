@@ -84,7 +84,7 @@ def editItemsInfoForm(
       placeholder='The ISBN...'
     )
   ], submitMessage,
-    theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
+    hxTarget='this', hxPost=hxPost, **kwargs
   )
 
 def getItemInfoTable(db, itemsInfoId) :
@@ -210,7 +210,7 @@ def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
       TableEntry(Link(
         f'/itemsPhysical/{linkAction}/{aBook["itemsPhysical_id"]}',
         aBook['itemsPhysical_barCode'],
-        hxTarget='#level1div'
+        hxTarget='#content'
       )),
       TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
       TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),

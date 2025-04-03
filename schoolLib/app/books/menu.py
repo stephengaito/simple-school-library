@@ -15,19 +15,16 @@ def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
       'Take a book out of the library',
       theId    = 'takeOut',
       hxGet    = '/menu/books/takeOut',
-      hxTarget = '#level1div'
     ),
     Button(
       'Return books to the library',
       theId    = 'return',
       hxGet    = '/menu/books/return',
-      hxTarget = '#level1div'
     ),
     Button(
       'Find a book',
       theId    = 'findBook',
       hxGet    = '/search/items',
-      hxTarget = '#level1div'
     )
   ], selectedId=selectedId, klassName='vertical')
 
@@ -37,7 +34,6 @@ def secondLevelBooksMenu(pageData, selectedId=None, **kwargs) :
         'Add a book',
         theId    = 'addBook',
         hxGet    = '/itemsInfo/new',
-        hxTarget = '#level1div'
       )
     )
   return theMenu
@@ -82,7 +78,7 @@ def getTakeOutABookForm(pageData, **kwargs) :
     ),
     schoolLib.app.utils.finders.findAThing(
       pageData,
-      theId='level2div', hxPost='/search/borrowers',
+      hxPost='/search/borrowers',
       helpName='findBorrower', placeHolder="Type a borrower's name",
       **kwargs
     )

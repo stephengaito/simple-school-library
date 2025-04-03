@@ -286,7 +286,7 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
     ),
     schoolLib.app.utils.finders.findAThing(
       pageData,
-      theId='level2div', hxPost='/search/borrowers',
+      hxPost='/search/borrowers',
       helpName='findBorrower', placeHolder="Type a person's name",
       **kwargs
     )
@@ -398,7 +398,7 @@ def getBorrowerReturnBook(
   pageData, borrowerId=None, itemsBorrowedId=None, **kwargs
 ) :
   if itemsBorrowedId : dbReturnABook(pageData.db, itemsBorrowedId)
-  kwargs['hxTarget'] = '#level1div'
+  kwargs['hxTarget'] = '#content'
   if borrowerId :
     return schoolLib.app.people.borrowers.getShowBorrowerInfo(
       pageData, borrowerId, **kwargs

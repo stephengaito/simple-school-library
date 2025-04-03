@@ -47,8 +47,8 @@ async def notFound(request, theException) :
         Text("Opps! Something went wrong! We can't find that page!"),
         Text(f"Looking for: [{request.url}]")
       ],
-      # ), status_code=404), pageData)
-    )
+      status_code=404
+    ), pageData
   )
 
 async def serverError(request, theException) :
@@ -66,9 +66,9 @@ async def serverError(request, theException) :
         Text("Opps! Something went wrong! We can't find that page!", type='p'),
         Text(f"Looking for: [{request.url}]", type='p'),
         Text(f"Error: {repr(theException)}", type="p"),
-      ]
-    )
-    # status_code=500), pageData)
+      ],
+      status_code=500
+    ), pageData
   )
 
 

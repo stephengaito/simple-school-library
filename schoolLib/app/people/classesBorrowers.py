@@ -51,10 +51,11 @@ def listPupilsInAClassTable(pageData, classId=None, **kwargs) :
         TableEntry(Button(
           'Edit',
           hxGet=f'/borrowers/edit/{aRow['borrowers_id']}',
-          hxTarget='#level1div'
+          hxTarget='#content',
+          hxSwap='innerHTML'
         ))
       ]))
-  return Table(tableRows, theId='level1div')
+  return Table(tableRows)
 
 @pagePart
 def updatePupilsInClassForm(pageData, classId=None, hxPost=None, **kwargs) :

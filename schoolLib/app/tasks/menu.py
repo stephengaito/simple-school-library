@@ -14,7 +14,6 @@ def secondLevelTasksMenu(pageData, selectedId=None, **kwargs) :
       'Books checked out',
       theId    = 'booksCheckedOut',
       hxGet    = '/menu/tasks/booksCheckedOut',
-      hxTarget = '#level1div'
     )
   ], selectedId=selectedId, klassName='vertical')
 

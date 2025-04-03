@@ -32,7 +32,6 @@ class StdHeaders(HtmxBase) :
       <script src="/static/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
       <script src="/static/js/htmx.min.js"></script>
       <script src="/static/js/idiomorph-ext.min.js"></script>
-      <script src="/static/js/multi-swap.js"></script>
       <script src="/static/js/hyperscript.min.js"></script>
     """)  # noqa
     htmlFragments.extend(self.additionalHeaders)
@@ -54,7 +53,7 @@ class MainContent(HtmxBase) :
     super().__init__(**kwargs)
     self.mainMenu = mainMenu
     self.subMenu  = subMenu
-    if not isinstance(self.content, list) :
+    if not isinstance(content, list) :
       self.content = [ content ]
     else :
       self.content  = content

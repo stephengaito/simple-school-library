@@ -60,7 +60,7 @@ def editClassForm(
       selectedColourName=classColour,
     )
   ], submitMessage,
-    theId='level2div', hxTarget='this', hxPost=hxPost, **kwargs
+    hxTarget='this', hxPost=hxPost, **kwargs
   )
 
 @pagePart
@@ -82,27 +82,27 @@ def listClasses(pageData, **kwargs) :
       TableEntry(Text(addEmojiColour(aClass['colour'], aClass['colour']))),
       TableEntry(Div([
         Button(
-          'List', hxGet=f'/classes/list/{aClass['id']}', hxTarget='#level1div'
+          'List', hxGet=f'/classes/list/{aClass['id']}', hxTarget='#content'
         ),
         HelpButton(hxGet="/help/listClass/modal")
       ])),
       TableEntry(Div([
         Button(
           'Update', hxGet=f'/classes/update/{aClass['id']}',
-          hxTarget='#level1div'
+          hxTarget='#content'
         ),
         HelpButton(hxGet="/help/updateClass/modal")
       ])),
       TableEntry(Div([
         Button(
-          'Edit', hxGet=f'/classes/edit/{aClass['id']}', hxTarget='#level1div'
+          'Edit', hxGet=f'/classes/edit/{aClass['id']}', hxTarget='#content'
         ),
         HelpButton(hxGet="/help/editClass/modal")
       ])),
       TableEntry(Div([
         Button(
           'Delete', hxGet=f'/classes/delete/{aClass['id']}',
-          hxTarget='#level1div'
+          hxTarget='#content'
         ),
         HelpButton(hxGet="/help/deleteClass/modal")
       ])),
@@ -113,7 +113,7 @@ def listClasses(pageData, **kwargs) :
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='listClasses'
     ),
-    Table(tableRows, theId='level2div')
+    Table(tableRows)
   )
 
 @pagePart

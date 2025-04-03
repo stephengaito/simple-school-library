@@ -14,7 +14,7 @@ import schoolLib
 @pagePart
 def findAThing(
   pageData, probe=None, thingRows=[],
-  theId='level2div', hxPost='/search/borrowers',
+  hxPost='/search/borrowers',
   helpName='findBorrower', placeHolder="Type a person's name",
   **kwargs
 ) :
@@ -39,7 +39,7 @@ def searchForThings(
   pageData, thingsIterClass,
   targetUrl='/borrowers/show',
   targetSwap='outerHTML', oobLevel=None, search=None,
-  theId='level2div', hxPost='/search/borrowers', hxTarget=None,
+  hxPost='/search/borrowers', hxTarget=None,
   helpName='findBorrower', placeHolder="Type a person's name",
   **kwargs
 ) :
@@ -111,7 +111,7 @@ def getFindBorrowerForm(pageData, **kwargs) :
     ),
     schoolLib.app.utils.finders.findAThing(
       pageData,
-      theId='level2div', hxPost='/search/borrowers',
+      hxPost='/search/borrowers',
       helpName='findBorrower', placeHolder="Type a person's name",
       **kwargs
     )
@@ -144,12 +144,12 @@ class SearchForABorrowerIter(SearchIter) :
 
 @pagePart
 def postSearchForBorrower(pageData, level=None, **kwargs) :
-  if not level : level = 'level1div'
+  if not level : level = 'content'
   print(f"postSearchForBorrower: [{level}]")
   return schoolLib.app.utils.finders.searchForThings(
     pageData, SearchForABorrowerIter,
     targetUrl='/borrowers/show', targetLevel=level,
-    theId='level2div', hxPost='/search/borrowers',
+    hxPost='/search/borrowers',
     helpName='findBorrower', placeHolder="Type a person's name",
     **kwargs
   )
@@ -168,7 +168,7 @@ def getFindAnItemForm(pageData, **kwargs) :
     ),
     schoolLib.app.utils.finders.findAThing(
       pageData,
-      theId='level2div', hxPost='/search/items',
+      hxPost='/search/items',
       helpName='findBook', placeHolder='Type a book title...',
       **kwargs
     )
@@ -203,8 +203,8 @@ class SearchForAnItemIter(SearchIter) :
 def postSearchForAnItem(pageData, **kwargs) :
   return schoolLib.app.utils.finders.searchForThings(
     pageData, SearchForAnItemIter,
-    targetUrl='/itemsInfo/show', targetLeve='level1div',
-    theId='level2div', hxPost='/search/items',
+    targetUrl='/itemsInfo/show', targetLevel='content',
+    hxPost='/search/items',
     helpName='findBook', placeHolder='Type a book title...',
     **kwargs
   )
@@ -421,7 +421,7 @@ def postTakeOutABookSearch(pageData, borrowerId=None, **kwargs) :
   return schoolLib.app.utils.finders.searchForThings(
     pageData, SearchForAPhysicalItemIter,
     targetUrl=f"/borrowers/takeOutABook/{borrowerId}",
-    targetLevel='level1div',
+    targetLevel='content',
     theId='takeOutABookSearch',
     hxPost=f"/borrowers/takeOutABookSearch/{borrowerId}",
     helpName='findBarCode', placeHolder="Type a bar code...",
@@ -450,7 +450,7 @@ def getTakeOutABook(
     print("Book NOT taken out")
   if 'level' in kwargs : del kwargs['level']
   return schoolLib.app.people.borrowers.getShowBorrowerInfo(
-    pageData, borrowerId=borrowerId, level='level1div', **kwargs
+    pageData, borrowerId=borrowerId, level='content', **kwargs
   )
 
 getRoute(
