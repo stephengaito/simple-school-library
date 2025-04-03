@@ -49,7 +49,7 @@ class InitialOuterDiv(HtmxBase) :
       ></div>
     """)
 
-class UpdateMenusContent(HtmxBase) :
+class MainContent(HtmxBase) :
   def __init__(self, mainMenu, subMenu, content, **kwargs) :
     super().__init__(**kwargs)
     self.mainMenu = mainMenu
@@ -57,7 +57,25 @@ class UpdateMenusContent(HtmxBase) :
     self.content  = content
 
   def collectHtml(self, htmlFragments) :
-    pass
+    htmlFragments.append('<main id="mainContent">')
+
+    htmlFragments.append('<nav id="mainMenu" >')
+    self.mainMenu.collectHtml(htmlFragments)
+    htmlFragments.append('</nav>')
+
+    htmlFragments.append('<div class="flex flex-row">')
+
+    htmlFragments.append('<asside id="subMenu" class="w-1/5 flex-none" >')
+    self.subMenu.collectHtml(htmlFragments)
+    htmlFragments.append('</asside>')
+
+    htmlFragments.append('<section id="content" class="w-4/5 flex-none" >')
+    self.content.collectHtml(htmlFragments)
+    htmlFragments.append('</section>')
+
+    htmlFragments.append('</div>')
+
+    htmlFragments.append('</main>')
 
 class StdBody(HtmxBase) :
   def __init__(self, htmxComponent, url='/', **kwargs) :
@@ -68,15 +86,9 @@ class StdBody(HtmxBase) :
   def collectHtml(self, htmlFragments) :
     htmlFragments.append("""
       <header id="header" > </header>
-      <nav id="mainMenu" > </nav>
-      <main class="flex flex-row" >
-        <aside id="subMenu" class="w-1/5 flex-none" > </aside>
-        <section id="content" class="w-4/5 flex-none" >
     """)
     self.htmxComponent.collectHtml(htmlFragments)
     htmlFragments.append("""
-        </section>
-      </main>
     """)
     if 'develop' in config :
       htmlFragments.append(f"""
@@ -99,6 +111,6 @@ class HtmlPage(HtmxBase) :
     htmlFragments.append('<!DOCTYPE html>')
     htmlFragments.append('<html lang="en"><head>')
     self.headers.collectHtml(htmlFragments)
-    htmlFragments.append('</head><body hx-ext="morph" >')
+    htmlFragments.append('</head><body>')
     self.body.collectHtml(htmlFragments)
     htmlFragments.append('</body></html>')

@@ -89,6 +89,9 @@ class HtmxBase :
   def isA(self, klass) :
     return isinstance(self, klass)
 
+  def needsTemplate(self) :
+    return False
+
   def collectHtmlStr(self) :
     htmlFragments = []
     self.collectHtml(htmlFragments)
@@ -262,3 +265,4 @@ class HtmxChildrenBase(HtmxBase) :
       else:
         print(repr(self))
         print("contains a None child")
+

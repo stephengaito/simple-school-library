@@ -7,10 +7,16 @@ class Table(HtmxChildrenBase) :
     self.collectChildrenHtml(htmlFragments)
     htmlFragments.append("</table>")
 
+  def needsTemplate(self) :
+    return True
+
 class TableHead(HtmxChildrenBase) :
   def __init__(self, rows, tablePart='thead', **kwargs) :
     super().__init__(rows, **kwargs)
     self.tablePart = tablePart
+
+  def needsTemplate(self) :
+    return True
 
   def collectHtml(self, htmlFragments) :
     htmlFragments.append(f"<{self.tablePart} {self.computeHtmxAttrs()}>")
@@ -26,6 +32,9 @@ class TableFoot(TableHead) :
     super().__init__(rows, tablePart=tablePart, **kwargs)
 
 class TableRow(HtmxChildrenBase) :
+  def needsTemplate(self) :
+    return True
+
   def collectHtml(self, htmlFragments) :
     htmlFragments.append(f"<tr {self.computeHtmxAttrs()}>")
     self.collectChildrenHtml(htmlFragments)
@@ -37,6 +46,9 @@ class TableEntry(HtmxBase) :
     self.component = aComponent
     self.tableCode = tableCode
     self.colspan   = colspan
+
+  def needsTemplate(self) :
+    return True
 
   def collectHtml(self, htmlFragments) :
     teAttrs = self.computeHtmxAttrs()

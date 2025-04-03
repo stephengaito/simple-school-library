@@ -1,9 +1,11 @@
 
 from schoolLib.setup import pagePart, getRoute, registerHomePage, \
   getHelpPageHtml, postRoute
-from schoolLib.htmxComponents import Menu, Level0div, Level1div,  \
+# from schoolLib.htmxComponents import Menu, Level0div, Level1div,  \
+from schoolLib.htmxComponents import Menu, \
   getHelpPage, HtmlPage, StdHeaders, StdBody, InitialOuterDiv,    \
   HelpEditorModalDialog, HelpEditorForm, postHelpPage
+from schoolLib.htmxComponents.layout import MainContent
 import schoolLib.app.menus
 
 ##########################################################################
@@ -15,16 +17,24 @@ def secondLevelHomeMenu(pageData, selectedId=None, **kwargs) :
 
 @pagePart
 def getHomeMenu(pageData, **kwargs) :
-  return Level0div([
+  return MainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
-    Level1div([
-      secondLevelHomeMenu(pageData),
-      getHelpPage(
-        pageData, 'homePage', modal=False,
-        hxPost='/editHelp/homePage/nonModal'
-      )
-    ])
-  ], theId='level0div')
+    secondLevelHomeMenu(pageData),
+    getHelpPage(
+      pageData, 'homePage', modal=False,
+      hxPost='/editHelp/homePage/nonModal'
+    )
+  )
+  # return Level0div([
+  #   schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
+  #   Level1div([
+  #     secondLevelHomeMenu(pageData),
+  #     getHelpPage(
+  #       pageData, 'homePage', modal=False,
+  #       hxPost='/editHelp/homePage/nonModal'
+  #     )
+  #   ])
+  # ], theId='level0div')
 
 ##########################################################################
 # routes
