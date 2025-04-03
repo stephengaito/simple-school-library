@@ -11,7 +11,7 @@ import yaml
 from schoolLib.setup import SelectSql, pagePart, getRoute, InsertSql, \
   postRoute, UpdateSql, putRoute
 from schoolLib.htmxComponents import FormTable, TextInput, DateInput, Table, \
-  TableRow, TableEntry, Text, Level1div, EmptyDiv, SpacedDiv, MarkdownDiv
+  TableRow, TableEntry, Text, MainContent, SpacedDiv, MarkdownDiv
 import schoolLib
 
 ##########################################################################
@@ -262,16 +262,17 @@ def getEditItemsPhysicalForm(pageData, itemsPhysicalId=None, **kwargs) :
         pageData.db, itemsPhysical[0]['itemsInfoId']
       )
       if itemsInfoTable :
-        return Level1div([
+        return MainContent(
+          schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
           schoolLib.app.books.menu.secondLevelSingleBookMenu(
             pageData, **kwargs
           ),
-          itemsInfoTable,
-          EmptyDiv([]),
-          SpacedDiv([]),
-          EmptyDiv([]),
-          copyForm
-        ])
+          [
+            itemsInfoTable,
+            SpacedDiv([]),
+            copyForm
+          ]
+        )
   return schoolLib.app.books.itemsInfo.editItemsInfoForm(
     pageData,
     submitMessage='Add new book',
@@ -366,16 +367,17 @@ def getItemsPhysicalShow(pageData, itemsPhysicalId=None, **kwargs) :
     pageData.db, itemsInfoId
   )
   if itemInfoTable and physicalCopyTable :
-    theComponent = Level1div([
+    theComponent = MainContent(
+      schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
       schoolLib.app.books.menu.secondLevelSingleBookMenu(
         pageData, **kwargs
       ),
-      itemInfoTable,
-      EmptyDiv([]),
-      SpacedDiv([]),
-      EmptyDiv([]),
-      physicalCopyTable
-    ])
+      [
+        itemInfoTable,
+        SpacedDiv([]),
+        physicalCopyTable
+      ]
+    )
     print("-----------component----------")
     print(yaml.dump(theComponent))
     return theComponent

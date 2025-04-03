@@ -119,37 +119,6 @@ class Footer(HtmlElement) :
     kwargs['elementType'] = 'footer'
     super().__init__(someChildren, **kwargs)
 
-# we defined a set of level divs which each act as replacement points.
-
-# The intent is that each larger number should be nested inside the lower
-# numbers, so that only the dom which needs to be replaced can be
-# replaced.
-
-class Level0div(Div) :
-  def __init__(self, someChildren, **kwargs) :
-    if 'theId' not in kwargs : kwargs['theId'] = 'level0div'
-    super().__init__(someChildren, **kwargs)
-
-class Level1div(Div) :
-  def __init__(self, someChildren, **kwargs) :
-    if 'theId' not in kwargs : kwargs['theId'] = 'level1div'
-    super().__init__(someChildren, **kwargs)
-
-class Level2div(Div) :
-  def __init__(self, someChildren, **kwargs) :
-    if 'theId' not in kwargs : kwargs['theId'] = 'level2div'
-    super().__init__(someChildren, **kwargs)
-
-class Level3div(Div) :
-  def __init__(self, someChildren, **kwargs) :
-    if 'theId' not in kwargs : kwargs['theId'] = 'level3div'
-    super().__init__(someChildren, **kwargs)
-
-class Level4div(Div) :
-  def __init__(self, someChildren, **kwargs) :
-    if 'theId' not in kwargs : kwargs['theId'] = 'level4div'
-    super().__init__(someChildren, **kwargs)
-
 class List(HtmxChildrenBase) :
   def __init__(
     self,

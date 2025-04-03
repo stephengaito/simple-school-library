@@ -17,7 +17,7 @@ from starlette_login.middleware import AuthenticationMiddleware
 from schoolLib.setup import loadedConfig, PageData, htmlResponseFromHtmx, \
   loadUsers, config, routes
 
-from schoolLib.htmxComponents import loadedTheme, Level0div, Level1div, Text
+from schoolLib.htmxComponents import loadedTheme, MainContent, Text
 
 import schoolLib.app.menus
 
@@ -39,13 +39,17 @@ async def notFound(request, theException) :
   print("-------------")
   pageData = PageData(None)
   await pageData.getRequestData(request)
-  return htmlResponseFromHtmx(Level0div([
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
-    Level1div([
-      Text("Opps! Something went wrong! We can't find that page!"),
-      Text(f"Looking for: [{request.url}]")
-    ])
-  ], status_code=404), pageData)
+  return htmlResponseFromHtmx(
+    MainContent(
+      schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
+      None,
+      [
+        Text("Opps! Something went wrong! We can't find that page!"),
+        Text(f"Looking for: [{request.url}]")
+      ],
+      # ), status_code=404), pageData)
+    )
+  )
 
 async def serverError(request, theException) :
   print("-------------")
@@ -54,14 +58,18 @@ async def serverError(request, theException) :
   print("-------------")
   pageData = PageData(None)
   await pageData.getRequestData(request)
-  return htmlResponseFromHtmx(Level0div([
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
-    Level1div([
-      Text("Opps! Something went wrong! We can't find that page!", type='p'),
-      Text(f"Looking for: [{request.url}]", type='p'),
-      Text(f"Error: {repr(theException)}", type="p"),
-    ])
-  ], status_code=500), pageData)
+  return htmlResponseFromHtmx(
+    MainContent(
+      schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
+      None,
+      [
+        Text("Opps! Something went wrong! We can't find that page!", type='p'),
+        Text(f"Looking for: [{request.url}]", type='p'),
+        Text(f"Error: {repr(theException)}", type="p"),
+      ]
+    )
+    # status_code=500), pageData)
+  )
 
 
 # see: https://starlette-login.readthedocs.io/en/stable/usage/

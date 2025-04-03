@@ -9,8 +9,7 @@ from schoolLib.setup import pagePart, SelectSql, getOrderedClassList, \
   dbReturnABook
 from schoolLib.htmxComponents import FormTable, TextInput, NumberInput, \
   Text, ClassesSelector, Table, TableRow, TableEntry, TableHeader, Link, \
-  Div, Button, HelpButton, Level1div, EmptyDiv, SpacedDiv, RawHtml, \
-  Level0div
+  Div, Button, HelpButton, SpacedDiv, RawHtml, MainContent
 import schoolLib.app.menus
 import schoolLib.app.people.menu
 
@@ -151,14 +150,10 @@ def getBorrowerBooksOut(db, borrowerId, isAuthenticated=False) :
         TableEntry(Link(
           f'/itemsInfo/show/{anItem['itemsInfo_id']}',
           anItem['itemsInfo_title'],
-          level='level0div',
-          hxTarget='#level0div'
         )),
         TableEntry(Link(
           f'/itemsInfo/show/{anItem['itemsInfo_id']}',
           anItem['itemsPhysical_barCode'],
-          level='level0div',
-          hxTarget='#level0div'
         )),
         TableEntry(Text(anItem['itemsInfo_dewey'])),
         TableEntry(Text(anItem['itemsBorrowed_dateBorrowed'])),
@@ -170,7 +165,6 @@ def getBorrowerBooksOut(db, borrowerId, isAuthenticated=False) :
             Button(
               'Return',
               hxGet=f"/borrowers/returnBook/{borrowerId}/{anItem['itemsBorrowed_id']}",  # noqa
-              hxTarget='#level1div'
             ),
             HelpButton(hxGet="/help/returnBook/modal")
           ]))
@@ -213,14 +207,10 @@ def getBorrowerBooksHistory(db, borrowerId) :
           TableEntry(Link(
             f'/itemsInfo/show/{anItem['itemsInfo_id']}',
             anItem['itemsInfo_title'],
-            level='level0div',
-            hxTarget='#level0div'
           )),
           TableEntry(Link(
             f'/itemsInfo/show/{anItem['itemsInfo_id']}',
             anItem['itemsPhysical_barCode'],
-            level='level0div',
-            hxTarget='#level0div'
           )),
           TableEntry(Text(anItem['itemsInfo_dewey'])),
           TableEntry(Text(anItem['itemsReturned_dateBorrowed'])),
@@ -249,14 +239,9 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         pageData, borrowerId, **kwargs
       )
 
-    theComponent = Level1div([
-      schoolLib.app.people.menu.secondLevelSinglePersonMenu(
-        pageData, **kwargs
-      ),
+    theComponent = [
       borrowerInfo,
-      EmptyDiv([]),
       SpacedDiv([]),
-      EmptyDiv([]),
       SpacedDiv([
         RawHtml('<hr/>'),
         Text(
@@ -265,11 +250,8 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         ),
         RawHtml('<hr/>')
       ]),
-      EmptyDiv([]),
       SpacedDiv(takeOutHtmx),
-      EmptyDiv([]),
       SpacedDiv([]),
-      EmptyDiv([]),
       SpacedDiv([
         RawHtml('<hr/>'),
         Text(
@@ -278,11 +260,8 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         ),
         RawHtml('<hr/>')
       ]),
-      EmptyDiv([]),
       Table(itemsBorrowedRows, theId='itemsBorrowed'),
-      EmptyDiv([]),
       SpacedDiv([]),
-      EmptyDiv([]),
       SpacedDiv([
         RawHtml('<hr/>'),
         Text(
@@ -291,16 +270,17 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         ),
         RawHtml('<hr/>')
       ]),
-      EmptyDiv([]),
       Table(borrowingHistoryRows)
-    ])
-    if level and '0' in level :
-      theComponent = Level0div([
-        schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-        theComponent
-      ])
-    return theComponent
-  return Level1div([
+    ]
+    return MainContent(
+      schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+      schoolLib.app.people.menu.secondLevelSinglePersonMenu(
+        pageData, **kwargs
+      ),
+      theComponent
+    )
+  return MainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='findBorrower'
     ),
@@ -310,16 +290,15 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
       helpName='findBorrower', placeHolder="Type a person's name",
       **kwargs
     )
-
-  ])
-
+  )
 
 ##########################################################################
 # routes
 
 @pagePart
 def getNewBorrowerForm(pageData, **kwargs) :
-  return Level1div([
+  return MainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='addBorrower'
     ),
@@ -329,7 +308,7 @@ def getNewBorrowerForm(pageData, **kwargs) :
       hxPost='/borrowers/new',
       **kwargs
     )
-  ])
+  )
 
 getRoute('/menu/people/addBorrower', getNewBorrowerForm)
 

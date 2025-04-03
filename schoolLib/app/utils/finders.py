@@ -3,7 +3,7 @@ import yaml
 from schoolLib.setup import pagePart, getRoute, SelectSql, postRoute, \
   dbReturnABook, dbTakeOutABook
 from schoolLib.htmxComponents import Div, SearchBox, Table, TableRow, \
-  TableEntry, Link, Level1div, OobCollection, OobTemplate, TableBody, \
+  TableEntry, Link, MainContent, OobCollection, OobTemplate, TableBody, \
   Text
 
 import schoolLib
@@ -37,7 +37,7 @@ def findAThing(
 @pagePart
 def searchForThings(
   pageData, thingsIterClass,
-  targetUrl='/borrowers/show', targetLevel='level1div',
+  targetUrl='/borrowers/show',
   targetSwap='outerHTML', oobLevel=None, search=None,
   theId='level2div', hxPost='/search/borrowers', hxTarget=None,
   helpName='findBorrower', placeHolder="Type a person's name",
@@ -104,7 +104,8 @@ class SearchIter(object) :
 
 @pagePart
 def getFindBorrowerForm(pageData, **kwargs) :
-  return Level1div([
+  return MainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='findBorrower'
     ),
@@ -114,7 +115,7 @@ def getFindBorrowerForm(pageData, **kwargs) :
       helpName='findBorrower', placeHolder="Type a person's name",
       **kwargs
     )
-  ])
+  )
 
 getRoute('/search/borrowers', getFindBorrowerForm, anyUser=True)
 
@@ -160,7 +161,8 @@ postRoute('/search/borrowers', postSearchForBorrower, anyUser=True)
 
 @pagePart
 def getFindAnItemForm(pageData, **kwargs) :
-  return Level1div([
+  return MainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.books.menu.secondLevelBooksMenu(
       pageData, selectedId='findBook'
     ),
@@ -170,7 +172,7 @@ def getFindAnItemForm(pageData, **kwargs) :
       helpName='findBook', placeHolder='Type a book title...',
       **kwargs
     )
-  ])
+  )
 
 getRoute('/search/items', getFindAnItemForm, anyUser=True)
 

@@ -1,7 +1,7 @@
 
 
 from schoolLib.setup import pagePart, getRoute
-from schoolLib.htmxComponents import Menu, Button, Level0div, Level1div, \
+from schoolLib.htmxComponents import Menu, Button, MainContent, \
   getHelpPage
 import schoolLib.app.menus
 
@@ -59,16 +59,14 @@ def secondLevelSingleBookMenu(pageData, selectedId=None, **kwargs) :
 @pagePart
 def booksMenu(pageData, **kwargs) :
 
-  return Level0div([
+  return MainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
-    Level1div([
-      secondLevelBooksMenu(pageData),
-      getHelpPage(
-        pageData, 'booksPage', modal=False,
-        hxPost='/editHelp/booksPage/nonModal'
-      )
-    ])
-  ])
+    secondLevelBooksMenu(pageData),
+    getHelpPage(
+      pageData, 'booksPage', modal=False,
+      hxPost='/editHelp/booksPage/nonModal'
+    )
+  )
 
 ##########################################################################
 # routes
@@ -77,16 +75,17 @@ getRoute('/menu/books', booksMenu, anyUser=True)
 
 @pagePart
 def getTakeOutABookForm(pageData, **kwargs) :
-  return Level1div([
+  return MainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.books.menu.secondLevelBooksMenu(
       pageData, selectedId='takeOut'
     ),
     schoolLib.app.utils.finders.findAThing(
       pageData,
-      theId='level2div', hxPost='/search/borrowers?level=level0div',
+      theId='level2div', hxPost='/search/borrowers',
       helpName='findBorrower', placeHolder="Type a borrower's name",
       **kwargs
     )
-  ])
+  )
 
 getRoute('/menu/books/takeOut', getTakeOutABookForm, anyUser=True)

@@ -187,11 +187,11 @@ class HtmxBase :
 
   def computeTarget(self) :
     targetStr = ""
-    if self.hxTarget :
-      targetStr = f'hx-target="{self.hxTarget}"'
-      if not self.hxSwap : self.hxSwap = 'outerHTML'
-    if self.hxSwap :
-      targetStr += f' hx-swap="{self.hxSwap}"'
+    if not self.hxTarget :
+      self.hxTarget = "#mainContent"
+    targetStr = f'hx-target="{self.hxTarget}"'
+    if not self.hxSwap : self.hxSwap = 'outerHTML'
+    targetStr += f' hx-swap="{self.hxSwap}"'
     if self.hxSwapOob :
       targetStr += f' hx-swap-oob="{self.hxSwapOob}"'
     return targetStr

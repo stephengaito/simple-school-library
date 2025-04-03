@@ -54,23 +54,30 @@ class MainContent(HtmxBase) :
     super().__init__(**kwargs)
     self.mainMenu = mainMenu
     self.subMenu  = subMenu
-    self.content  = content
+    if not isinstance(self.content, list) :
+      self.content = [ content ]
+    else :
+      self.content  = content
 
   def collectHtml(self, htmlFragments) :
     htmlFragments.append('<main id="mainContent">')
 
     htmlFragments.append('<nav id="mainMenu" >')
-    self.mainMenu.collectHtml(htmlFragments)
+    if self.mainMenu :
+      self.mainMenu.collectHtml(htmlFragments)
     htmlFragments.append('</nav>')
 
     htmlFragments.append('<div class="flex flex-row">')
 
     htmlFragments.append('<asside id="subMenu" class="w-1/5 flex-none" >')
-    self.subMenu.collectHtml(htmlFragments)
+    if self.subMenu :
+      self.subMenu.collectHtml(htmlFragments)
     htmlFragments.append('</asside>')
 
     htmlFragments.append('<section id="content" class="w-4/5 flex-none" >')
-    self.content.collectHtml(htmlFragments)
+    if self.content :
+      for anItem in self.content :
+        anItem.collectHtml(htmlFragments)
     htmlFragments.append('</section>')
 
     htmlFragments.append('</div>')

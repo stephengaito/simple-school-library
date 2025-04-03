@@ -13,21 +13,18 @@ def topLevelMenu(pageData, selectedId=None, **kwargs) :
       'Home',
       theId    = 'home',
       hxGet    = '/menu/home',
-      hxTarget = '#level0div',
       klass    = theKlass
     ),
     Button(
       'Books',
       theId    = 'books',
       hxGet    = '/menu/books',
-      hxTarget = '#level0div',
       klass    = theKlass
     ),
     Button(
       'People',
       theId    = 'people',
       hxGet    = '/menu/people',
-      hxTarget = '#level0div',
       klass    = theKlass
     )
   ])
@@ -38,7 +35,6 @@ def topLevelMenu(pageData, selectedId=None, **kwargs) :
         'Tasks',
         theId    = 'tasks',
         hxGet    = '/menu/tasks',
-        hxTarget = '#level0div',
         klass    = theKlass
       )
     )
@@ -48,7 +44,6 @@ def topLevelMenu(pageData, selectedId=None, **kwargs) :
       'Admin',
       theId    = 'admin',
       hxGet    = '/menu/admin',
-      hxTarget = '#level0div',
       klass    = theKlass
     )
   )

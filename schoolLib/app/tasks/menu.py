@@ -1,7 +1,7 @@
 
 from schoolLib.setup import pagePart, getRoute
-from schoolLib.htmxComponents import Menu, Button, Level1div, getHelpPage, \
-  Level0div
+from schoolLib.htmxComponents import Menu, Button, getHelpPage, \
+  MainContent
 import schoolLib.app.menus
 
 ##########################################################################
@@ -24,16 +24,14 @@ def secondLevelTasksMenu(pageData, selectedId=None, **kwargs) :
 @pagePart
 def tasksMenu(pageData, **kwargs) :
 
-  return Level0div([
+  return MainContent(
     schoolLib.app.menus.topLevelMenu(
       pageData, selectedId='tasks'
     ),
-    Level1div([
-      secondLevelTasksMenu(pageData),
-      getHelpPage(
-        pageData, 'tasksMenu', modal=False,
-        hxPost='/editHelp/tasksMenu/nonModal'),
-    ])
-  ])
+    secondLevelTasksMenu(pageData),
+    getHelpPage(
+      pageData, 'tasksMenu', modal=False,
+      hxPost='/editHelp/tasksMenu/nonModal'),
+  )
 
 getRoute('/menu/tasks', tasksMenu, anyUser=True)

@@ -10,8 +10,8 @@ import yaml
 from schoolLib.setup import pagePart, SelectSql, getClasses, getRoute, \
   InsertSql, postRoute, UpdateSql, putRoute
 from schoolLib.htmxComponents import FormTable, TextInput, TextAreaInput, \
-  Table, TableRow, TableEntry, Text, TableHeader, Link, Level1div, EmptyDiv, \
-  SpacedDiv, Div, Button, HelpButton, Level0div, MarkdownDiv
+  Table, TableRow, TableEntry, Text, TableHeader, Link, \
+  Div, Button, HelpButton, MarkdownDiv, MainContent
 import schoolLib.app.books.menu
 
 ##########################################################################
@@ -220,8 +220,7 @@ def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
       TableEntry(Link(
         f'/borrowers/show/{aBook['borrowers_id']}',
         borrowerName,
-        level='level0div',
-        hxTarget='#level0div'
+        hxTarget='#mainContent'
       )),
       TableEntry(Text(borrowerClass))
     ]))
@@ -238,21 +237,13 @@ def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
   )
 
   if itemInfoTable and itemInfoCopiesTable :
-    theComponent = Level1div([
-      schoolLib.app.books.menu.secondLevelSingleBookMenu(
-        pageData, **kwargs
-      ),
+    theComponent = [
       itemInfoTable,
-      EmptyDiv([]),
-      SpacedDiv([]),
-      EmptyDiv([]),
       itemInfoCopiesTable
-    ])
+    ]
+
     if pageData.user.is_authenticated :
-      theComponent.appendChildren([
-        EmptyDiv([]),
-        SpacedDiv([]),
-        EmptyDiv([]),
+      theComponent.append(
         Div([
           Button(
             'Add new copy',
@@ -261,15 +252,16 @@ def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
           ),
           HelpButton(hxGet="/help/addCopy/modal")
         ], theId="addPhysicalCopy")
-      ])
-    if level and '0' in level :
-      theComponent = Level0div([
-        schoolLib.app.menus.topLevelMenu(
-          pageData, selectedId='books'
-        ),
-        theComponent
-      ])
-    return theComponent
+      )
+    return MainContent(
+      schoolLib.app.menus.topLevelMenu(
+        pageData, selectedId='books'
+      ),
+      schoolLib.app.books.menu.secondLevelSingleBookMenu(
+        pageData, **kwargs
+      ),
+      theComponent
+    )
   return MarkdownDiv("some thing about itemsInfo")
 
 getRoute(
@@ -279,7 +271,8 @@ getRoute(
 
 @pagePart
 def getNewItemsInfoForm(pageData, **kwargs) :
-  return Level1div([
+  return MainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.books.menu.secondLevelBooksMenu(
       pageData, **kwargs
     ),
@@ -289,7 +282,7 @@ def getNewItemsInfoForm(pageData, **kwargs) :
       hxPost='/itemsInfo/new',
       **kwargs
     )
-  ])
+  )
 
 getRoute('/itemsInfo/new', getNewItemsInfoForm)
 

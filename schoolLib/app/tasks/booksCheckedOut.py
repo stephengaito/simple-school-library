@@ -2,7 +2,7 @@
 from schoolLib.setup import getRoute, pagePart, SelectSql, getClasses, \
   addEmojiColour
 from schoolLib.htmxComponents import TableRow, TableHeader, Text, \
-  TableEntry, Link, Level1div, Table
+  TableEntry, Link, Table, MainContent
 import schoolLib.app.tasks.menu
 
 ##########################################################################
@@ -59,14 +59,10 @@ def booksCheckedOut(pageData, **kwargs) :
         TableEntry(Link(
           f'/borrowers/show/{aBook['borrowers_id']}',
           aBook['borrowers_firstName'] + ' ' + aBook['borrowers_familyName'],
-          level='level0div',
-          hxTarget='#level0div'
         )),
         TableEntry(Link(
           f'/itemsInfo/show/{aBook['itemsInfo_id']}',
           aBook['itemsInfo_title'],
-          level='level0div',
-          hxTarget='#level0div'
         )),
         TableEntry(Text(aBook['itemsPhysical_barcode'])),
         TableEntry(Text(aBook['itemsBorrowed_dateBorrowed'])),
@@ -74,12 +70,13 @@ def booksCheckedOut(pageData, **kwargs) :
         TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
         TableEntry(Text("")),
       ]))
-  return Level1div([
+  return MainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.tasks.menu.secondLevelTasksMenu(
       pageData, selectedId='booksCheckedOut'
     ),
     Table(bcoRows)
-  ])
+  )
 
 ##########################################################################
 # routes

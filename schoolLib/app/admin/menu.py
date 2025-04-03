@@ -1,6 +1,6 @@
 
 from schoolLib.setup import pagePart, getRoute
-from schoolLib.htmxComponents import Menu, Button, Level0div, Level1div, \
+from schoolLib.htmxComponents import Menu, Button, MainContent, \
   getHelpPage
 import schoolLib.app.menus
 
@@ -17,7 +17,6 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
         'Logout',
         theId    = 'logout',
         hxGet    = '/logout',
-        hxTarget = '#level0div'
       )
     )
   else :
@@ -26,24 +25,20 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
         'Login',
         theId    = 'login',
         hxGet    = '/login',
-        hxTarget = '#level0div'
       )
     )
   return theMenu
 
 @pagePart
 def adminMenu(pageData, **kwargs) :
-  return Level0div([
+  return MainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
-    Level1div([
-      secondLevelAdminMenu(pageData, **kwargs),
-      getHelpPage(
-        pageData, 'adminPage', modal=False,
-        hxPost='/editHelp/adminPage/nonModal'
-      )
-
-    ])
-  ], theId='level0div')
+    secondLevelAdminMenu(pageData, **kwargs),
+    getHelpPage(
+      pageData, 'adminPage', modal=False,
+      hxPost='/editHelp/adminPage/nonModal'
+    )
+  )
 
 ##########################################################################
 # routes
