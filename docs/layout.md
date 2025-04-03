@@ -50,6 +50,8 @@ classes.
 
 ## Resources
 
+- [</> htmx ~ Documentation](https://htmx.org/docs/)
+- [htmx multi-swap extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/multi-swap/README.md)
 - [How To Make a Breadcrumb Navigation](https://www.w3schools.com/howto/howto_css_breadcrumbs.asp)
 - [</> htmx ~ Examples ~ Updating Other Content](https://htmx.org/examples/update-other-content/)
 - [How to update 2 target with htmx? - Stack Overflow](https://stackoverflow.com/questions/76451723/how-to-update-2-target-with-htmx)

@@ -32,6 +32,7 @@ class StdHeaders(HtmxBase) :
       <script src="/static/tinymce/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
       <script src="/static/js/htmx.min.js"></script>
       <script src="/static/js/idiomorph-ext.min.js"></script>
+      <script src="/static/js/multi-swap.js"></script>
       <script src="/static/js/hyperscript.min.js"></script>
     """)  # noqa
     htmlFragments.extend(self.additionalHeaders)
@@ -48,6 +49,16 @@ class InitialOuterDiv(HtmxBase) :
       ></div>
     """)
 
+class UpdateMenusContent(HtmxBase) :
+  def __init__(self, mainMenu, subMenu, content, **kwargs) :
+    super().__init__(**kwargs)
+    self.mainMenu = mainMenu
+    self.subMenu  = subMenu
+    self.content  = content
+
+  def collectHtml(self, htmlFragments) :
+    pass
+
 class StdBody(HtmxBase) :
   def __init__(self, htmxComponent, url='/', **kwargs) :
     super().__init__(**kwargs)
@@ -55,7 +66,18 @@ class StdBody(HtmxBase) :
     self.url           = url
 
   def collectHtml(self, htmlFragments) :
+    htmlFragments.append("""
+      <header id="header" > </header>
+      <nav id="mainMenu" > </nav>
+      <main class="flex flex-row" >
+        <aside id="subMenu" class="w-1/5 flex-none" > </aside>
+        <section id="content" class="w-4/5 flex-none" >
+    """)
     self.htmxComponent.collectHtml(htmlFragments)
+    htmlFragments.append("""
+        </section>
+      </main>
+    """)
     if 'develop' in config :
       htmlFragments.append(f"""
         <div id="developerMessages" class="fixed bottom-0 w-screen">
@@ -64,7 +86,7 @@ class StdBody(HtmxBase) :
         </div>
       """)
     htmlFragments.append("""
-      <div id="footerMessages" class="fixed bottom-0 w-screen"></div>
+      <footer id="footerMessages" class="fixed bottom-0 w-screen"></footer>
     """)
 
 class HtmlPage(HtmxBase) :
@@ -77,6 +99,6 @@ class HtmlPage(HtmxBase) :
     htmlFragments.append('<!DOCTYPE html>')
     htmlFragments.append('<html lang="en"><head>')
     self.headers.collectHtml(htmlFragments)
-    htmlFragments.append("</head><body>")
+    htmlFragments.append('</head><body hx-ext="morph" >')
     self.body.collectHtml(htmlFragments)
-    htmlFragments.append("</body></html>")
+    htmlFragments.append('</body></html>')
