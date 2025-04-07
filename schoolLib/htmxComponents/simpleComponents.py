@@ -99,7 +99,7 @@ class SubMenu(HtmlElement) :
 
 class Content(HtmlElement) :
   def __init__(self, someChildren, **kwargs) :
-    if 'theId' not in kwargs : kwargs['theId'] = 'content'
+    if 'theId' not in kwargs : kwargs['theId'] = 'mainContent'
     kwargs['elementType'] = 'section'
     super().__init__(someChildren, **kwargs)
 

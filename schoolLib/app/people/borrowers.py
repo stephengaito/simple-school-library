@@ -270,7 +270,8 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
         ),
         RawHtml('<hr/>')
       ]),
-      Table(borrowingHistoryRows)
+      Table(borrowingHistoryRows),
+      SpacedDiv([])
     ]
     return RefreshMainContent(
       schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
@@ -398,7 +399,7 @@ def getBorrowerReturnBook(
   pageData, borrowerId=None, itemsBorrowedId=None, **kwargs
 ) :
   if itemsBorrowedId : dbReturnABook(pageData.db, itemsBorrowedId)
-  kwargs['hxTarget'] = '#content'
+  kwargs['hxTarget'] = '#mainContent'
   if borrowerId :
     return schoolLib.app.people.borrowers.getShowBorrowerInfo(
       pageData, borrowerId, **kwargs

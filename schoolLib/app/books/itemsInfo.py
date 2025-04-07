@@ -210,7 +210,7 @@ def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
       TableEntry(Link(
         f'/itemsPhysical/{linkAction}/{aBook["itemsPhysical_id"]}',
         aBook['itemsPhysical_barCode'],
-        hxTarget='#content'
+        hxTarget='#mainContent'
       )),
       TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
       TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),
