@@ -161,7 +161,13 @@ def postSaveNewClass(pageData, **kwargs) :
     'colour'     : theForm['classColour']
   }))
   pageData.db.commit()
-  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
+    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  )
 
 postRoute('/classes/new', postSaveNewClass)
 
@@ -170,17 +176,29 @@ def getEditAClassForm(pageData, classId=None, **kwargs) :
   if classId :
     theClasses = getClasses(pageData.db)
     if classId in theClasses :
-      return schoolLib.app.people.classes.editClassForm(
-        pageData,
-        className=theClasses[classId]['name'],
-        classDesc=theClasses[classId]['desc'],
-        classOrder=theClasses[classId]['classOrder'],
-        classColour=theClasses[classId]['colour'],
-        submitMessage='Save changes',
-        hxPost=f'/classes/edit/{classId}',
-        **kwargs
+      return RefreshMainContent(
+        schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+        schoolLib.app.people.menu.secondLevelPeopleMenu(
+          pageData, selectedId='listClasses'
+        ),
+        schoolLib.app.people.classes.editClassForm(
+          pageData,
+          className=theClasses[classId]['name'],
+          classDesc=theClasses[classId]['desc'],
+          classOrder=theClasses[classId]['classOrder'],
+          classColour=theClasses[classId]['colour'],
+          submitMessage='Save changes',
+          hxPost=f'/classes/edit/{classId}',
+          **kwargs
+        )
       )
-  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
+    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  )
 
 getRoute('/classes/edit/{classId:int}', getEditAClassForm)
 
@@ -196,7 +214,13 @@ def putUpdateAClass(pageData, classId=None, **kwargs) :
     'colour'     : theForm['classColour']
   }))
   pageData.db.commit()
-  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
+    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  )
 
 putRoute('/classes/edit/{classId:int}', putUpdateAClass)
 
@@ -213,6 +237,12 @@ def deleteAnEmptyClass(pageData, classId=None, **kwargs) :
       pageData.db.commit()
     else :
       print("Can NOT delete a class which is not empty!")
-  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
+    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  )
 
 deleteRoute('/classes/delete/{classId:int}', deleteAnEmptyClass)

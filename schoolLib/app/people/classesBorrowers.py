@@ -13,7 +13,7 @@ Provide a listing of Borrowers in each class.
 from schoolLib.setup          import pagePart, SelectSql, addEmojiColour, \
   getClasses, getSortedClasses, getRoute, UpdateSql, putRoute
 from schoolLib.htmxComponents import TableRow, TableHeader, Text, \
-  TableEntry, Button, Table, ClassesSelector, FormTable
+  TableEntry, Button, Table, ClassesSelector, FormTable, RefreshMainContent
 
 import schoolLib
 
@@ -54,7 +54,13 @@ def listPupilsInAClassTable(pageData, classId=None, **kwargs) :
           hxSwap='innerHTML'
         ))
       ]))
-  return Table(tableRows)
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
+    Table(tableRows)
+  )
 
 @pagePart
 def updatePupilsInClassForm(pageData, classId=None, hxPost=None, **kwargs) :
@@ -100,10 +106,16 @@ getRoute('/classes/list/{classId:int}', listPupilsInAClassTable)
 
 @pagePart
 def getUpdatePupilsInAClassForm(pageData, classId=None, **kwargs) :
-  return updatePupilsInClassForm(
-    pageData,
-    classId=classId, hxPost='/classes/update',
-    *kwargs
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
+    updatePupilsInClassForm(
+      pageData,
+      classId=classId, hxPost='/classes/update',
+      *kwargs
+    )
   )
 
 getRoute('/classes/update/{classId:int}', getUpdatePupilsInAClassForm)
@@ -120,6 +132,12 @@ def putUpdatePupilesInAClass(pageData, **kwargs) :
       'classId' : rowClass[2]
     }))
   pageData.db.commit()
-  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
+    ),
+    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  )
 
 putRoute('/classes/update', putUpdatePupilesInAClass)

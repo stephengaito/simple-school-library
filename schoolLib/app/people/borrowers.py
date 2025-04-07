@@ -49,30 +49,36 @@ def editBorrowerForm(
   if not sortedClasses :
     sortedClasses = getOrderedClassList(pageData.db)
 
-  return FormTable([
-    TextInput(
-      label="First name",
-      name='firstname',
-      value=borrower['firstName'],
-      placeholder='A first name...'
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='listClasses'
     ),
-    TextInput(
-      label="Family name",
-      name='familyName',
-      value=borrower['familyName'],
-      placeholder="A family name..."
-    ),
-    NumberInput(
-      label='Cohort (year entered education)',
-      name='cohort',
-      value=borrower['cohort'],
-    ),
-    ClassesSelector(
-      sortedClasses,
-      label='Class',
-      name='assignedClass',
-    )
-  ], submitMsg="Save changes")
+    FormTable([
+      TextInput(
+        label="First name",
+        name='firstname',
+        value=borrower['firstName'],
+        placeholder='A first name...'
+      ),
+      TextInput(
+        label="Family name",
+        name='familyName',
+        value=borrower['familyName'],
+        placeholder="A family name..."
+      ),
+      NumberInput(
+        label='Cohort (year entered education)',
+        name='cohort',
+        value=borrower['cohort'],
+      ),
+      ClassesSelector(
+        sortedClasses,
+        label='Class',
+        name='assignedClass',
+      )
+    ], submitMsg="Save changes")
+  )
 
 
 def getBorrowerInfo(db, borrowerId) :
