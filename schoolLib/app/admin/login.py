@@ -2,7 +2,7 @@
 from schoolLib.setup          import pagePart, getRoute, postRoute, \
   OtherUser, authenticateSlibUser, SLibUser, goToHomePage
 
-from schoolLib.htmxComponents import MainContent, Text, \
+from schoolLib.htmxComponents import RefreshMainContent, Text, \
   FormTable, TextInput, PasswordInput
 import schoolLib.app.main
 import schoolLib.app.menus
@@ -10,7 +10,7 @@ import schoolLib.app.admin.menu
 
 @pagePart
 def getLoginForm(pageData, message="Please login", **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
     schoolLib.app.admin.menu.secondLevelAdminMenu(
       pageData, selectedId='login'

@@ -11,7 +11,7 @@ import yaml
 from schoolLib.setup import SelectSql, pagePart, getRoute, InsertSql, \
   postRoute, UpdateSql, putRoute
 from schoolLib.htmxComponents import FormTable, TextInput, DateInput, Table, \
-  TableRow, TableEntry, Text, MainContent, SpacedDiv, MarkdownDiv
+  TableRow, TableEntry, Text, RefreshMainContent, SpacedDiv, MarkdownDiv
 import schoolLib
 
 ##########################################################################
@@ -262,7 +262,7 @@ def getEditItemsPhysicalForm(pageData, itemsPhysicalId=None, **kwargs) :
         pageData.db, itemsPhysical[0]['itemsInfoId']
       )
       if itemsInfoTable :
-        return MainContent(
+        return RefreshMainContent(
           schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
           schoolLib.app.books.menu.secondLevelSingleBookMenu(
             pageData, **kwargs
@@ -367,7 +367,7 @@ def getItemsPhysicalShow(pageData, itemsPhysicalId=None, **kwargs) :
     pageData.db, itemsInfoId
   )
   if itemInfoTable and physicalCopyTable :
-    theComponent = MainContent(
+    theComponent = RefreshMainContent(
       schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
       schoolLib.app.books.menu.secondLevelSingleBookMenu(
         pageData, **kwargs

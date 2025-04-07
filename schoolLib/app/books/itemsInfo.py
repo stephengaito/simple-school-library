@@ -11,7 +11,7 @@ from schoolLib.setup import pagePart, SelectSql, getClasses, getRoute, \
   InsertSql, postRoute, UpdateSql, putRoute
 from schoolLib.htmxComponents import FormTable, TextInput, TextAreaInput, \
   Table, TableRow, TableEntry, Text, TableHeader, Link, \
-  Div, Button, HelpButton, MarkdownDiv, MainContent
+  Div, Button, HelpButton, MarkdownDiv, RefreshMainContent
 import schoolLib.app.books.menu
 
 ##########################################################################
@@ -253,7 +253,7 @@ def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
           HelpButton(hxGet="/help/addCopy/modal")
         ], theId="addPhysicalCopy")
       )
-    return MainContent(
+    return RefreshMainContent(
       schoolLib.app.menus.topLevelMenu(
         pageData, selectedId='books'
       ),
@@ -271,7 +271,7 @@ getRoute(
 
 @pagePart
 def getNewItemsInfoForm(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.books.menu.secondLevelBooksMenu(
       pageData, **kwargs

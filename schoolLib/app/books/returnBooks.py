@@ -1,5 +1,5 @@
 from schoolLib.setup import pagePart, getRoute
-from schoolLib.htmxComponents import MainContent, \
+from schoolLib.htmxComponents import RefreshMainContent, \
   Table, TableHead, TableRow, TableHeader, TableBody, SpacedDiv, Text
 import schoolLib.app.menus
 
@@ -8,7 +8,7 @@ import schoolLib.app.menus
 
 @pagePart
 def getReturnBooksPage(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.books.menu.secondLevelBooksMenu(
       pageData, selectedId='return'

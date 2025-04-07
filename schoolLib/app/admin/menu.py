@@ -1,7 +1,7 @@
 
 from schoolLib.setup import pagePart, getRoute
-from schoolLib.htmxComponents import Menu, Button, MainContent, \
-  getHelpPage
+from schoolLib.htmxComponents import Menu, Button, \
+  RefreshMainContent, getHelpPage
 import schoolLib.app.menus
 
 ##########################################################################
@@ -31,7 +31,7 @@ def secondLevelAdminMenu(pageData, selectedId=None, **kwargs) :
 
 @pagePart
 def adminMenu(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='admin'),
     secondLevelAdminMenu(pageData, **kwargs),
     getHelpPage(

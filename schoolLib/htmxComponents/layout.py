@@ -48,15 +48,42 @@ class InitialOuterDiv(HtmxBase) :
       ></div>
     """)
 
-class MainContent(HtmxBase) :
-  def __init__(self, mainMenu, subMenu, content, **kwargs) :
+class RefreshContent(HtmxBase) :
+  def __init__(self, content, **kwargs) :
     super().__init__(**kwargs)
-    self.mainMenu = mainMenu
-    self.subMenu  = subMenu
     if not isinstance(content, list) :
       self.content = [ content ]
     else :
       self.content  = content
+
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append('<section id="content" class="w-4/5 flex-none" >')
+    if self.content :
+      for anItem in self.content :
+        anItem.collectHtml(htmlFragments)
+    htmlFragments.append('</section>')
+
+class RefreshSubContent(RefreshContent) :
+  def __init__(self, subMenu, content, **kwargs) :
+    super().__init__(content, **kwargs)
+    self.subMenu  = subMenu
+
+  def collectHtml(self, htmlFragments) :
+    htmlFragments.append('<div id="subContent" class="flex flex-row">')
+
+    htmlFragments.append('<asside id="subMenu" class="w-1/5 flex-none" >')
+    if self.subMenu :
+      self.subMenu.collectHtml(htmlFragments)
+    htmlFragments.append('</asside>')
+
+    super().collectHtml(htmlFragments)
+
+    htmlFragments.append('</div>')
+
+class RefreshMainContent(RefreshSubContent) :
+  def __init__(self, mainMenu, subMenu, content, **kwargs) :
+    super().__init__(subMenu, content, **kwargs)
+    self.mainMenu = mainMenu
 
   def collectHtml(self, htmlFragments) :
     htmlFragments.append('<main id="mainContent">')
@@ -66,20 +93,7 @@ class MainContent(HtmxBase) :
       self.mainMenu.collectHtml(htmlFragments)
     htmlFragments.append('</nav>')
 
-    htmlFragments.append('<div class="flex flex-row">')
-
-    htmlFragments.append('<asside id="subMenu" class="w-1/5 flex-none" >')
-    if self.subMenu :
-      self.subMenu.collectHtml(htmlFragments)
-    htmlFragments.append('</asside>')
-
-    htmlFragments.append('<section id="content" class="w-4/5 flex-none" >')
-    if self.content :
-      for anItem in self.content :
-        anItem.collectHtml(htmlFragments)
-    htmlFragments.append('</section>')
-
-    htmlFragments.append('</div>')
+    super().collectHtml(htmlFragments)
 
     htmlFragments.append('</main>')
 

@@ -1,7 +1,7 @@
 
 from schoolLib.setup import pagePart, getRoute
 from schoolLib.htmxComponents import Menu, Button, getHelpPage, \
-  MainContent
+  RefreshMainContent
 import schoolLib.app.menus
 
 ##########################################################################
@@ -23,7 +23,7 @@ def secondLevelTasksMenu(pageData, selectedId=None, **kwargs) :
 @pagePart
 def tasksMenu(pageData, **kwargs) :
 
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(
       pageData, selectedId='tasks'
     ),

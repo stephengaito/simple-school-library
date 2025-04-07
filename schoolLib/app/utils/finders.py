@@ -3,8 +3,8 @@ import yaml
 from schoolLib.setup import pagePart, getRoute, SelectSql, postRoute, \
   dbReturnABook, dbTakeOutABook
 from schoolLib.htmxComponents import Div, SearchBox, Table, TableRow, \
-  TableEntry, Link, MainContent, OobCollection, OobTemplate, TableBody, \
-  Text
+  TableEntry, Link, RefreshMainContent, OobCollection, OobTemplate, \
+  TableBody, Text
 
 import schoolLib
 
@@ -104,7 +104,7 @@ class SearchIter(object) :
 
 @pagePart
 def getFindBorrowerForm(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='findBorrower'
@@ -161,7 +161,7 @@ postRoute('/search/borrowers', postSearchForBorrower, anyUser=True)
 
 @pagePart
 def getFindAnItemForm(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.books.menu.secondLevelBooksMenu(
       pageData, selectedId='findBook'

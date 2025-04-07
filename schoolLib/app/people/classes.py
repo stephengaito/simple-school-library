@@ -17,7 +17,7 @@ from schoolLib.setup import pagePart, getClasses, getSortedClasses,     \
   SelectSql, DeleteSql, deleteRoute
 from schoolLib.htmxComponents import FormTable, TextInput, NumberInput, \
   EmojiColourSelector, TableRow, TableHeader, Text, TableEntry, Div,    \
-  Button, HelpButton, MainContent, Table, getHelpPage
+  Button, HelpButton, RefreshMainContent, Table, getHelpPage
 import schoolLib.app.menus
 import schoolLib.app.people.menu
 
@@ -108,7 +108,7 @@ def listClasses(pageData, **kwargs) :
       ])),
     ]))
 
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='listClasses'
@@ -125,7 +125,7 @@ def addAClass(pageData, **kwargs) :
       maxClassOrder = aClass['classOrder']
   maxClassOrder += 1
 
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='addClass'

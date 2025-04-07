@@ -17,7 +17,7 @@ from starlette_login.middleware import AuthenticationMiddleware
 from schoolLib.setup import loadedConfig, PageData, htmlResponseFromHtmx, \
   loadUsers, config, routes
 
-from schoolLib.htmxComponents import loadedTheme, MainContent, Text
+from schoolLib.htmxComponents import loadedTheme, RefreshMainContent, Text
 
 import schoolLib.app.menus
 
@@ -40,7 +40,7 @@ async def notFound(request, theException) :
   pageData = PageData(None)
   await pageData.getRequestData(request)
   return htmlResponseFromHtmx(
-    MainContent(
+    RefreshMainContent(
       schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
       None,
       [
@@ -59,7 +59,7 @@ async def serverError(request, theException) :
   pageData = PageData(None)
   await pageData.getRequestData(request)
   return htmlResponseFromHtmx(
-    MainContent(
+    RefreshMainContent(
       schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
       None,
       [

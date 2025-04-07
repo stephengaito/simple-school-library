@@ -2,7 +2,7 @@
 from schoolLib.setup import getRoute, pagePart, SelectSql, getClasses, \
   addEmojiColour
 from schoolLib.htmxComponents import TableRow, TableHeader, Text, \
-  TableEntry, Link, Table, MainContent
+  TableEntry, Link, Table, RefreshMainContent
 import schoolLib.app.tasks.menu
 
 ##########################################################################
@@ -70,7 +70,7 @@ def booksCheckedOut(pageData, **kwargs) :
         TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
         TableEntry(Text("")),
       ]))
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.tasks.menu.secondLevelTasksMenu(
       pageData, selectedId='booksCheckedOut'

@@ -7,7 +7,7 @@ Work with itemsBorrowed
 
 from schoolLib.setup import pagePart, getRoute, InsertSql, postRoute, \
   SelectSql, UpdateSql, putRoute
-from schoolLib.htmxComponents import FormTable, DateInput, MainContent
+from schoolLib.htmxComponents import FormTable, DateInput, RefreshMainContent
 import schoolLib.app.menus
 
 ##########################################################################
@@ -56,7 +56,7 @@ def getNewItemsBorrowedForm(
       hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
       **kwargs
     )
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData),
     None,
     None
@@ -83,7 +83,7 @@ def postSaveNewItemsBorrowed(
       'dateDue'         : theForm['dateDue']
     }))
     pageData.db.commit()
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData),
     None,
     None
@@ -123,7 +123,7 @@ def getEditItemsBorrowedForm(
         hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',  # noqa
         **kwargs
       )
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData),
     None,
     None
@@ -153,7 +153,7 @@ def putUpdateAnItemsBorrowed(
       'dateDue'      : theForm['dateDue']
     }))
     pageData.db.commit()
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData),
     None,
     None

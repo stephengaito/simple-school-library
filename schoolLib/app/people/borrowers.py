@@ -9,7 +9,7 @@ from schoolLib.setup import pagePart, SelectSql, getOrderedClassList, \
   dbReturnABook
 from schoolLib.htmxComponents import FormTable, TextInput, NumberInput, \
   Text, ClassesSelector, Table, TableRow, TableEntry, TableHeader, Link, \
-  Div, Button, HelpButton, SpacedDiv, RawHtml, MainContent
+  Div, Button, HelpButton, SpacedDiv, RawHtml, RefreshMainContent
 import schoolLib.app.menus
 import schoolLib.app.people.menu
 
@@ -272,14 +272,14 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
       ]),
       Table(borrowingHistoryRows)
     ]
-    return MainContent(
+    return RefreshMainContent(
       schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
       schoolLib.app.people.menu.secondLevelSinglePersonMenu(
         pageData, **kwargs
       ),
       theComponent
     )
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='findBorrower'
@@ -297,7 +297,7 @@ def getShowBorrowerInfo(pageData, borrowerId=None, level=None, **kwargs) :
 
 @pagePart
 def getNewBorrowerForm(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
     schoolLib.app.people.menu.secondLevelPeopleMenu(
       pageData, selectedId='addBorrower'

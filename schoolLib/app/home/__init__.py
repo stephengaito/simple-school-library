@@ -3,8 +3,7 @@ from schoolLib.setup import pagePart, getRoute, registerHomePage, \
   getHelpPageHtml, postRoute
 from schoolLib.htmxComponents import Menu, \
   getHelpPage, HtmlPage, StdHeaders, StdBody, InitialOuterDiv,    \
-  HelpEditorModalDialog, HelpEditorForm, postHelpPage
-from schoolLib.htmxComponents.layout import MainContent
+  HelpEditorModalDialog, HelpEditorForm, postHelpPage, RefreshMainContent
 import schoolLib.app.menus
 
 ##########################################################################
@@ -16,7 +15,7 @@ def secondLevelHomeMenu(pageData, selectedId=None, **kwargs) :
 
 @pagePart
 def getHomeMenu(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
     secondLevelHomeMenu(pageData),
     getHelpPage(

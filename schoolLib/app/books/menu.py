@@ -1,7 +1,7 @@
 
 
 from schoolLib.setup import pagePart, getRoute
-from schoolLib.htmxComponents import Menu, Button, MainContent, \
+from schoolLib.htmxComponents import Menu, Button, RefreshMainContent, \
   getHelpPage
 import schoolLib.app.menus
 
@@ -55,7 +55,7 @@ def secondLevelSingleBookMenu(pageData, selectedId=None, **kwargs) :
 @pagePart
 def booksMenu(pageData, **kwargs) :
 
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     secondLevelBooksMenu(pageData),
     getHelpPage(
@@ -71,7 +71,7 @@ getRoute('/menu/books', booksMenu, anyUser=True)
 
 @pagePart
 def getTakeOutABookForm(pageData, **kwargs) :
-  return MainContent(
+  return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
     schoolLib.app.books.menu.secondLevelBooksMenu(
       pageData, selectedId='takeOut'
