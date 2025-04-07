@@ -82,29 +82,25 @@ def listClasses(pageData, **kwargs) :
       TableEntry(Text(addEmojiColour(aClass['colour'], aClass['colour']))),
       TableEntry(Div([
         Button(
-          'List', hxGet=f'/classes/list/{aClass['id']}',
-          hxTarget='#mainContent'
+          'List', hxGet=f'/classes/list/{aClass['id']}'
         ),
         HelpButton(hxGet="/help/listClass/modal")
       ])),
       TableEntry(Div([
         Button(
-          'Update', hxGet=f'/classes/update/{aClass['id']}',
-          hxTarget='#mainContent'
+          'Update', hxGet=f'/classes/update/{aClass['id']}'
         ),
         HelpButton(hxGet="/help/updateClass/modal")
       ])),
       TableEntry(Div([
         Button(
-          'Edit', hxGet=f'/classes/edit/{aClass['id']}',
-          hxTarget='#mainContent'
+          'Edit', hxGet=f'/classes/edit/{aClass['id']}'
         ),
         HelpButton(hxGet="/help/editClass/modal")
       ])),
       TableEntry(Div([
         Button(
-          'Delete', hxGet=f'/classes/delete/{aClass['id']}',
-          hxTarget='#mainContent'
+          'Delete', hxGet=f'/classes/delete/{aClass['id']}'
         ),
         HelpButton(hxGet="/help/deleteClass/modal")
       ])),

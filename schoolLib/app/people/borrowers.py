@@ -399,13 +399,16 @@ def getBorrowerReturnBook(
   pageData, borrowerId=None, itemsBorrowedId=None, **kwargs
 ) :
   if itemsBorrowedId : dbReturnABook(pageData.db, itemsBorrowedId)
-  kwargs['hxTarget'] = '#mainContent'
   if borrowerId :
     return schoolLib.app.people.borrowers.getShowBorrowerInfo(
       pageData, borrowerId, **kwargs
     )
-  return schoolLib.app.people.menu.secondLevelPeopleMenu(
-    pageData, selectedId='findBorrower', **kwargs
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
+    schoolLib.app.people.menu.secondLevelPeopleMenu(
+      pageData, selectedId='findBorrower', **kwargs
+    ),
+    []
   )
 
 getRoute(

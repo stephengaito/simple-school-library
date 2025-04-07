@@ -209,8 +209,7 @@ def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
     physicalItemRows.append(TableRow([
       TableEntry(Link(
         f'/itemsPhysical/{linkAction}/{aBook["itemsPhysical_id"]}',
-        aBook['itemsPhysical_barCode'],
-        hxTarget='#mainContent'
+        aBook['itemsPhysical_barCode']
       )),
       TableEntry(Text(aBook['itemsPhysical_dateAdded'])),
       TableEntry(Text(aBook['itemsPhysical_dateLastSeen'])),
@@ -219,8 +218,7 @@ def getItemInfoCopiesTable(db, itemsInfoId, isAuthenticated) :
       TableEntry(Text(aBook['itemsBorrowed_dateDue'])),
       TableEntry(Link(
         f'/borrowers/show/{aBook['borrowers_id']}',
-        borrowerName,
-        hxTarget='#mainContent'
+        borrowerName
       )),
       TableEntry(Text(borrowerClass))
     ]))

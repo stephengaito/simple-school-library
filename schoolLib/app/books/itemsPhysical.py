@@ -162,7 +162,6 @@ def getNewItemsPhysicalForm(pageData, itemsInfoId=None, **kwargs) :
     return schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
       pageData,
       hxPost=f'/itemsPhysical/{itemsInfoId}/new',
-      hxTarget="#mainContent",
       submitMessage='Add new copy',
       **kwargs
     )
@@ -255,7 +254,6 @@ def getEditItemsPhysicalForm(pageData, itemsPhysicalId=None, **kwargs) :
         notes=itemsPhysical[0]['notes'],
         location=itemsPhysical[0]['location'],
         submitMessage='Save changes',
-        hxTarget='#mainContent',
         **kwargs
       )
       itemsInfoTable = schoolLib.app.books.itemsInfo.getItemInfoTable(

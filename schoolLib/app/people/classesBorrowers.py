@@ -51,7 +51,6 @@ def listPupilsInAClassTable(pageData, classId=None, **kwargs) :
         TableEntry(Button(
           'Edit',
           hxGet=f'/borrowers/edit/{aRow['borrowers_id']}',
-          hxTarget='#mainContent',
           hxSwap='innerHTML'
         ))
       ]))
