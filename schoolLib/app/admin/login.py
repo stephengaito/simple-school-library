@@ -3,7 +3,7 @@ from schoolLib.setup          import pagePart, getRoute, postRoute, \
   OtherUser, authenticateSlibUser, SLibUser, goToHomePage
 
 from schoolLib.htmxComponents import RefreshMainContent, Text, \
-  FormTable, TextInput, PasswordInput
+  FormTable, TextInput, PasswordInput, OKFooterMessage
 import schoolLib.app.main
 import schoolLib.app.menus
 import schoolLib.app.admin.menu
@@ -40,15 +40,20 @@ def postLoginPage(pageData, **kwargs) :
   if theForm['userName'] == 'slib' :
     if authenticateSlibUser(theForm['userPassword'], pageData.db) :
       user = SLibUser()
-  print(f"Logged in user: {user.display_name}")
+  loginMessage = f"You are now logged in as the user: {user.display_name}"
+  print(loginMessage)
   pageData.setUser(user)
-  return goToHomePage(pageData)
+  return goToHomePage(pageData).addMessage(
+    OKFooterMessage(loginMessage)
+  )
 
 postRoute('/login', postLoginPage, anyUser=True)
 
 @pagePart
 def logoutPage(pageData, **kwargs) :
   if pageData.user.is_authenticated : pageData.shouldLogout()
-  return goToHomePage(pageData)
+  return goToHomePage(pageData).addMessage(
+    OKFooterMessage("You are now logged out")
+  )
 
 getRoute('/logout', logoutPage, anyUser=True)

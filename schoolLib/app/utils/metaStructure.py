@@ -132,7 +132,7 @@ def computeLinksNodesSeen(routes, nodes, links, nodesSeen, showPath) :
 
     # add the links
     anEndpoint = str(aRoute.endpoint.__module__) + \
-      '.' + str(aRoute.endpoint.__name)
+      '.' + str(aRoute.endpoint.__name__)
     anEndpoint = anEndpoint.lstrip('schoolLib.')
     if anEndpoint not in pageParts :
       print(f"Could not find the endpoint: {anEndpoint} for {aPath}")

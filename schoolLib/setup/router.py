@@ -16,7 +16,7 @@ from schoolLib.setup.authenticate    import OtherUser
 
 # from schoolLib.htmxComponents.layout import *
 from schoolLib.htmxComponents import HtmlPage, StdHeaders, StdBody, \
-  RawHtml, WithFooterMessage, WarnFooterMessage, Text
+  RawHtml, WarnFooterMessage, Text
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project
@@ -92,14 +92,17 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
   # print("-------------------------------------------------")
   return HTMLResponse('\n'.join(htmlFragments), **kwargs)
 
+
+# NOTE the registered home page func MUST return a RefreshMainContent
+# object
+
 homePageFunc = None
 def registerHomePage(aHomePageFunc) :
   global homePageFunc
   homePageFunc = aHomePageFunc
 
 def goToHomePage(pageData, **kwargs) :
-  headers = {'HX-Redirect' : '/'}
-  return RawHtml("<h1>Hello</h1>", headers=headers)
+  return homePageFunc(pageData, **kwargs)
 
 async def callWithParameters(request, func, anyUser=False) :
   params = {}
@@ -124,10 +127,10 @@ async def callWithParameters(request, func, anyUser=False) :
       message = "You must be logged in to access that page"
       if 'develop' in config :
         message += f" ({request.url.path})"
-      htmxComponent = WithFooterMessage(
+      htmxComponent = homePageFunc(
+        pageData
+      ).addMessage(
         WarnFooterMessage(Text(message)),
-        homePageFunc(pageData),
-        headers={'HX-Retarget' : '#mainContent'}
       )
     else :
       raise HTTPException(

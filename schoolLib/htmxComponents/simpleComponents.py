@@ -299,27 +299,6 @@ class EditorButton(ImgButton) :
     if 'hxSwap'   not in kwargs : kwargs['hxSwap']   = "beforeend"
     super().__init__('pencil-square', **kwargs)
 
-class WithFooterMessage(HtmxBase) :
-  def __init__(self, footerMessageHtmx, mainHtmx, **kwargs) :
-    super().__init__(**kwargs)
-    self.footer = footerMessageHtmx
-    footerMessageDelay = "5s"
-    if theme and 'footerMessageDelay' in theme :
-      footerMessageDelay = theme['footerMessageDelay']
-    self.footerMessageDelay = footerMessageDelay
-    self.footer.addKwargs(
-      hyperscript=f"init wait {footerMessageDelay} then remove me"
-    )
-    self.main   = mainHtmx
-
-  def collectHtml(self, htmlFragments, **kwargs) :
-    self.main.collectHtml(htmlFragments)
-    htmlFragments.append(
-      '<div hx-swap-oob="innerHTML:#footerMessages" class="fixed bottom-0 w-screen" script="init wait {self.footerMessageDelay} then remove me">'  # noqa
-    )
-    self.footer.collectHtml(htmlFragments)
-    htmlFragments.append('</div>')
-
 # The following *FooterMessage's are meant to be used with the above
 # WithFooterMesssage to colour the message background. Their primary
 # purpose is to play nicely with the TailwindCSS theming...

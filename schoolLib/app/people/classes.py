@@ -17,7 +17,7 @@ from schoolLib.setup import pagePart, getClasses, getSortedClasses,     \
   SelectSql, DeleteSql, deleteRoute
 from schoolLib.htmxComponents import FormTable, TextInput, NumberInput, \
   EmojiColourSelector, TableRow, TableHeader, Text, TableEntry, Div,    \
-  Button, HelpButton, RefreshMainContent, Table, getHelpPage
+  Button, HelpButton, RefreshMainContent, Table, getHelpPage, WarnFooterMessage
 import schoolLib.app.menus
 import schoolLib.app.people.menu
 
@@ -161,13 +161,8 @@ def postSaveNewClass(pageData, **kwargs) :
     'colour'     : theForm['classColour']
   }))
   pageData.db.commit()
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-    schoolLib.app.people.menu.secondLevelPeopleMenu(
-      pageData, selectedId='listClasses'
-    ),
-    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
-  )
+  # list classes already returns a RefreshMainContent
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 postRoute('/classes/new', postSaveNewClass)
 
@@ -192,13 +187,8 @@ def getEditAClassForm(pageData, classId=None, **kwargs) :
           **kwargs
         )
       )
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-    schoolLib.app.people.menu.secondLevelPeopleMenu(
-      pageData, selectedId='listClasses'
-    ),
-    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
-  )
+  # list classes already returns a RefreshMainContent
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 getRoute('/classes/edit/{classId:int}', getEditAClassForm)
 
@@ -214,13 +204,8 @@ def putUpdateAClass(pageData, classId=None, **kwargs) :
     'colour'     : theForm['classColour']
   }))
   pageData.db.commit()
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-    schoolLib.app.people.menu.secondLevelPeopleMenu(
-      pageData, selectedId='listClasses'
-    ),
-    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
-  )
+  # list classes already returns a RefreshMainContent
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 putRoute('/classes/edit/{classId:int}', putUpdateAClass)
 
@@ -237,12 +222,11 @@ def deleteAnEmptyClass(pageData, classId=None, **kwargs) :
       pageData.db.commit()
     else :
       print("Can NOT delete a class which is not empty!")
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-    schoolLib.app.people.menu.secondLevelPeopleMenu(
-      pageData, selectedId='listClasses'
-    ),
-    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
+  # list classes already returns a RefreshMainContent
+  return schoolLib.app.people.classes.listClasses(
+    pageData, **kwargs
+  ).addMessage(
+    WarnFooterMessage("Can NOT delete a class which is not empty!")
   )
 
 deleteRoute('/classes/delete/{classId:int}', deleteAnEmptyClass)

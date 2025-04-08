@@ -132,12 +132,7 @@ def putUpdatePupilesInAClass(pageData, **kwargs) :
       'classId' : rowClass[2]
     }))
   pageData.db.commit()
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='people'),
-    schoolLib.app.people.menu.secondLevelPeopleMenu(
-      pageData, selectedId='listClasses'
-    ),
-    schoolLib.app.people.classes.listClasses(pageData, **kwargs)
-  )
+  # list classes already returns a RefreshMainContent
+  return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
 putRoute('/classes/update', putUpdatePupilesInAClass)

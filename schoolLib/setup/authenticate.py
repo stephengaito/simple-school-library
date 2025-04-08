@@ -19,7 +19,7 @@ class SLibUser(UserMixin) :
 
   @property
   def display_name(self) :
-    return 'slib'
+    return 'admin user (slib)'
 
   @property
   def identity(self) :
@@ -32,7 +32,7 @@ class OtherUser(UserMixin) :
 
   @property
   def display_name(self) :
-    return 'other'
+    return 'general user'
 
   @property
   def identity(self) :
@@ -44,15 +44,15 @@ def loadUsers(request, userId) :
   print(f"Loaded user: {theUser.display_name}")
   return theUser
 
-# see: https://www.geeksforgeeks.org/encoding-and-decoding-base64-strings-in-python/
-# See: https://www.askpython.com/python/examples/storing-retrieving-passwords-securely
+# see: https://www.geeksforgeeks.org/encoding-and-decoding-base64-strings-in-python/     # noqa
+# See: https://www.askpython.com/python/examples/storing-retrieving-passwords-securely   # noqa
 
 def encryptSlibPassword(plainTextPassword, salt) :
   hashValue = hashlib.pbkdf2_hmac(
-    'sha256', # hashing algorithm
-    plainTextPassword.encode('utf-8'), # in bytes
-    salt, #in bytes
-    100000 # iterations
+    'sha256',                           # hashing algorithm
+    plainTextPassword.encode('utf-8'),  # in bytes
+    salt,                               # in bytes
+    100000                              # iterations
   )
   return base64.b64encode(salt + hashValue).decode('utf-8')
 

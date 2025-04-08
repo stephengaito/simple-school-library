@@ -3,7 +3,7 @@
 # see: https://hidde.blog/accessible-page-titles-in-a-single-page-app/
 
 from schoolLib.setup.configuration import config
-from schoolLib.htmxComponents.htmx import HtmxBase
+from schoolLib.htmxComponents.htmx import HtmxBase, theme
 
 class StdHeaders(HtmxBase) :
   def __init__(self, additionalHeaders=[], **kwargs) :
@@ -81,9 +81,10 @@ class RefreshSubContent(RefreshContent) :
     htmlFragments.append('</div>')
 
 class RefreshMainContent(RefreshSubContent) :
-  def __init__(self, mainMenu, subMenu, content, **kwargs) :
+  def __init__(self, mainMenu, subMenu, content, message=None, **kwargs) :
     super().__init__(subMenu, content, **kwargs)
     self.mainMenu = mainMenu
+    self.message = message
 
   def collectHtml(self, htmlFragments) :
     htmlFragments.append('<main id="mainContent">')
@@ -95,7 +96,23 @@ class RefreshMainContent(RefreshSubContent) :
 
     super().collectHtml(htmlFragments)
 
+    if self.message :
+      footerMessageDelay = "5s"
+      if theme and 'footerMessageDelay' in theme :
+        footerMessageDelay = theme['footerMessageDelay']
+      htmlFragments.append(f"""
+        <footer id="footerMessages" class="fixed bottom-0 w-screen"
+         script="init wait {footerMessageDelay} then remove me"
+        >
+      """)
+      self.message.collectHtml(htmlFragments)
+      htmlFragments.append('</footer>')
+
     htmlFragments.append('</main>')
+
+  def addMessage(self, messageHtmx) :
+    self.message = messageHtmx
+    return self
 
 class StdBody(HtmxBase) :
   def __init__(self, htmxComponent, url='/', **kwargs) :
@@ -117,9 +134,6 @@ class StdBody(HtmxBase) :
           <a href="/uiOverview" target="_blank">/uiOverview{self.url}</a>
         </div>
       """)
-    htmlFragments.append("""
-      <footer id="footerMessages" class="fixed bottom-0 w-screen"></footer>
-    """)
 
 class HtmlPage(HtmxBase) :
   def __init__(self, headers, body, **kwargs) :
