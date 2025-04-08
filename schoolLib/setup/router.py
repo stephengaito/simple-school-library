@@ -16,7 +16,7 @@ from schoolLib.setup.authenticate    import OtherUser
 
 # from schoolLib.htmxComponents.layout import *
 from schoolLib.htmxComponents import HtmlPage, StdHeaders, StdBody, \
-  RawHtml, WarnFooterMessage, Text
+  WarnFooterMessage, Text
 
 ###############################################################
 # A very simple RESTful router for the SchoolLib project

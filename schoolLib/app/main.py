@@ -26,7 +26,7 @@ loadedTheme()
 
 # The ORDER here is important!
 import schoolLib.app.utils
-import schoolLib.app.home
+import schoolLib.app.home.home
 import schoolLib.app.books
 import schoolLib.app.people
 import schoolLib.app.tasks

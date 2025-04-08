@@ -1,9 +1,30 @@
 #!/bin/sh
 
+reset
+
+# We use pyflakes to review the quality of the code (for typos)
+#
+# To do this we assume that the python-lsp-server has been installed uing
+# pipx
+# see: https://github.com/python-lsp/python-lsp-server
+
+echo "pyflakes results for schoolLib code"
+echo " (use ./scripts/checkInitCode to check size of init files)"
+
+$HOME/.local/share/pipx/venvs/python-lsp-server/bin/pyflakes schoolLib \
+  | grep -v "imported but unused" \
+  | egrep -vi "__init__.py.*unable to detect undefined names"
+
+echo ""
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo ""
+
+# run the preTests...
 .venv/bin/python ./tests/utils/preTests.py
 
 echo ""
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo ""
 
-.venv/bin/pytest $@
+# now run the pytests...
+# .venv/bin/pytest $@

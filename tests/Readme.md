@@ -1,5 +1,27 @@
 # Testing
 
+## What to sanity check
+
+- Check the database schema
+
+- Untested pageParts that interact with the database.
+
+- Check all routes have a corresponding pagePart
+
+## What to pytest
+
+- Database interactions (Highest priority)
+
+  - The `findPagePartsUsingSql` sanity check lists all untested sql using
+    pageParts. We test these pageParts by calling them using mocked
+    `callWithParameters` and then check the database to confirm the
+    appropriate changes have been made.
+
+- HtmlComponents returned by each pagePart (medium priority unless
+  something goes wrong)
+
+- Each HtmxComponent (low priority unless something goes wrong)
+
 ## Strategy
 
 The bulk of the testing will be done by calling appropriate `pageParts`

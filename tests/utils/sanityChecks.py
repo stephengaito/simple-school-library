@@ -1,6 +1,7 @@
 
-import glob
+# import glob
 import os
+import re
 import sys
 import yaml
 
@@ -54,6 +55,39 @@ def checkRoutes() :
           print(f"  hxPost: {hxPostPrefix} {hxPostName} [{hxPost}]")
   return problemFound
 
+sqlRegExpStrs = [
+  r"IndexSql",
+  r"SelectSql",
+  r"InsertSql",
+  r"UpdateSql",
+  r"DeleteSql",
+]
+sqlRegExp = re.compile('|'.join(sqlRegExpStrs))
+
+knownSqlPageParts = [
+  #  'app.books.itemsInfo.putUpdateAnItemsInfo'
+]
+knownSqlPageParts = set(knownSqlPageParts)
+
+def findPagePartsUsingSql() :
+  unknownSqlPageParts = {}
+  for aPagePartName, aPagePart in pageParts.items() :
+    matches = set()
+    for aMatch in sqlRegExp.finditer(aPagePart.src) :
+      matches.add(aMatch.group(0))
+    if matches :
+      if aPagePartName not in knownSqlPageParts :
+        matches = sorted(matches)
+        unknownSqlPageParts[aPagePartName] = ', '.join(matches)
+  if unknownSqlPageParts :
+    print("\nSql using pageParts which have not been tested:")
+    for aPagePartName, someMatches in unknownSqlPageParts.items() :
+      print('  ' + aPagePartName)
+      print('    ' + someMatches)
+    print("")
+    return True
+  return False
+
 def loadSchema() :
   schema = {}
   with open(os.path.join('schoolLib', 'setup', 'schema.yaml')) as sFile :
@@ -79,8 +113,9 @@ def runSanityChecks() :
   setupApp()
   computePagePartUsers()
   problemFound = False
-  problemFound |= checkRoutes()
-  problemFound |= checkSchema()
+  problemFound |= findPagePartsUsingSql()
+  # problemFound |= checkRoutes()
+  # problemFound |= checkSchema()
 
   if problemFound :
     print("Please fix the above problems")

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# This simple bash script checks number of lines in the __init__.py files
+
+# This number SHOULD be small (<12)
+
+echo "The following is a list of the number of lines in all __init__.py files"
+echo "  These numbers SHOULD all be small (< 12)"
+echo ""
+
+find  schoolLib tests -iname "__init__.py" | xargs wc -l
+
