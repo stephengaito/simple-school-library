@@ -10,7 +10,15 @@
 
 ## What to pytest
 
-- Database interactions (Highest priority)
+- Database updates (Highest priority)
+
+  - All known database updates are applied by the database pytests
+    fixture.
+
+  - Need to compare this updated database against the schema (and other
+    wise test its initial sanity).
+
+- Database interactions (High priority)
 
   - The `findPagePartsUsingSql` sanity check lists all untested sql using
     pageParts. We test these pageParts by calling them using mocked
@@ -21,6 +29,8 @@
   something goes wrong)
 
 - Each HtmxComponent (low priority unless something goes wrong)
+
+- General usage "tests" (on going)
 
 ## Strategy
 
