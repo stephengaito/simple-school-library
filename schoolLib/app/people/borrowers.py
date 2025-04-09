@@ -4,6 +4,7 @@ This "module" manages the collection of borrowers.
 """
 # import yaml
 
+from schoolLib.tools.dbUpdates.utils import reCreateBorrowersFTS
 from schoolLib.setup import pagePart, SelectSql, getOrderedClassList, \
   getClasses, getRoute, InsertSql, postRoute, UpdateSql, putRoute, \
   dbReturnABook
@@ -382,12 +383,9 @@ def putUpdatedBorrower(pageData, borrowerId=None, **kwargs) :
       'cohort'     : theForm['cohort'],
       'classId'    : theForm['assignedClass']
     }))
-    pageData.db.execute(UpdateSql(
-    ).whereValue('id', borrowerId
-    ).sql('borrowersFTS', {
-      'firstName'  : theForm['firstName'],
-      'familyName' : theForm['familyName']
-    }))
+    # We can NOT delete or update the FTS tables....
+    #   so we take the long road and completely rebuild it!
+    reCreateBorrowersFTS(pageData.db)
     pageData.db.commit()
   return schoolLib.app.people.borrowers.editBorrowerForm(
     pageData,

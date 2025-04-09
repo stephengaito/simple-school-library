@@ -12,4 +12,5 @@ import tests.utils
 
 from tests.fixtures.database import database
 from tests.fixtures.people.classes import addSomeClasses
+from tests.fixtures.people.borrowers import addSomeBorrowers
 

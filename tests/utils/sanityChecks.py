@@ -64,26 +64,57 @@ sqlRegExpStrs = [
 ]
 sqlRegExp = re.compile('|'.join(sqlRegExpStrs))
 
+sqlTablesRexExp = re.compile(
+  r"\.(sql|tables)\(([^\)]*)", re.MULTILINE
+)
+
 knownSqlPageParts = [
-  #  'app.books.itemsInfo.putUpdateAnItemsInfo'
+
+  # classes
+  'app.people.classes.listClasses',
+  'app.people.classes.postSaveNewClass',
+  'app.people.classes.putUpdateAClass',
+  
+  # classes / borrowers / borrowersFTS
+  'app.people.classes.deleteAnEmptyClass',
+  'app.people.borrowers.postSaveNewBorrower',
+  'app.people.borrowers.putUpdatedBorrower',
+  'app.people.classesBorrowers.putUpdatePupilsInAClass',
+  'app.people.classesBorrowers.listPupilsInAClassTable',
+  'app.people.classesBorrowers.updatePupilsInClassForm',
 ]
+
 knownSqlPageParts = set(knownSqlPageParts)
 
 def findPagePartsUsingSql() :
   unknownSqlPageParts = {}
   for aPagePartName, aPagePart in pageParts.items() :
     matches = set()
+    tables  = set()
     for aMatch in sqlRegExp.finditer(aPagePart.src) :
       matches.add(aMatch.group(0))
     if matches :
+      for aTableMatch in sqlTablesRexExp.finditer(aPagePart.src) :
+        someTables = ' '.join(aTableMatch.group(0).strip().split())
+        if someTables.startswith('.sql') :
+          someTables = someTables.removeprefix('.sql(').strip()
+          someTables = someTables.split('{')[0].strip()
+        elif someTables.startswith('.tables') :
+          someTables = someTables.removeprefix('.tables(').strip()
+        for aTable in someTables.split(',') :
+          tables.add(aTable.strip())
       if aPagePartName not in knownSqlPageParts :
         matches = sorted(matches)
-        unknownSqlPageParts[aPagePartName] = ', '.join(matches)
+        unknownSqlPageParts[aPagePartName] = {
+          'sql'    : ', '.join(matches),
+          'tables' : ', '.join(tables)
+        }
   if unknownSqlPageParts :
     print("\nSql using pageParts which have not been tested:")
     for aPagePartName, someMatches in unknownSqlPageParts.items() :
       print('  ' + aPagePartName)
-      print('    ' + someMatches)
+      print('    ' + someMatches['sql'])
+      print('      ' + someMatches['tables'])
     print("")
     return True
   return False

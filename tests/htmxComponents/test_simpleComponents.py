@@ -10,5 +10,6 @@ def test_Label() :
   assert aLabel.isA(Label)
   assert len(aLabel.children) == 1
   assert aLabel.children[0] == "aLabel"
-  assert aLabel.collectHtmlStr() == '<label > aLabel </label>'
+  assert aLabel.collectHtmlStr() == \
+    '<label hx-target="#mainContent" hx-swap="outerHTML"> aLabel </label>'
 

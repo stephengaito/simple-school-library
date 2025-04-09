@@ -1,5 +1,7 @@
 # Things to do....
 
+Deal with cardNumbers for borrowers....
+  
 Convert return a book to a simple but time triggered rapid file single
 text entry form.
 

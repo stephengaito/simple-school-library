@@ -10,6 +10,8 @@ Provide a listing of Borrowers in each class.
 
 """
 
+# import yaml
+
 from schoolLib.setup          import pagePart, SelectSql, addEmojiColour, \
   getClasses, getSortedClasses, getRoute, UpdateSql, putRoute
 from schoolLib.htmxComponents import TableRow, TableHeader, Text, \
@@ -121,7 +123,7 @@ def getUpdatePupilsInAClassForm(pageData, classId=None, **kwargs) :
 getRoute('/classes/update/{classId:int}', getUpdatePupilsInAClassForm)
 
 @pagePart
-def putUpdatePupilesInAClass(pageData, **kwargs) :
+def putUpdatePupilsInAClass(pageData, **kwargs) :
   theForm = pageData.form
   for aKey in theForm.keys() :
     rowClass = theForm[aKey].split('-')
@@ -135,4 +137,4 @@ def putUpdatePupilesInAClass(pageData, **kwargs) :
   # list classes already returns a RefreshMainContent
   return schoolLib.app.people.classes.listClasses(pageData, **kwargs)
 
-putRoute('/classes/update', putUpdatePupilesInAClass)
+putRoute('/classes/update', putUpdatePupilsInAClass)
