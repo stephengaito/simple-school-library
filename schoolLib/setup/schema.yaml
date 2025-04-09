@@ -10,8 +10,8 @@ borrowers.cohort: integer
 borrowers.classId: integer
 borrowers.cardNumber: text
 
+# borrowers Fult Text Search
 borrowersFTS.borrowersFTS: text
-itemsFTS.itemsFTS: text
 
 # classes
 classes.id: integer
@@ -56,6 +56,10 @@ itemsPhysical.dateLastSeen: date
 itemsPhysical.notes: text
 itemsPhysical.status: text
 itemsPhysical.location: text
+itemsPhysical.shelf: text
+
+# items Fult Text Search
+itemsFTS.itemsFTS: text
 
 # helpPages
 helpPages.id: integer

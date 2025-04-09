@@ -12,11 +12,10 @@
 
 - Database updates (Highest priority)
 
-  - All known database updates are applied by the database pytests
-    fixture.
+  - **DONE** All known database updates are applied by the database
+    pytests fixture.
 
-  - Need to compare this updated database against the schema (and other
-    wise test its initial sanity).
+  - **DONE** Need to compare this updated database against the schema.
 
 - Database interactions (High priority)
 

@@ -27,4 +27,4 @@ echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo ""
 
 # now run the pytests...
-# .venv/bin/pytest $@
+.venv/bin/pytest $@
