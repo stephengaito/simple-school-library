@@ -49,7 +49,7 @@ def test_addSomeClasses(database, addSomeClasses) :
 def test_getClasses(database, addSomeClasses) :
   """ Test to ensure that the getClasses method returns the expected
   classes."""
-  
+
   theClasses = getClasses(database, selectedClass=1)
   assert len(theClasses) == 3
   for aKey, aValue in theClasses.items() :
@@ -68,10 +68,10 @@ def test_getClasses(database, addSomeClasses) :
 def test_postSaveNewClass(database, addSomeClasses) :
   """ Test to ennsure the postSaveNewClass makes the correct changes to
   the database."""
-  
+
   pageData = getMockPageDataFrom(database, """
     authenticated: True
-    theForm: 
+    theForm:
       className:   Rabbits
       classOrder:  30
       classDesc:   The rabbits
@@ -104,14 +104,14 @@ def test_putUpdateAClass(database, addSomeClasses) :
   assert theClasses[2]['classOrder']  == 20
   assert theClasses[2]['desc']        == 'The squirrels'
   assert theClasses[2]['colour']      == 'orange'
-  
+
   pageData = getMockPageDataFrom(database, """
     authenticated: True
-    theForm: 
+    theForm:
       className:   Rabbits
       classOrder:  '30'
       classDesc:   The rabbits
-      classColour: blue    
+      classColour: blue
   """)
   schoolLib.app.people.classes.putUpdateAClass(pageData, classId=2)
 

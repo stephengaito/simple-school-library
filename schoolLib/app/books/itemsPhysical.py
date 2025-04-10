@@ -30,17 +30,16 @@ def computeNewBarcode(db) :
     fetchAll=False
   )
   print(yaml.dump(lastItemsPhysical))
+  theSeq = 1
   if lastItemsPhysical :
-    thisYear = date.today().year
     theSeq = lastItemsPhysical[0]['seq'] + 1
-    barcode = "{year}-{seq}".format(
-      year=thisYear,
-      seq=theSeq
-    )
-    return barcode
-  # a crude but fail-safe choice...
-  # This WILL fail if it gets hit more than once per second :$
-  return datetime.strftime("%Y-%m%d%H%M%S")
+
+  thisYear = date.today().year
+  barcode = "{year}-{seq:04d}".format(
+    year=thisYear,
+    seq=theSeq
+  )
+  return barcode
 
 @pagePart
 def editItemsPhysicalForm(

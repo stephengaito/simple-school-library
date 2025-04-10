@@ -13,4 +13,6 @@ import tests.utils
 from tests.fixtures.database import database
 from tests.fixtures.people.classes import addSomeClasses
 from tests.fixtures.people.borrowers import addSomeBorrowers
+from tests.fixtures.books.itemsInfo import addSomeItemsInfo
+from tests.fixtures.books.itemsPhysical import addSomeItemsPhysical
 

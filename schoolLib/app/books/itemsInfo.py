@@ -323,6 +323,7 @@ def getEditAnItemsInfoForm(pageData, itemsInfoId=None, **kwargs) :
     )
     if itemsInfo :
       return editItemsInfoForm(
+        pageData,
         title=itemsInfo[0]['title'],
         authors=itemsInfo[0]['authors'],
         publisher=itemsInfo[0]['publisher'],

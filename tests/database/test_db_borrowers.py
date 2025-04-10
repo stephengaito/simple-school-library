@@ -1,6 +1,6 @@
 import yaml
 
-import pytest
+# import pytest
 
 import schoolLib
 

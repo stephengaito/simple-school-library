@@ -74,7 +74,7 @@ knownSqlPageParts = [
   'app.people.classes.listClasses',
   'app.people.classes.postSaveNewClass',
   'app.people.classes.putUpdateAClass',
-  
+
   # classes / borrowers / borrowersFTS
   'app.people.classes.deleteAnEmptyClass',
   'app.people.borrowers.postSaveNewBorrower',
@@ -82,6 +82,20 @@ knownSqlPageParts = [
   'app.people.classesBorrowers.putUpdatePupilsInAClass',
   'app.people.classesBorrowers.listPupilsInAClassTable',
   'app.people.classesBorrowers.updatePupilsInClassForm',
+  'app.people.borrowers.editBorrowerForm',
+
+  # itemsInfo
+  'app.books.itemsInfo.postSaveNewItemsInfo',
+  'app.books.itemsInfo.putUpdateAnItemsInfo',
+  'app.books.itemsInfo.getEditAnItemsInfoForm',
+
+  # itemsInfo / itemsPhysical / itemsFTS
+  'app.books.itemsPhysical.postSaveNewItemsPhysical',
+  'app.books.itemsPhysical.putUpdateAnItemsPhysical',
+
+  # borrowers / itemsInfo / itemsPhysical / itemsBorrowed
+  'app.books.itemsPhysical.getEditItemsPhysicalForm',
+
 ]
 
 knownSqlPageParts = set(knownSqlPageParts)

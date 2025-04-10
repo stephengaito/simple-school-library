@@ -4,10 +4,12 @@
 #  app.people.classesBorrowers.listPupilsInAClassTable  (DONE)
 #    SelectSql
 #      "classes", "borrowers"
-#  app.people.classesBorrowers.updatePupilsInClassForm
+#
+#  app.people.classesBorrowers.updatePupilsInClassForm  (DONE)
 #    SelectSql
 #      "classes", "borrowers"
-#  app.people.borrowers.editBorrowerForm
+#
+#  app.people.borrowers.editBorrowerForm                (DONE)
 #    SelectSql
 #      'borrowers'
 
@@ -16,7 +18,8 @@
 import schoolLib
 
 from schoolLib.htmxComponents import RefreshMainContent, \
-  Table, TableRow, Text, Button, FormTable, ClassesSelector
+  Table, TableRow, Text, Button, FormTable, ClassesSelector, \
+  TextInput, NumberInput
 
 from tests.utils.utils import MockPageData
 
@@ -83,4 +86,32 @@ def test_updatePupilsInClassForm(
 
   assert aRow.children[4].component.isA(ClassesSelector)
   assert aRow.children[4].component.name == 'rowClass-3'
+
+def test_editBorrowerForm(
+  database, addSomeClasses, addSomeBorrowers
+) :
+  pageData = MockPageData(database, authenticated=True)
+  htmx = schoolLib.app.people.borrowers.editBorrowerForm(
+    pageData, 2, hxPost='/'
+  )
+  assert htmx.isA(RefreshMainContent)
+  assert len(htmx.content) == 1
+  htmxFormTable = htmx.content[0]
+  assert htmxFormTable.isA(FormTable)
+  assert len(htmxFormTable.children) == 1
+  aTable = htmxFormTable.children[0]
+  assert aTable.isA(Table)
+  assert len(aTable.children) == 4
+
+  assert aTable.children[0].isA(TextInput)
+  assert aTable.children[0].name == "firstname"
+
+  assert aTable.children[1].isA(TextInput)
+  assert aTable.children[1].name == "familyName"
+
+  assert aTable.children[2].isA(NumberInput)
+  assert aTable.children[2].name == "cohort"
+
+  assert aTable.children[3].isA(ClassesSelector)
+  assert aTable.children[3].name == "assignedClass"
 
