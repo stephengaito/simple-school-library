@@ -220,6 +220,8 @@ class UpdateSql(SqlBuilder) :
     for aKey, aValue in values.items() :
       if aKey == 'id' :
         continue
+      if not isinstance(aValue, str) :
+        aValue = str(aValue)
       setList.append(f"{aKey} = '{sqliteEscapeSingleQuotes(aValue)}'")
 
     cmd = "UPDATE "

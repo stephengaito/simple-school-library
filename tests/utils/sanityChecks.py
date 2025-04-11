@@ -95,6 +95,8 @@ knownSqlPageParts = [
 
   # borrowers / itemsInfo / itemsPhysical / itemsBorrowed
   'app.books.itemsPhysical.getEditItemsPhysicalForm',
+  'app.books.itemsBorrowed.postSaveNewItemsBorrowed',
+  'app.books.itemsBorrowed.putUpdateAnItemsBorrowed',
 
 ]
 

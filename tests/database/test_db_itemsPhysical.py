@@ -21,10 +21,6 @@ import schoolLib
 
 from schoolLib.setup.database import SelectSql
 
-# from schoolLib.htmxComponents import RefreshMainContent, \
-#   Table, TableRow, Text, Button, FormTable, ClassesSelector, \
-#   TextInput, NumberInput
-
 from tests.utils.utils import getMockPageDataFrom, \
   structureHasKeyValue
 

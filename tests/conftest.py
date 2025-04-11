@@ -15,4 +15,5 @@ from tests.fixtures.people.classes import addSomeClasses
 from tests.fixtures.people.borrowers import addSomeBorrowers
 from tests.fixtures.books.itemsInfo import addSomeItemsInfo
 from tests.fixtures.books.itemsPhysical import addSomeItemsPhysical
+from tests.fixtures.books.itemsBorrowed import addSomeItemsBorrowed
 
