@@ -158,17 +158,25 @@ def getItemPhysicalTable(db, itemsPhysicalId) :
 @pagePart
 def getNewItemsPhysicalForm(pageData, itemsInfoId=None, **kwargs) :
   if itemsInfoId :
-    return schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
+    return RefreshMainContent(
+      schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+      schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
+      schoolLib.app.books.itemsPhysical.editItemsPhysicalForm(
+        pageData,
+        hxPost=f'/itemsPhysical/{itemsInfoId}/new',
+        submitMessage='Add new copy',
+        **kwargs
+      )
+    )
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
+    schoolLib.app.books.itemsInfo.editItemsInfoForm(
       pageData,
-      hxPost=f'/itemsPhysical/{itemsInfoId}/new',
-      submitMessage='Add new copy',
+      submitMessage='Add new book',
+      hxPost='/itemsInfo/new',
       **kwargs
     )
-  return schoolLib.app.books.itemsInfo.editItemsInfoForm(
-    pageData,
-    submitMessage='Add new book',
-    hxPost='/itemsInfo/new',
-    **kwargs
   )
 
 getRoute('/itemsPhysical/{itemsInfoId:int}/new', getNewItemsPhysicalForm)

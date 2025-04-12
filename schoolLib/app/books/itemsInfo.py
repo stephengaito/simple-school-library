@@ -28,7 +28,7 @@ def editItemsInfoForm(
 ) :
   if not hxPost : return "<!-- edit itemsInfo form with NO hxPost -->"
 
-  return FormTable([
+  theFormTable = FormTable([
     TextInput(
       label='Title',
       name='title',
@@ -85,6 +85,13 @@ def editItemsInfoForm(
     )
   ], submitMessage,
     hxTarget='this', hxPost=hxPost, **kwargs
+  )
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(
+      pageData, **kwargs
+    ),
+    theFormTable
   )
 
 def getItemInfoTable(db, itemsInfoId) :
@@ -234,6 +241,7 @@ def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
     pageData.db, itemsInfoId, pageData.user.is_authenticated
   )
 
+  theComponent = []
   if itemInfoTable and itemInfoCopiesTable :
     theComponent = [
       itemInfoTable,
@@ -251,16 +259,15 @@ def getShowItemsInfo(pageData, itemsInfoId=None, level=None, **kwargs) :
           HelpButton(hxGet="/help/addCopy/modal")
         ], theId="addPhysicalCopy")
       )
-    return RefreshMainContent(
-      schoolLib.app.menus.topLevelMenu(
-        pageData, selectedId='books'
-      ),
-      schoolLib.app.books.menu.secondLevelSingleBookMenu(
-        pageData, **kwargs
-      ),
-      theComponent
-    )
-  return MarkdownDiv("some thing about itemsInfo")
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(
+      pageData, selectedId='books'
+    ),
+    schoolLib.app.books.menu.secondLevelSingleBookMenu(
+      pageData, **kwargs
+    ),
+    theComponent
+  )
 
 getRoute(
   '/itemsInfo/show/{itemsInfoId:int}',
@@ -269,17 +276,11 @@ getRoute(
 
 @pagePart
 def getNewItemsInfoForm(pageData, **kwargs) :
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
-    schoolLib.app.books.menu.secondLevelBooksMenu(
-      pageData, **kwargs
-    ),
-    editItemsInfoForm(
-      pageData,
-      submitMessage='Add new book',
-      hxPost='/itemsInfo/new',
-      **kwargs
-    )
+  return schoolLib.app.books.itemsInfo.editItemsInfoForm(
+    pageData,
+    submitMessage='Add new book',
+    hxPost='/itemsInfo/new',
+    **kwargs
   )
 
 getRoute('/itemsInfo/new', getNewItemsInfoForm)
@@ -322,7 +323,7 @@ def getEditAnItemsInfoForm(pageData, itemsInfoId=None, **kwargs) :
       fetchAll=False
     )
     if itemsInfo :
-      return editItemsInfoForm(
+      return schoolLib.app.books.itemsInfo.editItemsInfoForm(
         pageData,
         title=itemsInfo[0]['title'],
         authors=itemsInfo[0]['authors'],

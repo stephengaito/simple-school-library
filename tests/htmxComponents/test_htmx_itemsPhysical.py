@@ -66,10 +66,9 @@ def test_getEditItemsPhysicalForm_notExists(
     pageData, itemsPhysicalId=20
   )
 
-  formTable = htmx
-  # assert htmx.isA(RefreshMainContent)
-  # assert len(htmx.content) == 3
-  # formTable = htmx.content[2]
+  assert htmx.isA(RefreshMainContent)
+  assert len(htmx.content) == 1
+  formTable = htmx.content[0]
   assert formTable.isA(FormTable)
   assert formTable.submitButton.children[0] == 'Add new book'
   assert formTable.hxPost == '/itemsInfo/new'

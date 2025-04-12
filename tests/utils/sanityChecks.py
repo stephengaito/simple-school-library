@@ -144,103 +144,104 @@ methodsKnownToReturnCorrectly = [
   'schoolLib.app.people.borrowers.getShowBorrowerInfo',
   'schoolLib.app.people.borrowers.editBorrowerForm',
   'schoolLib.app.people.classes.listClasses',
+  'schoolLib.app.books.itemsInfo.getShowItemsInfo',
+  'schoolLib.app.books.itemsInfo.editItemsInfoForm',
+  'schoolLib.app.books.itemsBorrowed.editItemsBorrowedForm',
 ]
 
 knownPagePartReturns = [
-  'app.menus.topLevelMenu',  # (1)
-  'app.utils.metaStructure.listRoutes',  # (1) return HtmlPage(
-  'app.utils.metaStructure.listPageParts',  # (1) return HtmlPage(
-  'app.utils.metaStructure.provideUIOverview',  # (1) return HtmlPage(
-  'app.utils.finders.findAThing',  # (1) return Div(
-  'app.utils.finders.searchForThings',  # (1) return schoolLib.app.utils.finders.findAThing(  # noqa
-  'app.utils.finders.getFindBorrowerForm',  # (1)
-  'app.utils.finders.postSearchForBorrower',  # (1) return schoolLib.app.utils.finders.searchForThings(  # noqa
-  'app.utils.finders.getFindAnItemForm',  # (1)
-  'app.utils.finders.postSearchForAnItem',  # (1) return schoolLib.app.utils.finders.searchForThings(  # noqa
-  'app.utils.finders.returnBooksSearch',  # (1) return schoolLib.app.utils.finders.findAThing(  # noqa
-  'app.utils.finders.postReturnBooksSearch',  # (1) return schoolLib.app.utils.finders.searchForThings(  # noqa
-  'app.utils.finders.getReturnABook',  # (2) return OobCollection( | return Text(  # noqa
-  'app.utils.finders.getTakeOutABookSearch',  # (1) return schoolLib.app.utils.finders.findAThing(  # noqa
-  'app.utils.finders.postTakeOutABookSearch',  # (2) return Div( | return schoolLib.app.utils.finders.searchForThings( # noqa
-  'app.utils.finders.getTakeOutABook',  # (2) return Div(
-  'app.home.home.getHomeMenu',  # (1)
-  'app.home.home.homePage',  # (1) return HtmlPage(
-  'app.home.home.helpPages',  # (1) return getHelpPage(
-  'app.home.home.editHelpPage',  # (1) return HelpEditorModalDialog(
-  'app.home.home.postHelpPages',  # (1) return postHelpPage(
-  'app.books.menu.secondLevelBooksMenu',  # (1)
-  'app.books.menu.secondLevelSingleBookMenu',  # (1)
+  'app.admin.login.getLoginForm',  # (1)
+  'app.admin.login.logoutPage',  # (1)
+  'app.admin.login.postLoginPage',  # (1)
+  'app.admin.menu.adminMenu',  # (1)
+  'app.books.itemsBorrowed.getEditItemsBorrowedForm',  # (2)
+  'app.books.itemsBorrowed.getNewItemsBorrowedForm',  # (2)
+  'app.books.itemsBorrowed.postSaveNewItemsBorrowed',  # (1)
+  'app.books.itemsBorrowed.putUpdateAnItemsBorrowed',  # (1)
+  'app.books.itemsInfo.getEditAnItemsInfoForm',  # (2)
+  'app.books.itemsInfo.getNewItemsInfoForm',  # (1)
+  'app.books.itemsInfo.getShowItemsInfo',  # (1)
+  'app.books.itemsInfo.postSaveNewItemsInfo',  # (1)
+  'app.books.itemsInfo.putUpdateAnItemsInfo',  # (1)
+  'app.books.itemsPhysical.getEditItemsPhysicalForm',  # (2)
+  'app.books.itemsPhysical.getItemsPhysicalShow',  # (2) return theComponent | return MarkdownDiv(  # noqa
+  'app.books.itemsPhysical.getNewItemsPhysicalForm',  # (2)
+  'app.books.itemsPhysical.postSaveNewItemsPhysical',  # (2)
+  'app.books.itemsPhysical.putUpdateAnItemsPhysical',   # (2)
   'app.books.menu.booksMenu',  # (1)
   'app.books.menu.getTakeOutABookForm',  # (1)
-  'app.books.itemsInfo.editItemsInfoForm',  # (2) return <!-- | return FormTable(  # noqa
-  'app.books.itemsInfo.getShowItemsInfo',  # (2) return MarkdownDiv(
-  'app.books.itemsInfo.getNewItemsInfoForm',  # (1)
-  'app.books.itemsInfo.postSaveNewItemsInfo',  # (1) return schoolLib.app.books.itemsInfo.editItemsInfoForm( # noqa
-  'app.books.itemsInfo.getEditAnItemsInfoForm',  # (2) return editItemsInfoForm( | return schoolLib.app.books.itemsInfo.editItemsInfoForm( # noqa
-  'app.books.itemsInfo.putUpdateAnItemsInfo',  # (1) return schoolLib.app.books.itemsInfo.editItemsInfoForm(  # noqa
-  'app.books.itemsPhysical.editItemsPhysicalForm',  # (2) return <!-- | return FormTable(  # noqa
-  'app.books.itemsPhysical.getNewItemsPhysicalForm',  # (2) return schoolLib.app.books.itemsPhysical.editItemsPhysicalForm( | return schoolLib.app.books.itemsInfo.editItemsInfoForm( # noqa
-  'app.books.itemsPhysical.postSaveNewItemsPhysical',  # (2) return schoolLib.app.books.itemsInfo.getShowItemsInfo( | return schoolLib.app.books.itemsInfo.editItemsInfoForm( # noqa
-  'app.books.itemsPhysical.getEditItemsPhysicalForm',  # (2) return schoolLib.app.books.itemsInfo.editItemsInfoForm( # noqa
-  'app.books.itemsPhysical.putUpdateAnItemsPhysical',  # (2) return schoolLib.app.books.itemsInfo.getShowItemsInfo( | return schoolLib.app.books.itemsInfo.editItemsInfoForm( # noqa
-  'app.books.itemsPhysical.getItemsPhysicalShow',  # (2) return theComponent | return MarkdownDiv(  # noqa
-  'app.books.itemsBorrowed.editItemsBorrowedForm',  # (1) return FormTable(
-  'app.books.itemsBorrowed.getNewItemsBorrowedForm',  # (2) return schoolLib.app.books.itemsBorrowed.editItemsBorrowedForm( # noqa
-  'app.books.itemsBorrowed.postSaveNewItemsBorrowed',  # (1)
-  'app.books.itemsBorrowed.getEditItemsBorrowedForm',  # (2) return schoolLib.app.books.itemsBorrowed.editItemsBorrowedForm( # noqa
-  'app.books.itemsBorrowed.putUpdateAnItemsBorrowed',  # (1)
   'app.books.returnBooks.getReturnBooksPage',  # (1)
-  'app.people.menu.secondLevelPeopleMenu',  # (1)
-  'app.people.menu.secondLevelSinglePersonMenu',  # (2) return book
-  'app.people.menu.peopleMenu',  # (1)
-  'app.people.classes.editClassForm',  # (1) return FormTable(
-  'app.people.classes.listClasses',  # (1)
-  'app.people.classes.addAClass',  # (1)
-  'app.people.classes.postSaveNewClass',  # (1)
-  'app.people.classes.getEditAClassForm',  # (2)
-  'app.people.classes.putUpdateAClass',  # (1)
-  'app.people.classes.deleteAnEmptyClass',  # (1)
-  'app.people.classesBorrowers.listPupilsInAClassTable',  # (1)
-  'app.people.classesBorrowers.updatePupilsInClassForm',  # (1) return FormTable( # noqa
-  'app.people.classesBorrowers.getUpdatePupilsInAClassForm',  # (1)
-  'app.people.classesBorrowers.putUpdatePupilsInAClass',  # (1)
-  'app.people.borrowers.editBorrowerForm',  # (2) return <!--
-  'app.people.borrowers.getShowBorrowerInfo',  # (3)
-  'app.people.borrowers.getNewBorrowerForm',  # (1)
-  'app.people.borrowers.postSaveNewBorrower',  # (1)
-  'app.people.borrowers.getEditABorrowerForm',  # (1)
-  'app.people.borrowers.putUpdatedBorrower',  # (1)
+  'app.home.home.editHelpPage',  # (1) return HelpEditorModalDialog(
+  'app.home.home.getHomeMenu',  # (1)
+  'app.home.home.helpPages',  # (1) return getHelpPage(
+  'app.home.home.homePage',  # (1)
+  'app.home.home.postHelpPages',  # (1) return postHelpPage(
   'app.people.borrowers.getBorrowerReturnBook',  # (2)
-  'app.tasks.menu.secondLevelTasksMenu',  # (1)
-  'app.tasks.menu.tasksMenu',  # (1)
+  'app.people.borrowers.getEditABorrowerForm',  # (1)
+  'app.people.borrowers.getNewBorrowerForm',  # (1)
+  'app.people.borrowers.getShowBorrowerInfo',  # (3)
+  'app.people.borrowers.postSaveNewBorrower',  # (1)
+  'app.people.borrowers.putUpdatedBorrower',  # (1)
+  'app.people.classes.addAClass',  # (1)
+  'app.people.classes.deleteAnEmptyClass',  # (1)
+  'app.people.classes.getEditAClassForm',  # (2)
+  'app.people.classes.listClasses',  # (1)
+  'app.people.classes.postSaveNewClass',  # (1)
+  'app.people.classes.putUpdateAClass',  # (1)
+  'app.people.classesBorrowers.getUpdatePupilsInAClassForm',  # (1)
+  'app.people.classesBorrowers.listPupilsInAClassTable',  # (1)
+  'app.people.classesBorrowers.putUpdatePupilsInAClass',  # (1)
+  'app.people.menu.peopleMenu',  # (1)
   'app.tasks.booksCheckedOut.booksCheckedOut',  # (1)
-  'app.admin.menu.secondLevelAdminMenu',  # (1)
-  'app.admin.menu.adminMenu',  # (1)
-  'app.admin.login.getLoginForm',  # (1)
-  'app.admin.login.postLoginPage',  # (1)
-  'app.admin.login.logoutPage',  # (1)
+  'app.tasks.menu.tasksMenu',   # (1)
+  'app.utils.finders.getFindAnItemForm',  # (1)
+  'app.utils.finders.getFindBorrowerForm',  # (1)
+  'app.utils.finders.getReturnABook',  # (2) return OobCollection( | return Text(  # noqa
+  'app.utils.finders.getTakeOutABook',  # (2) return Div(
+  'app.utils.finders.postReturnBooksSearch',  # (1) return schoolLib.app.utils.finders.searchForThings( # noqa
+  'app.utils.finders.postSearchForAnItem',  # (1) return schoolLib.app.utils.finders.searchForThings( # noqa
+  'app.utils.finders.postSearchForBorrower',  # (1) return schoolLib.app.utils.finders.searchForThings(  # noqa
+  'app.utils.finders.postTakeOutABookSearch',  # (2) return Div( | return schoolLib.app.utils.finders.searchForThings(  # noqa
+  'app.utils.metaStructure.listPageParts',  # (1)
+  'app.utils.metaStructure.listRoutes',  # (1)
+  'app.utils.metaStructure.provideUIOverview',  # (1)
 ]
 
 # knownPagePartReturns = set(knownPagePartReturns)
 knownPagePartReturns = set()
 
-def checkPagePartReturns() :
+def collectRouteMethods() :
+  routeMethods = set()
+  for aRoute in routes :
+    anEndpoint = f'{aRoute.endpoint.__module__.removeprefix('schoolLib.')}.{aRoute.endpoint.__name__}'  # noqa
+    routeMethods.add(anEndpoint)
+  return sorted(routeMethods)
+
+def collectUnknownPageParts(routeMethods) :
   unknownPagePartReturns = {}
-  for aPagePartName, aPagePart in pageParts.items() :
+  for aRouteMethod in routeMethods :
+    if aRouteMethod not in pageParts : continue
+    aPagePart = pageParts[aRouteMethod]
     matches = []
     for aMatch in returnsRegExp.finditer(aPagePart.src) :
       theMatch = aMatch.group(0).strip()
       matches.append(theMatch)
     if matches :
-      if aPagePartName not in knownPagePartReturns :
-        unknownPagePartReturns[aPagePartName] = matches
+      if aRouteMethod not in knownPagePartReturns :
+        unknownPagePartReturns[aRouteMethod] = matches
+  return unknownPagePartReturns
+
+def checkPagePartReturns() :
+  routeMethods = collectRouteMethods()
+  unknownPagePartReturns = collectUnknownPageParts(routeMethods)
   if unknownPagePartReturns :
     print("\npagePart return which have not been considered:")
     for aPagePartName, someMatches in unknownPagePartReturns.items() :
-      print(f'  {aPagePartName} ({len(someMatches)})')
+      print(f"  '{aPagePartName}',  # ({len(someMatches)})")
       for aMatch in someMatches :
-        if 'RefreshMainContent' in aMatch : continue
-        if 'goToHomePage' in aMatch : continue
+        if 'RefreshMainContent' in aMatch    : continue
+        if 'HtmlPage' in aMatch              : continue
+        if 'goToHomePage' in aMatch          : continue
         if 'Menu' in aMatch and aPagePartName.endswith('Menu') :
           continue
         returnMethod = aMatch.split(' ')
@@ -248,7 +249,7 @@ def checkPagePartReturns() :
           returnMethod = returnMethod[1].strip('(')
           if returnMethod in methodsKnownToReturnCorrectly :
             continue
-        if aMatch == 'return your' : continue
+        if aMatch == 'return your'           : continue
         print('    ' + aMatch)
     print("")
     return True

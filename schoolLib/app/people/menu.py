@@ -44,7 +44,7 @@ def secondLevelPeopleMenu(pageData, selectedId=None, **kwargs) :
 def secondLevelSinglePersonMenu(pageData, selectedId=None, **kwargs) :
   theMenu = Menu([], klassName='vertical')
 
-  # return book
+  # check in book
 
   # edit this person
   # delete this person

@@ -11,7 +11,7 @@
 import schoolLib
 
 from schoolLib.htmxComponents import Table, FormTable, \
-  TextInput, TextAreaInput
+  TextInput, TextAreaInput, RefreshMainContent
 
 from tests.utils.utils import MockPageData
 
@@ -21,9 +21,12 @@ def test_getEditAnItemsInfoForm(database, addSomeItemsInfo) :
     pageData, itemsInfoId=2
   )
 
-  assert htmx.isA(FormTable)
-  assert len(htmx.children) == 1
-  htmxTable = htmx.children[0]
+  assert htmx.isA(RefreshMainContent)
+  assert len(htmx.content) == 1
+  aFormTable = htmx.content[0]
+  assert aFormTable.isA(FormTable)
+  assert len(aFormTable.children) == 1
+  htmxTable = aFormTable.children[0]
   assert htmxTable.isA(Table)
   assert len(htmxTable.children) == 9
   theRows = htmxTable.children

@@ -22,7 +22,7 @@ def editItemsBorrowedForm(
   hxPost=None,
   **kwargs
 ) :
-  return FormTable([
+  theFormTable = FormTable([
     DateInput(
       label='Date borrowed',
       name='dateBorrowed',
@@ -37,6 +37,11 @@ def editItemsBorrowedForm(
     )
   ], submitMessage,
     hxTarget='this', hxPost=hxPost, **kwargs
+  )
+  return RefreshMainContent(
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
+    theFormTable
   )
 
 ##########################################################################
@@ -57,9 +62,9 @@ def getNewItemsBorrowedForm(
       **kwargs
     )
   return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData),
-    None,
-    None
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
+    []
   )
 
 getRoute(
@@ -84,9 +89,9 @@ def postSaveNewItemsBorrowed(
     }))
     pageData.db.commit()
   return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData),
-    None,
-    None
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
+    []
   )
 
 postRoute(
@@ -124,9 +129,9 @@ def getEditItemsBorrowedForm(
         **kwargs
       )
   return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData),
-    None,
-    None
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
+    []
   )
 
 getRoute(
@@ -154,9 +159,9 @@ def putUpdateAnItemsBorrowed(
     }))
     pageData.db.commit()
   return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData),
-    None,
-    None
+    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
+    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
+    []
   )
 
 putRoute(

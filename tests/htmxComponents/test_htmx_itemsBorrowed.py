@@ -88,11 +88,14 @@ def test_getEditItemsBorrowedForm_happy(
     pageData, itemsPhysicalId=1, itemsBorrowedId=1, borrowersId=1
   )
 
-  assert htmx.isA(FormTable)
-  assert htmx.submitButton.children[0] == 'Save changes'
-  assert htmx.hxPost == '/itemsBorrowed/1/1/edit/1'
+  assert htmx.isA(RefreshMainContent)
+  assert len(htmx.content) == 1
+  aFormTable = htmx.content[0]
+  assert aFormTable.isA(FormTable)
+  assert aFormTable.submitButton.children[0] == 'Save changes'
+  assert aFormTable.hxPost == '/itemsBorrowed/1/1/edit/1'
 
-  aTable = htmx.children[0]
+  aTable = aFormTable.children[0]
   assert aTable.isA(Table)
   assert len(aTable.children) == 2
 
@@ -112,9 +115,9 @@ def test_getEditItemsBorrowedForm_unhappy(
   )
 
   assert htmx.isA(RefreshMainContent)
-  assert htmx.subMenu is None
-  assert len(htmx.content) == 1
-  assert htmx.content[0] is None
+  assert htmx.mainMenu.isA(Menu)
+  assert htmx.subMenu.isA(Menu)
+  assert len(htmx.content) == 0
 
   aMenu = htmx.mainMenu
   assert aMenu.isA(Menu)
