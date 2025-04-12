@@ -97,6 +97,9 @@ knownSqlPageParts = [
   'app.books.itemsPhysical.getEditItemsPhysicalForm',
   'app.books.itemsBorrowed.postSaveNewItemsBorrowed',
   'app.books.itemsBorrowed.putUpdateAnItemsBorrowed',
+  'app.books.itemsBorrowed.getEditItemsBorrowedForm',
+  'app.tasks.booksCheckedOut.booksCheckedOut',
+  'app.utils.finders.getReturnABook'
 
 ]
 
