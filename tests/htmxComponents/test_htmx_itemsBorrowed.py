@@ -117,8 +117,10 @@ def test_getEditItemsBorrowedForm_unhappy(
   assert htmx.isA(RefreshMainContent)
   assert htmx.mainMenu.isA(Menu)
   assert htmx.subMenu.isA(Menu)
-  assert len(htmx.content) == 0
-
+  assert len(htmx.content) == 1
+  print(yaml.dump(htmx.content[0]))
+  assert False
+  
   aMenu = htmx.mainMenu
   assert aMenu.isA(Menu)
   assert len(aMenu.children) == 5

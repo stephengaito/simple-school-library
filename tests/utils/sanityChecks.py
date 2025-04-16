@@ -147,6 +147,7 @@ methodsKnownToReturnCorrectly = [
   'schoolLib.app.books.itemsInfo.getShowItemsInfo',
   'schoolLib.app.books.itemsInfo.editItemsInfoForm',
   'schoolLib.app.books.itemsBorrowed.editItemsBorrowedForm',
+  'schoolLib.app.books.menu.booksMenu',
 ]
 
 knownPagePartReturns = [

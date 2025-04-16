@@ -61,11 +61,7 @@ def getNewItemsBorrowedForm(
       hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/new',
       **kwargs
     )
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
-    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
-    []
-  )
+  return schoolLib.app.books.menu.booksMenu(pageData)
 
 getRoute(
   '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new',
@@ -88,11 +84,7 @@ def postSaveNewItemsBorrowed(
       'dateDue'         : theForm['dateDue']
     }))
     pageData.db.commit()
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
-    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
-    []
-  )
+  return schoolLib.app.books.menu.booksMenu(pageData)
 
 postRoute(
   '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/new',
@@ -128,11 +120,7 @@ def getEditItemsBorrowedForm(
         hxPost=f'/itemsBorrowed/{itemsPhysicalId}/{borrowersId}/edit/{itemsBorrowedId}',  # noqa
         **kwargs
       )
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
-    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
-    []
-  )
+  return schoolLib.app.books.menu.booksMenu(pageData)
 
 getRoute(
   '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',  # noqa
@@ -158,11 +146,7 @@ def putUpdateAnItemsBorrowed(
       'dateDue'      : theForm['dateDue']
     }))
     pageData.db.commit()
-  return RefreshMainContent(
-    schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
-    schoolLib.app.books.menu.secondLevelBooksMenu(pageData),
-    []
-  )
+  return schoolLib.app.books.menu.booksMenu(pageData)
 
 putRoute(
   '/itemsBorrowed/{itemsPhysicalId:int}/{borrowersId:int}/edit/{itemsBorrowedId:int}',  # noqa
