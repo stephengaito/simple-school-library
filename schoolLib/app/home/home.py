@@ -18,7 +18,7 @@ def getHomeMenu(pageData, **kwargs) :
   return RefreshMainContent(
     schoolLib.app.menus.topLevelMenu(pageData, selectedId='home'),
     secondLevelHomeMenu(pageData),
-    getHelpPage(
+    schoolLib.app.home.home.getHelpPage(
       pageData, 'homePage', modal=False,
       hxPost='/editHelp/homePage/nonModal'
     )
@@ -53,7 +53,7 @@ def helpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
     modal = False
     modalStr = 'nonModal'
   print(f"modalStr: [{modalStr}]")
-  return getHelpPage(
+  return schoolLib.app.home.home.getHelpPage(
     pageData, aHelpPage,
     hxPost=f'/editHelp/{aHelpPage}/{modalStr}',
     modal=modal
@@ -94,7 +94,7 @@ def postHelpPages(pageData, aHelpPage=None, isModal='yes', **kwargs) :
   if isModal.startswith('no') :
     modal = False
     modalStr = 'nonModal'
-  return postHelpPage(
+  return schoolLib.app.home.home.postHelpPage(
     pageData, aHelpPage, modal=modal,
     hxPost=f'/editHelp/{aHelpPage}/{modalStr}',
     **kwargs

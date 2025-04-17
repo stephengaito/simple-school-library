@@ -74,7 +74,7 @@ def htmlResponseFromHtmx(htmxComponent, pageData) :
         <div hx-swap-oob="innerHTML:#developerMessages">
           <a href="/routes{url}" target="_blank">/routes{url}</a>
           &nbsp; &nbsp; &nbsp; &nbsp;
-          <a href="/uiOverview{url}" target="_blank">/uiOverview{url}</a>
+          <!-- a href="/uiOverview{url}" target="_blank">/uiOverview{url}</a -->
         </div>
       """)
   else :

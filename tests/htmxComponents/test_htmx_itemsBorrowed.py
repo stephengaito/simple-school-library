@@ -21,13 +21,15 @@
 
 import yaml
 
+# import pytest
+
 import schoolLib
 
 from schoolLib.htmxComponents import Table, FormTable, \
   RefreshMainContent, DateInput, OobCollection, SearchBox, \
-  OobTemplate, Div, Menu, TableRow, TableBody, Text
+  OobTemplate, Div, Menu, TableRow, TableBody, Text, HelpPage
 
-from tests.utils.utils import MockPageData
+from tests.utils.utils import MockPageData, getMockPageDataFrom
 
 def test_getReturnABook_happy(
   database, addSomeClasses, addSomeBorrowers,
@@ -66,9 +68,19 @@ def test_getReturnABook_happy(
   assert len(aTableRow.children) == 4
 
 def test_getReturnABook_unhappy(
-  database, addSomeClasses, addSomeBorrowers,
+  database, addSomeHelpPages, addSomeClasses, addSomeBorrowers,
   addSomeItemsInfo, addSomeItemsPhysical, addSomeItemsBorrowed
 ) :
+  # need to add the booksPage help page
+  pageData = getMockPageDataFrom(database, """
+    authenticated: True
+    theForm:
+      helpContent: This is the help for the books page
+  """)
+  schoolLib.htmxComponents.helpPages.postHelpPage(
+    pageData, "booksPage", modal=False
+  )
+
   pageData = MockPageData(database)
   # Note level= and oobLevel= are never used...
   # search= seems to be just passed through...
@@ -76,8 +88,14 @@ def test_getReturnABook_unhappy(
     pageData, itemsBorrowedId=3, search='silly'
   )
 
-  assert htmx.isA(Text)
-  assert htmx.children[0] == "hello"
+  assert htmx.isA(RefreshMainContent)
+  assert htmx.mainMenu.isA(Menu)
+  assert htmx.subMenu.isA(Menu)
+  assert len(htmx.content) == 1
+  helpPage = htmx.content[0]
+  assert helpPage.isA(HelpPage)
+  assert helpPage.helpPagePath == 'booksPage'
+  assert helpPage.rawHtml == 'This is the help for the books page'
 
 def test_getEditItemsBorrowedForm_happy(
   database, addSomeClasses, addSomeBorrowers,
@@ -106,9 +124,21 @@ def test_getEditItemsBorrowedForm_happy(
   assert aTable.children[1].name == 'dateDue'
 
 def test_getEditItemsBorrowedForm_unhappy(
-  database, addSomeClasses, addSomeBorrowers,
+  database, addSomeHelpPages, addSomeClasses, addSomeBorrowers,
   addSomeItemsInfo, addSomeItemsPhysical, addSomeItemsBorrowed
 ) :
+
+  # need to add the booksPage help page
+  pageData = getMockPageDataFrom(database, """
+    authenticated: True
+    theForm:
+      helpContent: This is the help for the books page
+  """)
+  schoolLib.htmxComponents.helpPages.postHelpPage(
+    pageData, "booksPage", modal=False
+  )
+
+  # Now start the test....
   pageData = MockPageData(database, authenticated=True)
   htmx = schoolLib.app.books.itemsBorrowed.getEditItemsBorrowedForm(
     pageData, itemsPhysicalId=1, itemsBorrowedId=1, borrowersId=3
@@ -118,9 +148,11 @@ def test_getEditItemsBorrowedForm_unhappy(
   assert htmx.mainMenu.isA(Menu)
   assert htmx.subMenu.isA(Menu)
   assert len(htmx.content) == 1
-  print(yaml.dump(htmx.content[0]))
-  assert False
-  
+  helpPage = htmx.content[0]
+  assert helpPage.isA(HelpPage)
+  assert helpPage.helpPagePath == 'booksPage'
+  assert helpPage.rawHtml == 'This is the help for the books page'
+
   aMenu = htmx.mainMenu
   assert aMenu.isA(Menu)
   assert len(aMenu.children) == 5

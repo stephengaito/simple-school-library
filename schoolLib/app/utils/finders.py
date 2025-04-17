@@ -362,7 +362,7 @@ def getReturnABook(
         )
       ])
 
-  return Text("hello")
+  return schoolLib.app.books.menu.booksMenu(pageData)
 
 getRoute(
   "/books/returnABook/{itemsBorrowedId:int}", getReturnABook, anyUser=True
@@ -416,7 +416,7 @@ def postTakeOutABookSearch(pageData, borrowerId=None, **kwargs) :
     # do nothing
     if 'headers' not in kwargs : kwargs['headers'] = {}
     kwargs['headers']['HX-Reswap'] = 'none'
-    return Div([])
+    return schoolLib.app.books.menu.booksMenu(pageData)
 
   return schoolLib.app.utils.finders.searchForThings(
     pageData, SearchForAPhysicalItemIter,
@@ -442,7 +442,7 @@ def getTakeOutABook(
     # do nothing
     if 'headers' not in kwargs : kwargs['headers'] = {}
     kwargs['headers']['HX-Reswap'] = 'none'
-    return Div([])
+    return schoolLib.app.books.menu.booksMenu(pageData)
 
   if dbTakeOutABook(pageData.db, borrowerId, itemsPhysicalId) :
     print("Book taken out")

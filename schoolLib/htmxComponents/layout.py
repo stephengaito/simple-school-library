@@ -131,7 +131,7 @@ class StdBody(HtmxBase) :
       htmlFragments.append(f"""
         <div id="developerMessages" class="fixed bottom-0 w-screen">
           <a href="/routes{self.url}" target="_blank">/routes{self.url}</a>
-          <a href="/uiOverview" target="_blank">/uiOverview{self.url}</a>
+          <!-- a href="/uiOverview" target="_blank">/uiOverview{self.url}</a -->
         </div>
       """)
 

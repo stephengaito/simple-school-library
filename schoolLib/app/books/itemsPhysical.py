@@ -5,7 +5,7 @@ Work with itemsPhysical
   - edit an itemsPhysical
 """
 
-from datetime import datetime, date
+from datetime import date
 import yaml
 
 from schoolLib.setup import SelectSql, pagePart, getRoute, InsertSql, \
@@ -372,7 +372,7 @@ def getItemsPhysicalShow(pageData, itemsPhysicalId=None, **kwargs) :
     pageData.db, itemsInfoId
   )
   if itemInfoTable and physicalCopyTable :
-    theComponent = RefreshMainContent(
+    return RefreshMainContent(
       schoolLib.app.menus.topLevelMenu(pageData, selectedId='books'),
       schoolLib.app.books.menu.secondLevelSingleBookMenu(
         pageData, **kwargs
@@ -383,10 +383,7 @@ def getItemsPhysicalShow(pageData, itemsPhysicalId=None, **kwargs) :
         physicalCopyTable
       ]
     )
-    print("-----------component----------")
-    print(yaml.dump(theComponent))
-    return theComponent
-  return MarkdownDiv("some thing about itemsPhysical")
+  return schoolLib.app.books.menu.booksMenu(pageData)
 
 getRoute(
   '/itemsPhysical/show/{itemsPhysicalId:int}',

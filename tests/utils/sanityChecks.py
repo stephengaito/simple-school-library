@@ -148,6 +148,9 @@ methodsKnownToReturnCorrectly = [
   'schoolLib.app.books.itemsInfo.editItemsInfoForm',
   'schoolLib.app.books.itemsBorrowed.editItemsBorrowedForm',
   'schoolLib.app.books.menu.booksMenu',
+  'schoolLib.app.home.home.postHelpPage',
+  'schoolLib.app.home.home.getHelpPage',
+  'schoolLib.app.utils.finders.searchForThings'
 ]
 
 knownPagePartReturns = [
@@ -165,18 +168,18 @@ knownPagePartReturns = [
   'app.books.itemsInfo.postSaveNewItemsInfo',  # (1)
   'app.books.itemsInfo.putUpdateAnItemsInfo',  # (1)
   'app.books.itemsPhysical.getEditItemsPhysicalForm',  # (2)
-  'app.books.itemsPhysical.getItemsPhysicalShow',  # (2) return theComponent | return MarkdownDiv(  # noqa
+  'app.books.itemsPhysical.getItemsPhysicalShow',  # (2)
   'app.books.itemsPhysical.getNewItemsPhysicalForm',  # (2)
   'app.books.itemsPhysical.postSaveNewItemsPhysical',  # (2)
-  'app.books.itemsPhysical.putUpdateAnItemsPhysical',   # (2)
+  'app.books.itemsPhysical.putUpdateAnItemsPhysical',  # (2)
   'app.books.menu.booksMenu',  # (1)
   'app.books.menu.getTakeOutABookForm',  # (1)
   'app.books.returnBooks.getReturnBooksPage',  # (1)
-  'app.home.home.editHelpPage',  # (1) return HelpEditorModalDialog(
+  'app.home.home.editHelpPage',  # (1)
   'app.home.home.getHomeMenu',  # (1)
-  'app.home.home.helpPages',  # (1) return getHelpPage(
+  'app.home.home.helpPages',  # (1)
   'app.home.home.homePage',  # (1)
-  'app.home.home.postHelpPages',  # (1) return postHelpPage(
+  'app.home.home.postHelpPages',  # (1)
   'app.people.borrowers.getBorrowerReturnBook',  # (2)
   'app.people.borrowers.getEditABorrowerForm',  # (1)
   'app.people.borrowers.getNewBorrowerForm',  # (1)
@@ -194,22 +197,22 @@ knownPagePartReturns = [
   'app.people.classesBorrowers.putUpdatePupilsInAClass',  # (1)
   'app.people.menu.peopleMenu',  # (1)
   'app.tasks.booksCheckedOut.booksCheckedOut',  # (1)
-  'app.tasks.menu.tasksMenu',   # (1)
+  'app.tasks.menu.tasksMenu',  # (1)
   'app.utils.finders.getFindAnItemForm',  # (1)
   'app.utils.finders.getFindBorrowerForm',  # (1)
-  'app.utils.finders.getReturnABook',  # (2) return OobCollection( | return Text(  # noqa
-  'app.utils.finders.getTakeOutABook',  # (2) return Div(
-  'app.utils.finders.postReturnBooksSearch',  # (1) return schoolLib.app.utils.finders.searchForThings( # noqa
-  'app.utils.finders.postSearchForAnItem',  # (1) return schoolLib.app.utils.finders.searchForThings( # noqa
-  'app.utils.finders.postSearchForBorrower',  # (1) return schoolLib.app.utils.finders.searchForThings(  # noqa
-  'app.utils.finders.postTakeOutABookSearch',  # (2) return Div( | return schoolLib.app.utils.finders.searchForThings(  # noqa
+  'app.utils.finders.getReturnABook',  # (2)
+  'app.utils.finders.getTakeOutABook',  # (2)
+  'app.utils.finders.postReturnBooksSearch',  # (1)
+  'app.utils.finders.postSearchForAnItem',  # (1)
+  'app.utils.finders.postSearchForBorrower',  # (1)
+  'app.utils.finders.postTakeOutABookSearch',  # (2)
   'app.utils.metaStructure.listPageParts',  # (1)
   'app.utils.metaStructure.listRoutes',  # (1)
   'app.utils.metaStructure.provideUIOverview',  # (1)
 ]
 
-# knownPagePartReturns = set(knownPagePartReturns)
-knownPagePartReturns = set()
+knownPagePartReturns = set(knownPagePartReturns)
+# knownPagePartReturns = set()
 
 def collectRouteMethods() :
   routeMethods = set()
@@ -241,7 +244,9 @@ def checkPagePartReturns() :
       print(f"  '{aPagePartName}',  # ({len(someMatches)})")
       for aMatch in someMatches :
         if 'RefreshMainContent' in aMatch    : continue
+        if 'HelpEditorModalDialog' in aMatch : continue
         if 'HtmlPage' in aMatch              : continue
+        if 'OobCollection' in aMatch         : continue
         if 'goToHomePage' in aMatch          : continue
         if 'Menu' in aMatch and aPagePartName.endswith('Menu') :
           continue
